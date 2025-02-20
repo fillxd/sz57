@@ -1,164 +1,250 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP 57 Ogłoszenia</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .category-btn {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .category-btn:hover {
-            background-color: #45a049;
-        }
-        #announcement-list {
-            margin-top: 20px;
-        }
-        .announcement {
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 10px;
-        }
-        .announcement button {
-            background-color: red;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .announcement button:hover {
-            background-color: darkred;
-        }
-    </style>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SP57</title>
+  <style>
+    /* Stylizacja kodu */
+    body {
+      font-family: 'Roboto', sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #f4f7f6;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Kontener nagłówka z wyszukiwarką */
+    #header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #333;
+      font-size: 2rem;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Pasek wyszukiwania w prawym górnym rogu */
+    #search {
+      width: 250px;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 1rem;
+      transition: box-shadow 0.3s;
+    }
+
+    #search:focus {
+      outline: none;
+      box-shadow: 0 0 8px rgba(0, 86, 179, 0.5);
+    }
+
+    /* Menu */
+    #menu {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      background-color: #0056b3;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      margin: 5px;
+      font-weight: bold;
+      color: #0056b3;
+      transition: transform 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Ogłoszenia */
+    #ogloszenia {
+      margin-top: 20px;
+    }
+
+    .ogloszenie {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 15px 0;
+      background: #fff;
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .ogloszenie:hover {
+      transform: translateX(5px);
+    }
+
+    /* Przycisk dodawania ogłoszenia */
+    .dodaj {
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      transition: background-color 0.3s;
+    }
+
+    .dodaj:hover {
+      background-color: #218838;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
+  <div id="header-container">
+    <h1>
+      <img src="https://cdn-icons-png.flaticon.com/512/5310/5310672.png" class="icon" alt="Edukacja" />
+      Szkoła Podstawowa nr 57 we Wrocławiu
+    </h1>
+    <!-- Pasek wyszukiwania w prawym górnym rogu -->
+    <input type="text" id="search" placeholder="Wyszukaj ogłoszenia..." oninput="wyszukajOgloszenia()" />
+  </div>
 
-    <h1>Ogłoszenia SP 57</h1>
+  <div id="menu">
+    <!-- Przycisków dla kategorii ogłoszeń -->
+    <button onclick="pokazOgloszenia('ogolne')">Ogólne</button>
+    <button onclick="pokazOgloszenia('nieobecnosci')">Nieobecności nauczycieli</button>
+    <button onclick="pokazOgloszenia('wydarzenia')">Wydarzenia</button>
+    <button onclick="pokazOgloszenia('samorzad')">Samorząd Uczniowski i Wolontariat</button>
+    <button onclick="pokazOgloszenia('wycieczki')">Wycieczki</button>
+    <button onclick="pokazOgloszenia('swietlica')">Klasy 1-3, Świetlica</button>
+    <button onclick="pokazOgloszenia('grono')">Grono Pedagogiczne</button>
+    <button onclick="pokazOgloszenia('wychowawcy')">Wychowawcy</button>
+  </div>
 
-    <div>
-        <button class="category-btn" onclick="showSection('general')">Ogólne</button>
-        <button class="category-btn" onclick="showSection('absences')">Nieobecności</button>
-        <button class="category-btn" onclick="showSection('events')">Wydarzenia</button>
-    </div>
+  <div id="ogloszenia"></div>
 
-    <div id="announcement-list"></div>
-    <button class="category-btn" onclick="dodajOgloszenie()">Dodaj ogłoszenie</button>
+  <!-- Importowanie Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+  <script>
+    // Konfiguracja Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-    <!-- Firebase setup (make sure this is included) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    // Inicjalizacja aplikacji Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
-            authDomain: "sp-eb58b.firebaseapp.com",
-            databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "sp-eb58b",
-            storageBucket: "sp-eb58b.firebasestorage.app",
-            messagingSenderId: "721683903483",
-            appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
-            measurementId: "G-2BJ1JK7D4H"
+    // Funkcja do pobierania ogłoszeń z Firebase
+    function pobierzOgloszenia() {
+      const ogloszeniaRef = database.ref('ogloszenia');
+      ogloszeniaRef.once('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          pokazOgloszenia(data);
+        }
+      });
+    }
+
+    // Funkcja wyświetlająca ogłoszenia
+    function pokazOgloszenia(data) {
+      const ogloszeniaDiv = document.getElementById("ogloszenia");
+      ogloszeniaDiv.innerHTML = "";
+
+      // Wyświetlanie ogłoszeń
+      for (let kategoria in data) {
+        const ogloszeniaKategoria = data[kategoria];
+        ogloszeniaKategoria.forEach((ogloszenie, index) => {
+          const div = document.createElement("div");
+          div.classList.add("ogloszenie");
+          div.innerHTML = `
+            <strong>${ogloszenie.tytul}</strong>
+            <p>${ogloszenie.tresc}</p>
+            <p><small>${ogloszenie.data}</small></p>
+            <button onclick="edytujOgloszenie('${kategoria}', ${index})">Edytuj</button>
+            <button onclick="usunOgloszenie('${kategoria}', ${index})">Usuń</button>
+          `;
+          ogloszeniaDiv.appendChild(div);
+        });
+      }
+    }
+
+    // Funkcja dodająca ogłoszenie
+    function dodajOgloszenie(kategoria) {
+      const tytul = prompt("Podaj tytuł ogłoszenia:");
+      const tresc = prompt("Podaj treść ogłoszenia:");
+      const data = new Date().toLocaleString();
+
+      if (tytul && tresc) {
+        const ogloszenie = {
+          tytul: tytul,
+          tresc: tresc,
+          data: data
         };
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
+        // Dodanie ogłoszenia do bazy Firebase
+        const ogloszeniaRef = database.ref('ogloszenia/' + kategoria);
+        ogloszeniaRef.push(ogloszenie);
+      }
+    }
 
-        let currentCategory = 'general';  // default category
+    // Funkcja do edytowania ogłoszenia
+    function edytujOgloszenie(kategoria, index) {
+      // Edycja logika tutaj (np. popup z formularzem)
+    }
 
-        // Show category section
-        function showSection(section) {
-            console.log(`Switching to section: ${section}`);
-            currentCategory = section;
-            pobierzOgloszenia(section);
-        }
+    // Funkcja do usuwania ogłoszenia
+    function usunOgloszenie(kategoria, index) {
+      const ogloszeniaRef = database.ref('ogloszenia/' + kategoria);
+      ogloszeniaRef.child(index).remove();
+    }
 
-        // Pobierz ogłoszenia z Firebase
-        function pobierzOgloszenia(sectionId) {
-            const ogloszeniaRef = firebase.database().ref(`${sectionId}`);
-            ogloszeniaRef.on('value', (snapshot) => {
-                const ogloszenia = snapshot.val();
-                console.log("Ogłoszenia:", ogloszenia);
-                displayAnnouncements(ogloszenia, sectionId);
-            });
-        }
-
-        // Wyświetl ogłoszenia na stronie
-        function displayAnnouncements(ogloszenia, sectionId) {
-            const listElement = document.getElementById('announcement-list');
-            listElement.innerHTML = '';  // Clear the existing list
-
-            if (ogloszenia) {
-                for (const id in ogloszenia) {
-                    const announcement = ogloszenia[id];
-                    const announcementElement = document.createElement('div');
-                    announcementElement.classList.add('announcement');
-                    announcementElement.innerHTML = `
-                        <h3>${announcement.title}</h3>
-                        <p>${announcement.content}</p>
-                        <button onclick="usuwanieOgloszenia('${sectionId}', '${id}')">Usuń</button>
-                    `;
-                    listElement.appendChild(announcementElement);
-                }
-            } else {
-                listElement.innerHTML = '<p>Brak ogłoszeń w tej kategorii.</p>';
-            }
-        }
-
-        // Dodaj ogłoszenie
-        function dodajOgloszenie() {
-            const title = prompt('Podaj tytuł ogłoszenia:');
-            if (!title) return;
-
-            const content = prompt('Podaj treść ogłoszenia:');
-            if (!content) return;
-
-            const newAnnouncement = {
-                title: title,
-                content: content
-            };
-
-            const ogloszeniaRef = firebase.database().ref(`${currentCategory}`);
-            const newPostRef = ogloszeniaRef.push();
-            newPostRef.set(newAnnouncement)
-                .then(() => {
-                    console.log('Ogłoszenie zostało dodane');
-                    pobierzOgloszenia(currentCategory);  // Reload announcements
-                })
-                .catch((error) => {
-                    console.error("Error adding announcement:", error);
-                });
-        }
-
-        // Usuń ogłoszenie
-        function usuwanieOgloszenia(sectionId, ogloszenieId) {
-            const ogloszenieRef = firebase.database().ref(`${sectionId}/${ogloszenieId}`);
-            ogloszenieRef.remove()
-                .then(() => {
-                    console.log('Ogłoszenie zostało usunięte');
-                    pobierzOgloszenia(sectionId);  // Reload announcements
-                })
-                .catch((error) => {
-                    console.error('Błąd podczas usuwania ogłoszenia:', error);
-                });
-        }
-
-        // Pobierz ogłoszenia przy starcie
-        window.onload = function() {
-            console.log("Strona załadowana!");
-            pobierzOgloszenia(currentCategory);  // Load announcements for default category
-        }
-    </script>
+    // Ładowanie ogłoszeń przy starcie
+    pobierzOgloszenia();
+  </script>
 </body>
 </html>
