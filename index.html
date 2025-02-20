@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ogłoszenia</title>
+</head>
+<body>
+    <h1>Tablica Ogłoszeń</h1>
+
+    <!-- Formularz do dodawania ogłoszenia -->
+    <input type="text" id="ogloszenie" placeholder="Wpisz treść ogłoszenia">
+    <button onclick="dodajOgloszenie()">Dodaj ogłoszenie</button>
+
+    <h2>Lista ogłoszeń:</h2>
+    <ul id="listaOgloszen"></ul>
+
+    <script type="module">
+        // Importowanie funkcji z najnowszego SDK Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getDatabase, ref, set, child, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        // Skopiowana konfiguracja Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
+            authDomain: "sp-eb58b.firebaseapp.com",
+            databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "sp-eb58b",
+            storageBucket: "sp-eb58b.firebasestorage.app",
+            messagingSenderId: "721683903483",
+            appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
+            measurementId: "G-2BJ1JK7D4H"
+        };
+
+        // Inicjalizacja Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Dodawanie ogłoszenia
+        function dodajOgloszenie() {
+            const tresc = document.getElementById("ogloszenie").value;
+            if (tresc.trim() === "") return alert("Podaj treść ogłoszenia!");
+
+            const ogloszenieRef = ref(db, "ogloszenia");
+            const newOgloszenieRef = child(ogloszenieRef, "ogloszenie_" + Date.now());
+            set(newOgloszenieRef, {
+                tekst: tresc
+            }).then(() => {
+                document.getElementById("ogloszenie").value = ""; // Czyści pole po dodaniu ogłoszenia
+                pobierzOgloszenia(); // Odświeżanie listy ogłoszeń po dodaniu
+            });
+        }
+
+        // Pobieranie ogłoszeń
+        function pobierzOgloszenia() {
+            const ogloszenieRef = ref(db, "ogloszenia");
+            get(ogloszenieRef).then((snapshot) => {
+                const listaOgloszen = document.getElementById("listaOgloszen");
+                listaOgloszen.innerHTML = ""; // Czyści listę przed dodaniem nowych ogłoszeń
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const ogloszenie = childSnapshot.val();
+                        const li = document.createElement("li");
+                        li.textContent = ogloszenie.tekst;
+                        listaOgloszen.appendChild(li);
+                    });
+                } else {
+                    listaOgloszen.innerHTML = "<li>Brak ogłoszeń</li>";
+                }
+            });
+        }
+
+        // Uruchomienie pobierania ogłoszeń przy załadowaniu strony
+        pobierzOgloszenia();
+    </script>
+</body>
+</html>
