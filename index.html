@@ -3,24 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ogłoszenia</title>
+    <title>SP 57 - Ogłoszenia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+        nav a {
+            color: white;
+            padding: 14px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        section {
+            padding: 20px;
+        }
+        .ogloszenie {
+            background-color: white;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .ogloszenie button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .ogloszenie button.edit {
+            background-color: #4CAF50;
+        }
+        .ogloszenie button:hover {
+            opacity: 0.8;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button.add {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button.add:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Tablica Ogłoszeń</h1>
+    <header>
+        <h1>SP 57 - Ogłoszenia</h1>
+    </header>
 
-    <!-- Formularz do dodawania ogłoszenia -->
-    <input type="text" id="ogloszenie" placeholder="Wpisz treść ogłoszenia">
-    <button onclick="dodajOgloszenie()">Dodaj ogłoszenie</button>
+    <nav>
+        <a href="#" onclick="showSection('ogolne')">Ogólne</a>
+        <a href="#" onclick="showSection('nieobecnosci')">Nieobecności</a>
+        <a href="#" onclick="showSection('wydarzenia')">Wydarzenia</a>
+    </nav>
 
-    <h2>Lista ogłoszeń:</h2>
-    <ul id="listaOgloszen"></ul>
+    <section id="ogolne" class="content">
+        <h2>Ogólne</h2>
+        <ul id="listaOgloszen"></ul>
+        <button class="add" onclick="dodajOgloszenie('ogolne')">Dodaj ogłoszenie</button>
+    </section>
+
+    <section id="nieobecnosci" class="content" style="display:none;">
+        <h2>Nieobecności</h2>
+        <ul id="listaOgloszenNieobecnosci"></ul>
+        <button class="add" onclick="dodajOgloszenie('nieobecnosci')">Dodaj ogłoszenie</button>
+    </section>
+
+    <section id="wydarzenia" class="content" style="display:none;">
+        <h2>Wydarzenia</h2>
+        <ul id="listaOgloszenWydarzenia"></ul>
+        <button class="add" onclick="dodajOgloszenie('wydarzenia')">Dodaj ogłoszenie</button>
+    </section>
 
     <script type="module">
-        // Importowanie funkcji z najnowszego SDK Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getDatabase, ref, set, child, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+        import { getDatabase, ref, set, child, get, update, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-        // Skopiowana konfiguracja Firebase
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
             authDomain: "sp-eb58b.firebaseapp.com",
@@ -32,36 +122,34 @@
             measurementId: "G-2BJ1JK7D4H"
         };
 
-        // Inicjalizacja Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Dodawanie ogłoszenia
-        function dodajOgloszenie() {
-            const tresc = document.getElementById("ogloszenie").value;
-            if (tresc.trim() === "") return alert("Podaj treść ogłoszenia!");
-
-            const ogloszenieRef = ref(db, "ogloszenia");
-            const newOgloszenieRef = child(ogloszenieRef, "ogloszenie_" + Date.now());
-            set(newOgloszenieRef, {
-                tekst: tresc
-            }).then(() => {
-                document.getElementById("ogloszenie").value = ""; // Czyści pole po dodaniu ogłoszenia
-                pobierzOgloszenia(); // Odświeżanie listy ogłoszeń po dodaniu
+        function showSection(sectionId) {
+            document.querySelectorAll('.content').forEach(section => {
+                section.style.display = 'none';
             });
+            document.getElementById(sectionId).style.display = 'block';
+            pobierzOgloszenia(sectionId);
         }
 
-        // Pobieranie ogłoszeń
-        function pobierzOgloszenia() {
-            const ogloszenieRef = ref(db, "ogloszenia");
+        function pobierzOgloszenia(sectionId) {
+            const ogloszenieRef = ref(db, sectionId);
             get(ogloszenieRef).then((snapshot) => {
-                const listaOgloszen = document.getElementById("listaOgloszen");
+                const listaOgloszen = document.getElementById("listaOgloszen" + (sectionId === 'ogolne' ? '' : sectionId.charAt(0).toUpperCase() + sectionId.slice(1)));
                 listaOgloszen.innerHTML = ""; // Czyści listę przed dodaniem nowych ogłoszeń
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const ogloszenie = childSnapshot.val();
                         const li = document.createElement("li");
-                        li.textContent = ogloszenie.tekst;
+                        li.classList.add("ogloszenie");
+                        li.innerHTML = `
+                            <strong>${ogloszenie.tytul}</strong><br>
+                            ${ogloszenie.tresc}
+                            <br>
+                            <button class="edit" onclick="edytujOgloszenie('${sectionId}', '${childSnapshot.key}')">Edytuj</button>
+                            <button onclick="usunOgloszenie('${sectionId}', '${childSnapshot.key}')">Usuń</button>
+                        `;
                         listaOgloszen.appendChild(li);
                     });
                 } else {
@@ -70,8 +158,50 @@
             });
         }
 
-        // Uruchomienie pobierania ogłoszeń przy załadowaniu strony
-        pobierzOgloszenia();
+        function dodajOgloszenie(sectionId) {
+            const tytul = prompt("Podaj tytuł ogłoszenia:");
+            if (!tytul) return;
+
+            const tresc = prompt("Podaj treść ogłoszenia:");
+            if (!tresc) return;
+
+            const ogloszenieRef = ref(db, sectionId);
+            const newOgloszenieRef = child(ogloszenieRef, "ogloszenie_" + Date.now());
+            set(newOgloszenieRef, {
+                tytul: tytul,
+                tresc: tresc
+            }).then(() => {
+                pobierzOgloszenia(sectionId);
+            });
+        }
+
+        function edytujOgloszenie(sectionId, ogloszenieId) {
+            const ogloszenieRef = ref(db, `${sectionId}/${ogloszenieId}`);
+            get(ogloszenieRef).then((snapshot) => {
+                const ogloszenie = snapshot.val();
+                const tytul = prompt("Edytuj tytuł ogłoszenia:", ogloszenie.tytul);
+                const tresc = prompt("Edytuj treść ogłoszenia:", ogloszenie.tresc);
+
+                if (tytul && tresc) {
+                    update(ogloszenieRef, {
+                        tytul: tytul,
+                        tresc: tresc
+                    }).then(() => {
+                        pobierzOgloszenia(sectionId);
+                    });
+                }
+            });
+        }
+
+        function usunOgloszenie(sectionId, ogloszenieId) {
+            const ogloszenieRef = ref(db, `${sectionId}/${ogloszenieId}`);
+            remove(ogloszenieRef).then(() => {
+                pobierzOgloszenia(sectionId);
+            });
+        }
+
+        // Start od sekcji "Ogólne"
+        showSection('ogolne');
     </script>
 </body>
 </html>
