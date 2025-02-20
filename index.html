@@ -166,48 +166,53 @@
   <script>
     // Konfiguracja Firebase
     const firebaseConfig = {
-   apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
-  authDomain: "sp-eb58b.firebaseapp.com",
-  databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "sp-eb58b",
-  storageBucket: "sp-eb58b.firebasestorage.app",
-  messagingSenderId: "721683903483",
-  appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
-  measurementId: "G-2BJ1JK7D4H"
+      apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
+      authDomain: "sp-eb58b.firebaseapp.com",
+      databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "sp-eb58b",
+      storageBucket: "sp-eb58b.firebasestorage.app",
+      messagingSenderId: "721683903483",
+      appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
+      measurementId: "G-2BJ1JK7D4H"
     };
 
     // Inicjalizacja aplikacji Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
     // Funkcja do pobierania ogłoszeń z Firebase
     function pobierzOgloszenia() {
-      const ogloszeniaRef = database.ref('ogloszenia');
-      ogloszeniaRef.once('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          pokazOgloszenia(data);
-        }
-      });
+      const ogloszeniaRef = ref(database, 'ogloszenia');
+      get(ogloszeniaRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            pokazOgloszenia(data);
+          } else {
+            console.log("Brak danych");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
 
     // Funkcja wyświetlająca ogłoszenia
-    function pokazOgloszenia(data) {
+    function pokazOgloszenia(kategoria) {
       const ogloszeniaDiv = document.getElementById("ogloszenia");
       ogloszeniaDiv.innerHTML = "";
 
-      // Wyświetlanie ogłoszeń
-      for (let kategoria in data) {
-        const ogloszeniaKategoria = data[kategoria];
-        ogloszeniaKategoria.forEach((ogloszenie, index) => {
+      if (kategoria) {
+        Object.keys(kategoria).forEach((key) => {
+          const ogloszenie = kategoria[key];
           const div = document.createElement("div");
           div.classList.add("ogloszenie");
           div.innerHTML = `
             <strong>${ogloszenie.tytul}</strong>
             <p>${ogloszenie.tresc}</p>
             <p><small>${ogloszenie.data}</small></p>
-            <button onclick="edytujOgloszenie('${kategoria}', ${index})">Edytuj</button>
-            <button onclick="usunOgloszenie('${kategoria}', ${index})">Usuń</button>
+            <button onclick="edytujOgloszenie('${key}')">Edytuj</button>
+            <button onclick="usunOgloszenie('${key}')">Usuń</button>
           `;
           ogloszeniaDiv.appendChild(div);
         });
@@ -228,20 +233,21 @@
         };
 
         // Dodanie ogłoszenia do bazy Firebase
-        const ogloszeniaRef = database.ref('ogloszenia/' + kategoria);
-        ogloszeniaRef.push(ogloszenie);
+        const ogloszeniaRef = ref(database, 'ogloszenia/' + kategoria);
+        const newOgloszenieRef = push(ogloszeniaRef);
+        set(newOgloszenieRef, ogloszenie);
       }
     }
 
     // Funkcja do edytowania ogłoszenia
-    function edytujOgloszenie(kategoria, index) {
+    function edytujOgloszenie(id) {
       // Edycja logika tutaj (np. popup z formularzem)
     }
 
     // Funkcja do usuwania ogłoszenia
-    function usunOgloszenie(kategoria, index) {
-      const ogloszeniaRef = database.ref('ogloszenia/' + kategoria);
-      ogloszeniaRef.child(index).remove();
+    function usunOgloszenie(id) {
+      const ogloszeniaRef = ref(database, 'ogloszenia/' + id);
+      remove(ogloszeniaRef);
     }
 
     // Ładowanie ogłoszeń przy starcie
