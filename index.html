@@ -83,9 +83,9 @@
     </header>
 
     <nav>
-        <a href="#" onclick="showSection('ogolne')">Ogólne</a>
-        <a href="#" onclick="showSection('nieobecnosci')">Nieobecności</a>
-        <a href="#" onclick="showSection('wydarzenia')">Wydarzenia</a>
+        <a href="#" id="ogolne" onclick="showSection('ogolne')">Ogólne</a>
+        <a href="#" id="nieobecnosci" onclick="showSection('nieobecnosci')">Nieobecności</a>
+        <a href="#" id="wydarzenia" onclick="showSection('wydarzenia')">Wydarzenia</a>
     </nav>
 
     <section id="ogolne" class="content">
@@ -126,6 +126,11 @@
 
         // Debug log: check if Firebase is initialized correctly
         console.log("Firebase initialized");
+
+        // Sprawdzamy, czy strona załadowała się poprawnie
+        window.onload = () => {
+            console.log("Strona załadowana!");
+        };
 
         function showSection(sectionId) {
             console.log("Switching to section:", sectionId);
@@ -217,9 +222,6 @@
                 console.error("Error deleting announcement:", error);
             });
         }
-
-        // Start od sekcji "Ogólne"
-        showSection('ogolne');
     </script>
 </body>
 </html>
