@@ -110,7 +110,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
         import { getDatabase, ref, set, child, get, update, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
             authDomain: "sp-eb58b.firebaseapp.com",
@@ -125,7 +124,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Debug log: check if Firebase is initialized correctly
+        console.log("Firebase initialized");
+
         function showSection(sectionId) {
+            console.log("Switching to section:", sectionId);
             document.querySelectorAll('.content').forEach(section => {
                 section.style.display = 'none';
             });
@@ -134,10 +137,11 @@
         }
 
         function pobierzOgloszenia(sectionId) {
+            console.log("Fetching announcements for:", sectionId);
             const ogloszenieRef = ref(db, sectionId);
             get(ogloszenieRef).then((snapshot) => {
                 const listaOgloszen = document.getElementById("listaOgloszen" + (sectionId === 'ogolne' ? '' : sectionId.charAt(0).toUpperCase() + sectionId.slice(1)));
-                listaOgloszen.innerHTML = ""; // Czyści listę przed dodaniem nowych ogłoszeń
+                listaOgloszen.innerHTML = ""; // Clear the list before adding new announcements
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const ogloszenie = childSnapshot.val();
@@ -155,10 +159,13 @@
                 } else {
                     listaOgloszen.innerHTML = "<li>Brak ogłoszeń</li>";
                 }
+            }).catch((error) => {
+                console.error("Error fetching announcements:", error);
             });
         }
 
         function dodajOgloszenie(sectionId) {
+            console.log("Adding announcement to section:", sectionId);
             const tytul = prompt("Podaj tytuł ogłoszenia:");
             if (!tytul) return;
 
@@ -171,11 +178,15 @@
                 tytul: tytul,
                 tresc: tresc
             }).then(() => {
+                console.log("Announcement added successfully");
                 pobierzOgloszenia(sectionId);
+            }).catch((error) => {
+                console.error("Error adding announcement:", error);
             });
         }
 
         function edytujOgloszenie(sectionId, ogloszenieId) {
+            console.log("Editing announcement:", ogloszenieId);
             const ogloszenieRef = ref(db, `${sectionId}/${ogloszenieId}`);
             get(ogloszenieRef).then((snapshot) => {
                 const ogloszenie = snapshot.val();
@@ -187,16 +198,23 @@
                         tytul: tytul,
                         tresc: tresc
                     }).then(() => {
+                        console.log("Announcement edited successfully");
                         pobierzOgloszenia(sectionId);
+                    }).catch((error) => {
+                        console.error("Error editing announcement:", error);
                     });
                 }
             });
         }
 
         function usunOgloszenie(sectionId, ogloszenieId) {
+            console.log("Deleting announcement:", ogloszenieId);
             const ogloszenieRef = ref(db, `${sectionId}/${ogloszenieId}`);
             remove(ogloszenieRef).then(() => {
+                console.log("Announcement deleted successfully");
                 pobierzOgloszenia(sectionId);
+            }).catch((error) => {
+                console.error("Error deleting announcement:", error);
             });
         }
 
