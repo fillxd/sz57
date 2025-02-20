@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SP57</title>
-  <!-- Dodaj Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <style>
@@ -13,147 +12,140 @@
   </style>
 </head>
 <body>
-  <!-- ... (HTML pozostaje bez zmian) ... -->
+  <div id="header-container">
+    <h1>
+      <img src="https://cdn-icons-png.flaticon.com/512/5310/5310672.png" class="icon" alt="Edukacja" />
+      Szkoła Podstawowa nr 57 we Wrocławiu
+    </h1>
+    <input type="text" id="search" placeholder="Wyszukaj ogłoszenia..." />
+  </div>
+
+  <div id="menu">
+    <!-- ... (przyciski menu pozostają bez zmian) ... -->
+  </div>
+
+  <div id="ogloszenia"></div>
 
   <script>
-    // Konfiguracja Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
-      authDomain: "sp-eb58b.firebaseapp.com",
-      databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "sp-eb58b",
-      storageBucket: "sp-eb58b.firebasestorage.app",
-      messagingSenderId: "721683903483",
-      appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
-      measurementId: "G-2BJ1JK7D4H"
-    };
+    document.addEventListener("DOMContentLoaded", () => {
+      // Konfiguracja Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
+        authDomain: "sp-eb58b.firebaseapp.com",
+        databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "sp-eb58b",
+        storageBucket: "sp-eb58b.firebasestorage.app",
+        messagingSenderId: "721683903483",
+        appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
+        measurementId: "G-2BJ1JK7D4H"
+      };
 
-    // Inicjalizacja Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const ogloszeniaRef = db.ref('ogloszenia');
+      // Inicjalizacja Firebase
+      try {
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const ogloszeniaRef = db.ref('ogloszenia');
+        let currentCategory = 'ogolne';
 
-    let ogloszenia = {};
-    let currentCategory = 'ogolne';
+        // Obsługa wyszukiwania
+        document.getElementById('search').addEventListener('input', wyszukajOgloszenia);
 
-    // Nasłuchiwanie zmian w bazie danych
-    ogloszeniaRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        ogloszenia = data;
-        pokazOgloszenia(currentCategory);
-      } else {
-        // Inicjalizacja danych domyślnych
-        const defaultData = {
-          ogolne: [],
-          samorzad: [],
-          wycieczki: [],
-          nieobecnosci: [],
-          przedmioty: [],
-          swietlica: [],
-          wydarzenia: [],
-          grono: [],
-          wychowawcy: [
-            { klasa: '1a', wychowawca: 'Jolanta Bosak' },
-            // ... (reszta danych inicjalizacyjnych)
-          ],
-          dlaNauczyciela: []
-        };
-        ogloszeniaRef.set(defaultData);
+        // Nasłuchiwanie zmian w bazie
+        ogloszeniaRef.on('value', (snapshot) => {
+          if (!document.getElementById("ogloszenia")) return;
+          
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            pokazOgloszenia(currentCategory, data);
+          } else {
+            inicjalizujDane(ogloszeniaRef);
+          }
+        }, (error) => {
+          console.error("Błąd Firebase:", error);
+        });
+
+        // Funkcja pokazująca ogłoszenia
+        function pokazOgloszenia(kategoria, data) {
+          const ogloszeniaDiv = document.getElementById("ogloszenia");
+          if (!ogloszeniaDiv) return;
+
+          ogloszeniaDiv.innerHTML = '';
+          currentCategory = kategoria;
+
+          try {
+            if (kategoria === 'wychowawcy') {
+              let tabela = "<table><tr><th>Klasa</th><th>Wychowawca</th></tr>";
+              data.wychowawcy.forEach(w => {
+                tabela += `<tr><td>${w.klasa}</td><td>${w.wychowawca}</td></tr>`;
+              });
+              tabela += "</table>";
+              ogloszeniaDiv.innerHTML = tabela;
+            } else {
+              const kategoriaData = data[kategoria] || [];
+              kategoriaData.forEach((o, index) => {
+                const div = document.createElement("div");
+                div.className = "ogloszenie";
+                div.innerHTML = `
+                  <strong>${o.tytul}</strong>
+                  <p>${o.tresc}</p>
+                  ${o.data ? `<p><small>${formatujDate(o.data)}</small></p>` : ''}
+                  <span class='edytuj'>✏️</span>
+                  <span class='usun'>❌</span>
+                  <span class='przesun-gore'>⬆️</span>
+                  <span class='przesun-dol'>⬇️</span>
+                `;
+                
+                div.querySelector('.edytuj').onclick = () => edytujOgloszenie(kategoria, index);
+                div.querySelector('.usun').onclick = () => usunOgloszenie(kategoria, index);
+                div.querySelector('.przesun-gore').onclick = () => przesunOgloszenie(kategoria, index, "gore");
+                div.querySelector('.przesun-dol').onclick = () => przesunOgloszenie(kategoria, index, "dol");
+                
+                ogloszeniaDiv.appendChild(div);
+              });
+            }
+
+            const addButton = document.createElement("button");
+            addButton.className = "dodaj";
+            addButton.textContent = "Dodaj ogłoszenie";
+            addButton.onclick = () => dodajOgloszenie(kategoria);
+            ogloszeniaDiv.appendChild(addButton);
+
+          } catch (error) {
+            console.error("Błąd renderowania:", error);
+            ogloszeniaDiv.innerHTML = "<p>Błąd ładowania danych</p>";
+          }
+        }
+
+        // Inicjalizacja domyślnych danych
+        function inicjalizujDane(ref) {
+          const defaultData = {
+            wychowawcy: [
+              // ... (lista wychowawców pozostaje bez zmian) ...
+            ],
+            // ... (inne puste kategorie) ...
+          };
+          ref.set(defaultData)
+            .then(() => console.log("Dane zainicjalizowane"))
+            .catch(error => console.error("Błąd inicjalizacji:", error));
+        }
+
+        // Reszta funkcji (dodajOgloszenie, edytujOgloszenie, usunOgloszenie, przesunOgloszenie)
+        // ... (pozostałe funkcje z poprzedniej odpowiedzi, opakowane w DOMContentLoaded) ...
+
+      } catch (error) {
+        console.error("Błąd inicjalizacji Firebase:", error);
+        document.body.innerHTML = "<h1>Błąd ładowania aplikacji</h1>";
       }
     });
 
-    function pokazOgloszenia(kategoria) {
-      currentCategory = kategoria;
-      const ogloszeniaDiv = document.getElementById("ogloszenia");
-      ogloszeniaDiv.innerHTML = "";
-
-      if (kategoria === 'wychowawcy') {
-        let tabela = "<table><tr><th>Klasa</th><th>Wychowawca</th></tr>";
-        ogloszenia.wychowawcy.forEach(w => {
-          tabela += `<tr><td>${w.klasa}</td><td>${w.wychowawca}</td></tr>`;
-        });
-        tabela += "</table>";
-        ogloszeniaDiv.innerHTML = tabela;
-      } else {
-        const kategoriaData = ogloszenia[kategoria] || [];
-        kategoriaData.forEach((o, index) => {
-          const div = document.createElement("div");
-          div.classList.add("ogloszenie");
-          div.innerHTML = `<strong>${o.tytul}</strong>
-                           <p>${o.tresc}</p>
-                           ${o.data ? `<p><small>${formatujDate(o.data)}</small></p>` : ''}
-                           <span class='edytuj' onclick='edytujOgloszenie("${kategoria}", ${index})'>✏️</span>
-                           <span class='usun' onclick='usunOgloszenie("${kategoria}", ${index})'>❌</span>
-                           <span class='przesun-gore' onclick='przesunOgloszenie("${kategoria}", ${index}, "gore")'>⬆️</span>
-                           <span class='przesun-dol' onclick='przesunOgloszenie("${kategoria}", ${index}, "dol")'>⬇️</span>`;
-          ogloszeniaDiv.appendChild(div);
-        });
-      }
-
-      const addButton = document.createElement("button");
-      addButton.className = "dodaj";
-      addButton.textContent = "Dodaj ogłoszenie";
-      addButton.onclick = () => dodajOgloszenie(kategoria);
-      ogloszeniaDiv.appendChild(addButton);
+    // Funkcje pomocnicze
+    function formatujDate(isoString) {
+      // ... (implementacja pozostaje bez zmian) ...
     }
 
-    // Zmodyfikowane funkcje operujące na Firebase
-    function dodajOgloszenie(kategoria) {
-      const tytul = prompt("Podaj tytuł ogłoszenia:");
-      const tresc = prompt("Podaj treść ogłoszenia:");
-      const data = new Date().toISOString();
-      
-      if (tytul && tresc) {
-        const newOgloszenie = { tytul, tresc, data };
-        db.ref(`ogloszenia/${kategoria}`).transaction((currentData) => {
-          if (currentData === null) return [newOgloszenie];
-          return [...currentData, newOgloszenie];
-        });
-      }
+    function pokazLibrus() {
+      // ... (implementacja pozostaje bez zmian) ...
     }
-
-    function edytujOgloszenie(kategoria, index) {
-      const ref = db.ref(`ogloszenia/${kategoria}/${index}`);
-      ref.once('value').then((snapshot) => {
-        const ogloszenie = snapshot.val();
-        const tytul = prompt("Edytuj tytuł", ogloszenie.tytul);
-        const tresc = prompt("Edytuj treść", ogloszenie.tresc);
-        
-        if (tytul && tresc) {
-          ref.update({ tytul, tresc });
-        }
-      });
-    }
-
-    function usunOgloszenie(kategoria, index) {
-      if (confirm("Czy na pewno chcesz usunąć to ogłoszenie?")) {
-        db.ref(`ogloszenia/${kategoria}`).transaction((currentData) => {
-          if (currentData && currentData.length > index) {
-            currentData.splice(index, 1);
-          }
-          return currentData;
-        });
-      }
-    }
-
-    function przesunOgloszenie(kategoria, index, kierunek) {
-      const ref = db.ref(`ogloszenia/${kategoria}`);
-      ref.transaction((currentData) => {
-        if (!currentData) return currentData;
-        
-        if (kierunek === "gore" && index > 0) {
-          [currentData[index], currentData[index - 1]] = 
-          [currentData[index - 1], currentData[index]];
-        } else if (kierunek === "dol" && index < currentData.length - 1) {
-          [currentData[index], currentData[index + 1]] = 
-          [currentData[index + 1], currentData[index]];
-        }
-        return currentData;
-      });
-    }
-
-    // ... (pozostałe funkcje pozostają bez zmian) ...
   </script>
 </body>
 </html>
