@@ -164,6 +164,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
   <script>
+    // Importowanie funkcji z Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getDatabase, ref, get, set, push, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
     // Konfiguracja Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
