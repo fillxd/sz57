@@ -32,69 +32,155 @@
 
     // ZMIANA: Funkcja do pobierania danych z JSONBin.io
     async function pobierzDane() {
-      const response = await fetch(apiUrl, {
-        headers: {
-          'X-Master-Key': apiKey,
-        },
-      });
-      const data = await response.json();
-      return data.record || {
-        ogolne: [],
-        samorzad: [],
-        wycieczki: [],
-        nieobecnosci: [],
-        przedmioty: [],
-        swietlica: [],
-        wydarzenia: [],
-        grono: [],
-        wychowawcy: [
-          { klasa: '1a', wychowawca: 'Jolanta Bosak' },
-          { klasa: '1b', wychowawca: 'Rozalia Lipska' },
-          { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
-          { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
-          { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
-          { klasa: '2c', wychowawca: 'Daria Musherina' },
-          { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
-          { klasa: '3b', wychowawca: 'Anna Brzeska' },
-          { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
-          { klasa: '4a', wychowawca: 'Renata Skleszewska' },
-          { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
-          { klasa: '4c', wychowawca: 'Natalia Raczynska' },
-          { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
-          { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
-          { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
-          { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
-          { klasa: '6b', wychowawca: 'Kinga Młodzik' },
-          { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
-          { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
-          { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
-          { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
-          { klasa: '8a', wychowawca: 'Karol Dębowicz' },
-          { klasa: '8b', wychowawca: 'Michał Tarczyn' },
-          { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
-        ],
-        dlaNauczyciela: []
-      };
+      try {
+        const response = await fetch(apiUrl, {
+          headers: {
+            'X-Master-Key': apiKey,
+          },
+        });
+        const data = await response.json();
+        return data.record || {
+          ogolne: [],
+          samorzad: [],
+          wycieczki: [],
+          nieobecnosci: [],
+          przedmioty: [],
+          swietlica: [],
+          wydarzenia: [],
+          grono: [],
+          wychowawcy: [
+            { klasa: '1a', wychowawca: 'Jolanta Bosak' },
+            { klasa: '1b', wychowawca: 'Rozalia Lipska' },
+            { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
+            { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
+            { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
+            { klasa: '2c', wychowawca: 'Daria Musherina' },
+            { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
+            { klasa: '3b', wychowawca: 'Anna Brzeska' },
+            { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
+            { klasa: '4a', wychowawca: 'Renata Skleszewska' },
+            { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
+            { klasa: '4c', wychowawca: 'Natalia Raczynska' },
+            { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
+            { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
+            { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
+            { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
+            { klasa: '6b', wychowawca: 'Kinga Młodzik' },
+            { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
+            { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
+            { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
+            { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
+            { klasa: '8a', wychowawca: 'Karol Dębowicz' },
+            { klasa: '8b', wychowawca: 'Michał Tarczyn' },
+            { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
+          ],
+          dlaNauczyciela: []
+        };
+      } catch (error) {
+        console.error('Błąd podczas pobierania danych:', error);
+        return {
+          ogolne: [],
+          samorzad: [],
+          wycieczki: [],
+          nieobecnosci: [],
+          przedmioty: [],
+          swietlica: [],
+          wydarzenia: [],
+          grono: [],
+          wychowawcy: [
+            { klasa: '1a', wychowawca: 'Jolanta Bosak' },
+            { klasa: '1b', wychowawca: 'Rozalia Lipska' },
+            { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
+            { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
+            { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
+            { klasa: '2c', wychowawca: 'Daria Musherina' },
+            { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
+            { klasa: '3b', wychowawca: 'Anna Brzeska' },
+            { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
+            { klasa: '4a', wychowawca: 'Renata Skleszewska' },
+            { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
+            { klasa: '4c', wychowawca: 'Natalia Raczynska' },
+            { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
+            { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
+            { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
+            { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
+            { klasa: '6b', wychowawca: 'Kinga Młodzik' },
+            { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
+            { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
+            { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
+            { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
+            { klasa: '8a', wychowawca: 'Karol Dębowicz' },
+            { klasa: '8b', wychowawca: 'Michał Tarczyn' },
+            { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
+          ],
+          dlaNauczyciela: []
+        };
+      }
     }
 
     // ZMIANA: Funkcja do zapisywania danych w JSONBin.io
     async function zapiszDane(dane) {
-      await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': apiKey,
-        },
-        body: JSON.stringify(dane),
-      });
+      try {
+        await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': apiKey,
+          },
+          body: JSON.stringify(dane),
+        });
+      } catch (error) {
+        console.error('Błąd podczas zapisywania danych:', error);
+      }
     }
 
     // ZMIANA: Inicjalizacja danych
     let ogloszenia;
-    pobierzDane().then(data => {
-      ogloszenia = data;
+    async function inicjalizuj() {
+      ogloszenia = await pobierzDane();
       pokazOgloszenia('ogolne'); // Domyślnie pokazujemy ogłoszenia ogólne
-    });
+      zaladujMenu();
+    }
+
+    // Funkcja do ładowania menu
+    function zaladujMenu() {
+      const menu = document.getElementById("menu");
+      menu.innerHTML = `
+        <button onclick="pokazOgloszenia('ogolne')">
+          <img src="https://cdn-icons-png.flaticon.com/512/107/107812.png" class="category-icon" alt="Ogólne" /> Ogólne
+        </button>
+        <button onclick="pokazOgloszenia('nieobecnosci')">
+          <img src="https://img.myloview.pl/fototapety/vector-sars-virus-flat-icon-vector-pictograph-style-is-a-flat-symbol-sars-virus-icon-on-a-white-background-700-205263154.jpg" class="category-icon" alt="Nieobecności nauczycieli" /> Nieobecności nauczycieli
+        </button>
+        <button onclick="pokazOgloszenia('wydarzenia')">
+          <img src="https://static.vecteezy.com/system/resources/previews/006/692/012/non_2x/calendar-date-date-notes-business-office-event-icon-template-black-color-editable-calendar-date-symbol-flat-illustration-for-graphic-and-web-design-free-vector.jpg" class="category-icon" alt="Wydarzenia" /> Wydarzenia
+        </button>
+        <button onclick="pokazOgloszenia('samorzad')">
+          <img src="https://spfalkowo.pl/images/glowne/260-4620.png" class="category-icon" alt="Samorząd Uczniowski i Wolontariat" /> Samorząd Uczniowski i Wolontariat
+        </button>
+        <button onclick="pokazOgloszenia('wycieczki')">
+          <img src="https://cdn-icons-png.freepik.com/512/5776/5776883.png" class="category-icon" alt="Wycieczki" /> Wycieczki
+        </button>
+        <button onclick="pokazOgloszenia('swietlica')">
+          <img src="https://czasopismomatematyka.pl/media/cache/img_370_251/uploads/673/455/673455e2199b4989535024.webp?extension=jpg&version=609" class="category-icon" alt="Klasy 1-3, Świetlica" /> Klasy 1-3, Świetlica
+        </button>
+        <button onclick="pokazOgloszenia('grono')">
+          <img src="https://cdn-icons-png.flaticon.com/512/2472/2472253.png" class="category-icon" alt="Grono Pedagogiczne" /> Grono Pedagogiczne
+        </button>
+        <button onclick="pokazOgloszenia('wychowawcy')">
+          <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" class="category-icon" alt="Wychowawcy" /> Wychowawcy
+        </button>
+        <button onclick="pokazLibrus()">
+          <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" class="category-icon" alt="Harmonogram Świetlicy" /> Harmonogram Świetlicy
+        </button>
+        <button onclick="pokazOgloszenia('przedmioty')">
+          <img src="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" class="category-icon" alt="Przedmioty" /> Przedmioty
+        </button>
+        <button onclick="pokazOgloszenia('dlaNauczyciela')">
+          <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" class="category-icon" alt="Dla Nauczyciela" /> Dla Nauczyciela
+        </button>
+      `;
+    }
 
     // Funkcja wyświetlająca ogłoszenia dla wybranej kategorii
     async function pokazOgloszenia(kategoria) {
@@ -226,6 +312,9 @@
       const diffDays = Math.floor(diffHours / 24);
       return diffDays + " dni temu";
     }
+
+    // Inicjalizacja strony
+    inicjalizuj();
   </script>
 </body>
 </html>
