@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SP57</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <style>
-    /* ... (styl pozostaje bez zmian) ... */
+    /* (Pozostaw styl bez zmian) */
   </style>
 </head>
 <body>
@@ -17,134 +15,216 @@
       <img src="https://cdn-icons-png.flaticon.com/512/5310/5310672.png" class="icon" alt="Edukacja" />
       Szkoła Podstawowa nr 57 we Wrocławiu
     </h1>
-    <input type="text" id="search" placeholder="Wyszukaj ogłoszenia..." />
+    <input type="text" id="search" placeholder="Wyszukaj ogłoszenia..." oninput="wyszukajOgloszenia()" />
   </div>
 
   <div id="menu">
-    <!-- ... (przyciski menu pozostają bez zmian) ... -->
+    <!-- (Pozostaw menu bez zmian) -->
   </div>
 
   <div id="ogloszenia"></div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Konfiguracja Firebase
-      const firebaseConfig = {
-        apiKey: "AIzaSyBWhG0j-ufWPNk7eBvJWtFPB1J661AzrrQ",
-        authDomain: "sp-eb58b.firebaseapp.com",
-        databaseURL: "https://sp-eb58b-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "sp-eb58b",
-        storageBucket: "sp-eb58b.firebasestorage.app",
-        messagingSenderId: "721683903483",
-        appId: "1:721683903483:web:871ef96ee6957e7f3e515e",
-        measurementId: "G-2BJ1JK7D4H"
+    // ZMIANA: Wstawiłem Twój klucz API i Bin ID
+    const apiKey = '$2a$10$Lrw8dNmqRfLDVzjI22oysONmVE3Sur/E4RYw8ZE7DRFpt/nRuzLKG'; // Twój X-Master-Key
+    const binId = '67b8d2edacd3cb34a8eb7f1e'; // Twój Bin ID
+    const apiUrl = `https://api.jsonbin.io/v3/b/${binId}`;
+
+    // ZMIANA: Funkcja do pobierania danych z JSONBin.io
+    async function pobierzDane() {
+      const response = await fetch(apiUrl, {
+        headers: {
+          'X-Master-Key': apiKey,
+        },
+      });
+      const data = await response.json();
+      return data.record || {
+        ogolne: [],
+        samorzad: [],
+        wycieczki: [],
+        nieobecnosci: [],
+        przedmioty: [],
+        swietlica: [],
+        wydarzenia: [],
+        grono: [],
+        wychowawcy: [
+          { klasa: '1a', wychowawca: 'Jolanta Bosak' },
+          { klasa: '1b', wychowawca: 'Rozalia Lipska' },
+          { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
+          { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
+          { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
+          { klasa: '2c', wychowawca: 'Daria Musherina' },
+          { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
+          { klasa: '3b', wychowawca: 'Anna Brzeska' },
+          { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
+          { klasa: '4a', wychowawca: 'Renata Skleszewska' },
+          { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
+          { klasa: '4c', wychowawca: 'Natalia Raczynska' },
+          { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
+          { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
+          { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
+          { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
+          { klasa: '6b', wychowawca: 'Kinga Młodzik' },
+          { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
+          { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
+          { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
+          { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
+          { klasa: '8a', wychowawca: 'Karol Dębowicz' },
+          { klasa: '8b', wychowawca: 'Michał Tarczyn' },
+          { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
+        ],
+        dlaNauczyciela: []
       };
-
-      // Inicjalizacja Firebase
-      try {
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const ogloszeniaRef = db.ref('ogloszenia');
-        let currentCategory = 'ogolne';
-
-        // Obsługa wyszukiwania
-        document.getElementById('search').addEventListener('input', wyszukajOgloszenia);
-
-        // Nasłuchiwanie zmian w bazie
-        ogloszeniaRef.on('value', (snapshot) => {
-          if (!document.getElementById("ogloszenia")) return;
-          
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            pokazOgloszenia(currentCategory, data);
-          } else {
-            inicjalizujDane(ogloszeniaRef);
-          }
-        }, (error) => {
-          console.error("Błąd Firebase:", error);
-        });
-
-        // Funkcja pokazująca ogłoszenia
-        function pokazOgloszenia(kategoria, data) {
-          const ogloszeniaDiv = document.getElementById("ogloszenia");
-          if (!ogloszeniaDiv) return;
-
-          ogloszeniaDiv.innerHTML = '';
-          currentCategory = kategoria;
-
-          try {
-            if (kategoria === 'wychowawcy') {
-              let tabela = "<table><tr><th>Klasa</th><th>Wychowawca</th></tr>";
-              data.wychowawcy.forEach(w => {
-                tabela += `<tr><td>${w.klasa}</td><td>${w.wychowawca}</td></tr>`;
-              });
-              tabela += "</table>";
-              ogloszeniaDiv.innerHTML = tabela;
-            } else {
-              const kategoriaData = data[kategoria] || [];
-              kategoriaData.forEach((o, index) => {
-                const div = document.createElement("div");
-                div.className = "ogloszenie";
-                div.innerHTML = `
-                  <strong>${o.tytul}</strong>
-                  <p>${o.tresc}</p>
-                  ${o.data ? `<p><small>${formatujDate(o.data)}</small></p>` : ''}
-                  <span class='edytuj'>✏️</span>
-                  <span class='usun'>❌</span>
-                  <span class='przesun-gore'>⬆️</span>
-                  <span class='przesun-dol'>⬇️</span>
-                `;
-                
-                div.querySelector('.edytuj').onclick = () => edytujOgloszenie(kategoria, index);
-                div.querySelector('.usun').onclick = () => usunOgloszenie(kategoria, index);
-                div.querySelector('.przesun-gore').onclick = () => przesunOgloszenie(kategoria, index, "gore");
-                div.querySelector('.przesun-dol').onclick = () => przesunOgloszenie(kategoria, index, "dol");
-                
-                ogloszeniaDiv.appendChild(div);
-              });
-            }
-
-            const addButton = document.createElement("button");
-            addButton.className = "dodaj";
-            addButton.textContent = "Dodaj ogłoszenie";
-            addButton.onclick = () => dodajOgloszenie(kategoria);
-            ogloszeniaDiv.appendChild(addButton);
-
-          } catch (error) {
-            console.error("Błąd renderowania:", error);
-            ogloszeniaDiv.innerHTML = "<p>Błąd ładowania danych</p>";
-          }
-        }
-
-        // Inicjalizacja domyślnych danych
-        function inicjalizujDane(ref) {
-          const defaultData = {
-            wychowawcy: [
-              // ... (lista wychowawców pozostaje bez zmian) ...
-            ],
-            // ... (inne puste kategorie) ...
-          };
-          ref.set(defaultData)
-            .then(() => console.log("Dane zainicjalizowane"))
-            .catch(error => console.error("Błąd inicjalizacji:", error));
-        }
-
-        // Reszta funkcji (dodajOgloszenie, edytujOgloszenie, usunOgloszenie, przesunOgloszenie)
-        // ... (pozostałe funkcje z poprzedniej odpowiedzi, opakowane w DOMContentLoaded) ...
-
-      } catch (error) {
-        console.error("Błąd inicjalizacji Firebase:", error);
-        document.body.innerHTML = "<h1>Błąd ładowania aplikacji</h1>";
-      }
-    });
-
-    // Funkcje pomocnicze
-    function formatujDate(isoString) {
-      // ... (implementacja pozostaje bez zmian) ...
     }
 
-    function pokazLibrus() {
-      // ... (implementacja pozostaje bez zmian) ...
+    // ZMIANA: Funkcja do zapisywania danych w JSONBin.io
+    async function zapiszDane(dane) {
+      await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': apiKey,
+        },
+        body: JSON.stringify(dane),
+      });
+    }
+
+    // ZMIANA: Inicjalizacja danych
+    let ogloszenia;
+    pobierzDane().then(data => {
+      ogloszenia = data;
+      pokazOgloszenia('ogolne'); // Domyślnie pokazujemy ogłoszenia ogólne
+    });
+
+    // Funkcja wyświetlająca ogłoszenia dla wybranej kategorii
+    async function pokazOgloszenia(kategoria) {
+      const ogloszeniaDiv = document.getElementById("ogloszenia");
+      ogloszeniaDiv.innerHTML = "";
+
+      if (kategoria === 'wychowawcy') {
+        let tabela = "<table><tr><th>Klasa</th><th>Wychowawca</th></tr>";
+        ogloszenia.wychowawcy.forEach(w => {
+          tabela += `<tr><td>${w.klasa}</td><td>${w.wychowawca}</td></tr>`;
+        });
+        tabela += "</table>";
+        ogloszeniaDiv.innerHTML = tabela;
+      } else {
+        ogloszenia[kategoria].forEach((o, index) => {
+          const div = document.createElement("div");
+          div.classList.add("ogloszenie");
+          div.innerHTML = `<strong>${o.tytul}</strong>
+                           <p>${o.tresc}</p>
+                           <p><small>${formatujDate(o.data)}</small></p>
+                           <span class='edytuj' onclick='edytujOgloszenie("${kategoria}", ${index})'>✏️</span>
+                           <span class='usun' onclick='usunOgloszenie("${kategoria}", ${index})'>❌</span>
+                           <span class='przesun-gore' onclick='przesunOgloszenie("${kategoria}", ${index}, "gore")'>⬆️</span>
+                           <span class='przesun-dol' onclick='przesunOgloszenie("${kategoria}", ${index}, "dol")'>⬇️</span>`;
+          ogloszeniaDiv.appendChild(div);
+        });
+      }
+
+      // Dodajemy przycisk do dodawania ogłoszenia
+      const addButton = document.createElement("button");
+      addButton.classList.add("dodaj");
+      addButton.textContent = "Dodaj ogłoszenie";
+      addButton.onclick = () => dodajOgloszenie(kategoria);
+      ogloszeniaDiv.appendChild(addButton);
+    }
+
+    // Funkcja wyszukująca ogłoszenia
+    function wyszukajOgloszenia() {
+      const searchQuery = document.getElementById("search").value.toLowerCase();
+      const ogloszeniaDiv = document.getElementById("ogloszenia");
+      ogloszeniaDiv.innerHTML = "";
+
+      Object.keys(ogloszenia).forEach(kategoria => {
+        ogloszenia[kategoria].forEach((o, index) => {
+          if (o.tytul && o.tresc) {
+            if (
+              o.tytul.toLowerCase().includes(searchQuery) ||
+              o.tresc.toLowerCase().includes(searchQuery)
+            ) {
+              const div = document.createElement("div");
+              div.classList.add("ogloszenie");
+              div.innerHTML = `<strong>${o.tytul}</strong>
+                               <p>${o.tresc}</p>
+                               <p><small>${formatujDate(o.data)}</small></p>
+                               <span class='edytuj' onclick='edytujOgloszenie("${kategoria}", ${index})'>✏️</span>
+                               <span class='usun' onclick='usunOgloszenie("${kategoria}", ${index})'>❌</span>
+                               <span class='przesun-gore' onclick='przesunOgloszenie("${kategoria}", ${index}, "gore")'>⬆️</span>
+                               <span class='przesun-dol' onclick='przesunOgloszenie("${kategoria}", ${index}, "dol")'>⬇️</span>`;
+              ogloszeniaDiv.appendChild(div);
+            }
+          }
+        });
+      });
+    }
+
+    // Funkcja do dodawania ogłoszenia
+    async function dodajOgloszenie(kategoria) {
+      const tytul = prompt("Podaj tytuł ogłoszenia:");
+      const tresc = prompt("Podaj treść ogłoszenia:");
+      const data = new Date();
+      if (tytul && tresc) {
+        ogloszenia[kategoria].push({ tytul, tresc, data: data.toISOString() });
+        await zapiszDane(ogloszenia);
+        pokazOgloszenia(kategoria);
+      }
+    }
+
+    // Funkcja do edycji ogłoszenia
+    async function edytujOgloszenie(kategoria, index) {
+      const tytul = prompt("Edytuj tytuł", ogloszenia[kategoria][index].tytul);
+      const tresc = prompt("Edytuj treść", ogloszenia[kategoria][index].tresc);
+      if (tytul && tresc) {
+        ogloszenia[kategoria][index].tytul = tytul;
+        ogloszenia[kategoria][index].tresc = tresc;
+        await zapiszDane(ogloszenia);
+        pokazOgloszenia(kategoria);
+      }
+    }
+
+    // Funkcja do usuwania ogłoszenia
+    async function usunOgloszenie(kategoria, index) {
+      if (confirm("Czy na pewno chcesz usunąć to ogłoszenie?")) {
+        ogloszenia[kategoria].splice(index, 1);
+        await zapiszDane(ogloszenia);
+        pokazOgloszenia(kategoria);
+      }
+    }
+
+    // Funkcja do przesuwania ogłoszeń
+    async function przesunOgloszenie(kategoria, index, kierunek) {
+      if (kierunek === "gore" && index > 0) {
+        [ogloszenia[kategoria][index], ogloszenia[kategoria][index - 1]] =
+          [ogloszenia[kategoria][index - 1], ogloszenia[kategoria][index]];
+      } else if (kierunek === "dol" && index < ogloszenia[kategoria].length - 1) {
+        [ogloszenia[kategoria][index], ogloszenia[kategoria][index + 1]] =
+          [ogloszenia[kategoria][index + 1], ogloszenia[kategoria][index]];
+      }
+      await zapiszDane(ogloszenia);
+      pokazOgloszenia(kategoria);
+    }
+
+    // Funkcja formatująca datę
+    function formatujDate(isoString) {
+      const date = new Date(isoString);
+      const now = new Date();
+      const diffSeconds = Math.floor((now - date) / 1000);
+
+      if (diffSeconds < 60) {
+        return diffSeconds + " sekund temu";
+      }
+      const diffMinutes = Math.floor(diffSeconds / 60);
+      if (diffMinutes < 60) {
+        return diffMinutes + " minut temu";
+      }
+      const diffHours = Math.floor(diffMinutes / 60);
+      if (diffHours < 24) {
+        return diffHours + " godzin temu";
+      }
+      const diffDays = Math.floor(diffHours / 24);
+      return diffDays + " dni temu";
     }
   </script>
 </body>
