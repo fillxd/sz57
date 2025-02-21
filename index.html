@@ -1,12 +1,199 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/png" href="favicon.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SP57</title>
   <style>
-    /* (Pozostaw styl bez zmian) */
+    /* Nowoczesna czcionka */
+    body {
+      font-family: 'Roboto', sans-serif;
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #f4f7f6;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Kontener nagłówka z wyszukiwarką */
+    #header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* Nagłówek */
+    h1 {
+      margin: 0;
+      color: #333;
+      font-size: 2rem;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Pasek wyszukiwania - estetyczny, w prawym górnym rogu */
+    #search {
+      width: 250px;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 1rem;
+      transition: box-shadow 0.3s;
+    }
+
+    #search:focus {
+      outline: none;
+      box-shadow: 0 0 8px rgba(0, 86, 179, 0.5);
+    }
+
+    /* Menu */
+    #menu {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      background-color: #0056b3;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      margin: 5px;
+      font-weight: bold;
+      color: #0056b3;
+      transition: transform 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Sekcja ogłoszeń */
+    #ogloszenia {
+      margin-top: 20px;
+    }
+
+    .ogloszenie {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 15px 0;
+      background: #fff;
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .ogloszenie:hover {
+      transform: translateX(5px);
+    }
+
+    /* Przycisk edycji, usunięcia itp. */
+    .edytuj,
+    .usun,
+    .przesun-gore,
+    .przesun-dol {
+      position: absolute;
+      top: 12px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .edytuj:hover,
+    .usun:hover,
+    .przesun-gore:hover,
+    .przesun-dol:hover {
+      transform: scale(1.2);
+    }
+
+    .usun {
+      right: 10px;
+      color: #f44336;
+    }
+
+    .edytuj {
+      right: 40px;
+      color: #ffa500;
+    }
+
+    .przesun-gore {
+      right: 70px;
+      color: #4caf50;
+    }
+
+    .przesun-dol {
+      right: 100px;
+      color: #4caf50;
+    }
+
+    /* Przycisk dodawania ogłoszenia */
+    .dodaj {
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      transition: background-color 0.3s;
+    }
+
+    .dodaj:hover {
+      background-color: #218838;
+    }
+
+    /* Tabela */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Ikony */
+    .icon {
+      width: 60px;
+      height: 60px;
+    }
+
+    .category-icon {
+      width: 45px;
+      height: 45px;
+      margin-right: 10px;
+    }
+
+    /* Arkusz kalkulacyjny */
+    iframe {
+      width: 132%;
+      height: 750px;
+      border: none;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -15,175 +202,184 @@
       <img src="https://cdn-icons-png.flaticon.com/512/5310/5310672.png" class="icon" alt="Edukacja" />
       Szkoła Podstawowa nr 57 we Wrocławiu
     </h1>
+    <!-- Pasek wyszukiwania w prawym górnym rogu -->
     <input type="text" id="search" placeholder="Wyszukaj ogłoszenia..." oninput="wyszukajOgloszenia()" />
   </div>
 
   <div id="menu">
-    <!-- (Pozostaw menu bez zmian) -->
+    <button onclick="pokazOgloszenia('ogolne')">
+      <img src="https://cdn-icons-png.flaticon.com/512/107/107812.png" class="category-icon" alt="Ogólne" /> Ogólne
+    </button>
+    <button onclick="pokazOgloszenia('nieobecnosci')">
+      <img src="https://img.myloview.pl/fototapety/vector-sars-virus-flat-icon-vector-pictograph-style-is-a-flat-symbol-sars-virus-icon-on-a-white-background-700-205263154.jpg" class="category-icon" alt="Nieobecności nauczycieli" /> Nieobecności nauczycieli
+    </button>
+    <button onclick="pokazOgloszenia('wydarzenia')">
+      <img src="https://static.vecteezy.com/system/resources/previews/006/692/012/non_2x/calendar-date-date-notes-business-office-event-icon-template-black-color-editable-calendar-date-symbol-flat-illustration-for-graphic-and-web-design-free-vector.jpg" class="category-icon" alt="Wydarzenia" /> Wydarzenia
+    </button>
+    <button onclick="pokazOgloszenia('samorzad')">
+      <img src="https://spfalkowo.pl/images/glowne/260-4620.png" class="category-icon" alt="Samorząd Uczniowski i Wolontariat" /> Samorząd Uczniowski i Wolontariat
+    </button>
+    <button onclick="pokazOgloszenia('wycieczki')">
+      <img src="https://cdn-icons-png.freepik.com/512/5776/5776883.png" class="category-icon" alt="Wycieczki" /> Wycieczki
+    </button>
+    <button onclick="pokazOgloszenia('swietlica')">
+      <img src="https://czasopismomatematyka.pl/media/cache/img_370_251/uploads/673/455/673455e2199b4989535024.webp?extension=jpg&version=609" class="category-icon" alt="Klasy 1-3, Świetlica" /> Klasy 1-3, Świetlica
+    </button>
+    <button onclick="pokazOgloszenia('grono')">
+      <img src="https://cdn-icons-png.flaticon.com/512/2472/2472253.png" class="category-icon" alt="Grono Pedagogiczne" /> Grono Pedagogiczne
+    </button>
+    <button onclick="pokazOgloszenia('wychowawcy')">
+      <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" class="category-icon" alt="Wychowawcy" /> Wychowawcy
+    </button>
+    <button onclick="pokazLibrus()">
+      <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" class="category-icon" alt="Harmonogram Świetlicy" /> Harmonogram Świetlicy
+    </button>
+    <!-- Nowe kategorie -->
+    <button onclick="pokazOgloszenia('przedmioty')">
+      <img src="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" class="category-icon" alt="Przedmioty" /> Przedmioty
+    </button>
+    <button onclick="pokazOgloszenia('dlaNauczyciela')">
+      <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" class="category-icon" alt="Dla Nauczyciela" /> Dla Nauczyciela
+    </button>
   </div>
 
   <div id="ogloszenia"></div>
 
-  <script>
-    // ZMIANA: Wstawiłem Twój klucz API i Bin ID
-    const apiKey = '$2a$10$Lrw8dNmqRfLDVzjI22oysONmVE3Sur/E4RYw8ZE7DRFpt/nRuzLKG'; // Twój X-Master-Key
-    const binId = '67b8d2edacd3cb34a8eb7f1e'; // Twój Bin ID
-    const apiUrl = `https://api.jsonbin.io/v3/b/${binId}`;
+<script>
+  // ZMIANA: Wstawiłem Twój klucz API i Bin ID
+  const apiKey = '$2a$10$Lrw8dNmqRfLDVzjI22oysONmVE3Sur/E4RYw8ZE7DRFpt/nRuzLKG'; // Twój X-Master-Key
+  const binId = '67b8d2edacd3cb34a8eb7f1e'; // Twój Bin ID
+  const apiUrl = `https://api.jsonbin.io/v3/b/${binId}`;
 
-    // ZMIANA: Funkcja do pobierania danych z JSONBin.io
-    async function pobierzDane() {
-      try {
-        const response = await fetch(apiUrl, {
-          headers: {
-            'X-Master-Key': apiKey,
-          },
-        });
-        const data = await response.json();
-        return data.record || {
-          ogolne: [],
-          samorzad: [],
-          wycieczki: [],
-          nieobecnosci: [],
-          przedmioty: [],
-          swietlica: [],
-          wydarzenia: [],
-          grono: [],
-          wychowawcy: [
-            { klasa: '1a', wychowawca: 'Jolanta Bosak' },
-            { klasa: '1b', wychowawca: 'Rozalia Lipska' },
-            { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
-            { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
-            { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
-            { klasa: '2c', wychowawca: 'Daria Musherina' },
-            { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
-            { klasa: '3b', wychowawca: 'Anna Brzeska' },
-            { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
-            { klasa: '4a', wychowawca: 'Renata Skleszewska' },
-            { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
-            { klasa: '4c', wychowawca: 'Natalia Raczynska' },
-            { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
-            { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
-            { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
-            { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
-            { klasa: '6b', wychowawca: 'Kinga Młodzik' },
-            { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
-            { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
-            { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
-            { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
-            { klasa: '8a', wychowawca: 'Karol Dębowicz' },
-            { klasa: '8b', wychowawca: 'Michał Tarczyn' },
-            { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
-          ],
-          dlaNauczyciela: []
-        };
-      } catch (error) {
-        console.error('Błąd podczas pobierania danych:', error);
-        return {
-          ogolne: [],
-          samorzad: [],
-          wycieczki: [],
-          nieobecnosci: [],
-          przedmioty: [],
-          swietlica: [],
-          wydarzenia: [],
-          grono: [],
-          wychowawcy: [
-            { klasa: '1a', wychowawca: 'Jolanta Bosak' },
-            { klasa: '1b', wychowawca: 'Rozalia Lipska' },
-            { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
-            { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
-            { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
-            { klasa: '2c', wychowawca: 'Daria Musherina' },
-            { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
-            { klasa: '3b', wychowawca: 'Anna Brzeska' },
-            { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
-            { klasa: '4a', wychowawca: 'Renata Skleszewska' },
-            { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
-            { klasa: '4c', wychowawca: 'Natalia Raczynska' },
-            { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
-            { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
-            { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
-            { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
-            { klasa: '6b', wychowawca: 'Kinga Młodzik' },
-            { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
-            { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
-            { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
-            { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
-            { klasa: '8a', wychowawca: 'Karol Dębowicz' },
-            { klasa: '8b', wychowawca: 'Michał Tarczyn' },
-            { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
-          ],
-          dlaNauczyciela: []
-        };
-      }
+  // ZMIANA: Funkcja do pobierania danych z JSONBin.io
+  async function pobierzDane() {
+    try {
+      const response = await fetch(apiUrl, {
+        headers: {
+          'X-Master-Key': apiKey,
+        },
+      });
+      const data = await response.json();
+      return data.record || {
+        ogolne: [],
+        samorzad: [],
+        wycieczki: [],
+        nieobecnosci: [],
+        przedmioty: [],
+        swietlica: [],
+        wydarzenia: [],
+        grono: [],
+        wychowawcy: [
+          { klasa: '1a', wychowawca: 'Jolanta Bosak' },
+          { klasa: '1b', wychowawca: 'Rozalia Lipska' },
+          { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
+          { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
+          { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
+          { klasa: '2c', wychowawca: 'Daria Musherina' },
+          { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
+          { klasa: '3b', wychowawca: 'Anna Brzeska' },
+          { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
+          { klasa: '4a', wychowawca: 'Renata Skleszewska' },
+          { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
+          { klasa: '4c', wychowawca: 'Natalia Raczynska' },
+          { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
+          { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
+          { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
+          { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
+          { klasa: '6b', wychowawca: 'Kinga Młodzik' },
+          { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
+          { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
+          { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
+          { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
+          { klasa: '8a', wychowawca: 'Karol Dębowicz' },
+          { klasa: '8b', wychowawca: 'Michał Tarczyn' },
+          { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
+        ],
+        dlaNauczyciela: []
+      };
+    } catch (error) {
+      console.error('Błąd podczas pobierania danych:', error);
+      return {
+        ogolne: [],
+        samorzad: [],
+        wycieczki: [],
+        nieobecnosci: [],
+        przedmioty: [],
+        swietlica: [],
+        wydarzenia: [],
+        grono: [],
+        wychowawcy: [
+          { klasa: '1a', wychowawca: 'Jolanta Bosak' },
+          { klasa: '1b', wychowawca: 'Rozalia Lipska' },
+          { klasa: '1c', wychowawca: 'Faustyna Dobrzek' },
+          { klasa: '2a', wychowawca: 'Alicja Rajewicz-Drzemała' },
+          { klasa: '2b', wychowawca: 'Agnieszka Miłasz' },
+          { klasa: '2c', wychowawca: 'Daria Musherina' },
+          { klasa: '3a', wychowawca: 'Katarzyna Buzdro' },
+          { klasa: '3b', wychowawca: 'Anna Brzeska' },
+          { klasa: '3c', wychowawca: 'Danuta Kapciuszko' },
+          { klasa: '4a', wychowawca: 'Renata Skleszewska' },
+          { klasa: '4b', wychowawca: 'Mateusz Gigołła' },
+          { klasa: '4c', wychowawca: 'Natalia Raczynska' },
+          { klasa: '5a', wychowawca: 'Katarzyna Sieczko' },
+          { klasa: '5b', wychowawca: 'Dorota Maszkiewska*' },
+          { klasa: '5m', wychowawca: 'Antonina Pawelczyk' },
+          { klasa: '6a', wychowawca: 'Bożena Szpilkiewicz' },
+          { klasa: '6b', wychowawca: 'Kinga Młodzik' },
+          { klasa: '6m', wychowawca: 'Małgorzata Domagała' },
+          { klasa: '7a', wychowawca: 'Celina Włodarczyk' },
+          { klasa: '7b', wychowawca: 'Magdalena Joelesh' },
+          { klasa: '7m', wychowawca: 'Ewelina Śmigalska' },
+          { klasa: '8a', wychowawca: 'Karol Dębowicz' },
+          { klasa: '8b', wychowawca: 'Michał Tarczyn' },
+          { klasa: '8m', wychowawca: 'Ludwik Parkowiak' }
+        ],
+        dlaNauczyciela: []
+      };
+    }
+  }
+
+  // ZMIANA: Funkcja do zapisywania danych w JSONBin.io
+  async function zapiszDane(dane) {
+    try {
+      await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': apiKey,
+        },
+        body: JSON.stringify(dane),
+      });
+    } catch (error) {
+      console.error('Błąd podczas zapisywania danych:', error);
+    }
+  }
+
+  // ZMIANA: Inicjalizacja danych
+  let ogloszenia;
+  async function inicjalizuj() {
+    ogloszenia = await pobierzDane();
+
+    // Upewnij się, że nowe kategorie istnieją – przydatne przy aktualizacji danych
+    if (!ogloszenia.przedmioty) {
+      ogloszenia.przedmioty = [];
+    }
+    if (!ogloszenia.dlaNauczyciela) {
+      ogloszenia.dlaNauczyciela = [];
     }
 
-    // ZMIANA: Funkcja do zapisywania danych w JSONBin.io
-    async function zapiszDane(dane) {
-      try {
-        await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': apiKey,
-          },
-          body: JSON.stringify(dane),
-        });
-      } catch (error) {
-        console.error('Błąd podczas zapisywania danych:', error);
-      }
-    }
+    // Zapisz zaktualizowane dane z powrotem do JSONBin.io
+    await zapiszDane(ogloszenia);
 
-    // ZMIANA: Inicjalizacja danych
-    let ogloszenia;
-    async function inicjalizuj() {
-      ogloszenia = await pobierzDane();
-      pokazOgloszenia('ogolne'); // Domyślnie pokazujemy ogłoszenia ogólne
-      zaladujMenu();
-    }
+    // Domyślnie pokazujemy ogłoszenia ogólne
+    pokazOgloszenia('ogolne');
+  }
 
-    // Funkcja do ładowania menu
-    function zaladujMenu() {
-      const menu = document.getElementById("menu");
-      menu.innerHTML = `
-        <button onclick="pokazOgloszenia('ogolne')">
-          <img src="https://cdn-icons-png.flaticon.com/512/107/107812.png" class="category-icon" alt="Ogólne" /> Ogólne
-        </button>
-        <button onclick="pokazOgloszenia('nieobecnosci')">
-          <img src="https://img.myloview.pl/fototapety/vector-sars-virus-flat-icon-vector-pictograph-style-is-a-flat-symbol-sars-virus-icon-on-a-white-background-700-205263154.jpg" class="category-icon" alt="Nieobecności nauczycieli" /> Nieobecności nauczycieli
-        </button>
-        <button onclick="pokazOgloszenia('wydarzenia')">
-          <img src="https://static.vecteezy.com/system/resources/previews/006/692/012/non_2x/calendar-date-date-notes-business-office-event-icon-template-black-color-editable-calendar-date-symbol-flat-illustration-for-graphic-and-web-design-free-vector.jpg" class="category-icon" alt="Wydarzenia" /> Wydarzenia
-        </button>
-        <button onclick="pokazOgloszenia('samorzad')">
-          <img src="https://spfalkowo.pl/images/glowne/260-4620.png" class="category-icon" alt="Samorząd Uczniowski i Wolontariat" /> Samorząd Uczniowski i Wolontariat
-        </button>
-        <button onclick="pokazOgloszenia('wycieczki')">
-          <img src="https://cdn-icons-png.freepik.com/512/5776/5776883.png" class="category-icon" alt="Wycieczki" /> Wycieczki
-        </button>
-        <button onclick="pokazOgloszenia('swietlica')">
-          <img src="https://czasopismomatematyka.pl/media/cache/img_370_251/uploads/673/455/673455e2199b4989535024.webp?extension=jpg&version=609" class="category-icon" alt="Klasy 1-3, Świetlica" /> Klasy 1-3, Świetlica
-        </button>
-        <button onclick="pokazOgloszenia('grono')">
-          <img src="https://cdn-icons-png.flaticon.com/512/2472/2472253.png" class="category-icon" alt="Grono Pedagogiczne" /> Grono Pedagogiczne
-        </button>
-        <button onclick="pokazOgloszenia('wychowawcy')">
-          <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" class="category-icon" alt="Wychowawcy" /> Wychowawcy
-        </button>
-        <button onclick="pokazLibrus()">
-          <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" class="category-icon" alt="Harmonogram Świetlicy" /> Harmonogram Świetlicy
-        </button>
-        <button onclick="pokazOgloszenia('przedmioty')">
-          <img src="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" class="category-icon" alt="Przedmioty" /> Przedmioty
-        </button>
-        <button onclick="pokazOgloszenia('dlaNauczyciela')">
-          <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" class="category-icon" alt="Dla Nauczyciela" /> Dla Nauczyciela
-        </button>
-      `;
-    }
+  // Inicjalizacja strony
+  inicjalizuj();
 
     // Funkcja wyświetlająca ogłoszenia dla wybranej kategorii
-    async function pokazOgloszenia(kategoria) {
+    function pokazOgloszenia(kategoria) {
       const ogloszeniaDiv = document.getElementById("ogloszenia");
       ogloszeniaDiv.innerHTML = "";
 
@@ -194,6 +390,22 @@
         });
         tabela += "</table>";
         ogloszeniaDiv.innerHTML = tabela;
+      } else if (
+        kategoria === 'wydarzenia' ||
+        kategoria === 'nieobecnosci' ||
+        kategoria === 'grono'
+      ) {
+        ogloszenia[kategoria].forEach((o, index) => {
+          const div = document.createElement("div");
+          div.classList.add("ogloszenie");
+          div.innerHTML = `<strong>${o.tytul}</strong>
+                           <p>${o.tresc}</p>
+                           <span class='edytuj' onclick='edytujOgloszenie("${kategoria}", ${index})'>✏️</span>
+                           <span class='usun' onclick='usunOgloszenie("${kategoria}", ${index})'>❌</span>
+                           <span class='przesun-gore' onclick='przesunOgloszenie("${kategoria}", ${index}, "gore")'>⬆️</span>
+                           <span class='przesun-dol' onclick='przesunOgloszenie("${kategoria}", ${index}, "dol")'>⬇️</span>`;
+          ogloszeniaDiv.appendChild(div);
+        });
       } else {
         ogloszenia[kategoria].forEach((o, index) => {
           const div = document.createElement("div");
@@ -217,7 +429,7 @@
       ogloszeniaDiv.appendChild(addButton);
     }
 
-    // Funkcja wyszukująca ogłoszenia
+    // Funkcja wyszukująca ogłoszenia - przeszukujemy wszystkie kategorie
     function wyszukajOgloszenia() {
       const searchQuery = document.getElementById("search").value.toLowerCase();
       const ogloszeniaDiv = document.getElementById("ogloszenia");
@@ -246,41 +458,12 @@
       });
     }
 
-    // Funkcja do dodawania ogłoszenia
-    async function dodajOgloszenie(kategoria) {
-      const tytul = prompt("Podaj tytuł ogłoszenia:");
-      const tresc = prompt("Podaj treść ogłoszenia:");
-      const data = new Date();
-      if (tytul && tresc) {
-        ogloszenia[kategoria].push({ tytul, tresc, data: data.toISOString() });
-        await zapiszDane(ogloszenia);
-        pokazOgloszenia(kategoria);
-      }
+    function pokazLibrus() {
+      const ogloszeniaDiv = document.getElementById("ogloszenia");
+      ogloszeniaDiv.innerHTML = `<iframe src="https://docs.google.com/spreadsheets/d/1lqOYumlfC9b8ifxArIctyg8cNCGoVhjDkg0gj77FR_k/edit?usp=sharing"></iframe>`;
     }
 
-    // Funkcja do edycji ogłoszenia
-    async function edytujOgloszenie(kategoria, index) {
-      const tytul = prompt("Edytuj tytuł", ogloszenia[kategoria][index].tytul);
-      const tresc = prompt("Edytuj treść", ogloszenia[kategoria][index].tresc);
-      if (tytul && tresc) {
-        ogloszenia[kategoria][index].tytul = tytul;
-        ogloszenia[kategoria][index].tresc = tresc;
-        await zapiszDane(ogloszenia);
-        pokazOgloszenia(kategoria);
-      }
-    }
-
-    // Funkcja do usuwania ogłoszenia
-    async function usunOgloszenie(kategoria, index) {
-      if (confirm("Czy na pewno chcesz usunąć to ogłoszenie?")) {
-        ogloszenia[kategoria].splice(index, 1);
-        await zapiszDane(ogloszenia);
-        pokazOgloszenia(kategoria);
-      }
-    }
-
-    // Funkcja do przesuwania ogłoszeń
-    async function przesunOgloszenie(kategoria, index, kierunek) {
+    function przesunOgloszenie(kategoria, index, kierunek) {
       if (kierunek === "gore" && index > 0) {
         [ogloszenia[kategoria][index], ogloszenia[kategoria][index - 1]] =
           [ogloszenia[kategoria][index - 1], ogloszenia[kategoria][index]];
@@ -288,11 +471,41 @@
         [ogloszenia[kategoria][index], ogloszenia[kategoria][index + 1]] =
           [ogloszenia[kategoria][index + 1], ogloszenia[kategoria][index]];
       }
-      await zapiszDane(ogloszenia);
+      localStorage.setItem("ogloszenia", JSON.stringify(ogloszenia));
       pokazOgloszenia(kategoria);
     }
 
-    // Funkcja formatująca datę
+    function dodajOgloszenie(kategoria) {
+      const tytul = prompt("Podaj tytuł ogłoszenia:");
+      const tresc = prompt("Podaj treść ogłoszenia:");
+      const data = new Date();
+      if (tytul && tresc) {
+        ogloszenia[kategoria].push({ tytul, tresc, data: data.toISOString() });
+        localStorage.setItem("ogloszenia", JSON.stringify(ogloszenia));
+        pokazOgloszenia(kategoria);
+      }
+    }
+
+    function edytujOgloszenie(kategoria, index) {
+      const tytul = prompt("Edytuj tytuł", ogloszenia[kategoria][index].tytul);
+      const tresc = prompt("Edytuj treść", ogloszenia[kategoria][index].tresc);
+      if (tytul && tresc) {
+        ogloszenia[kategoria][index].tytul = tytul;
+        ogloszenia[kategoria][index].tresc = tresc;
+        localStorage.setItem("ogloszenia", JSON.stringify(ogloszenia));
+        pokazOgloszenia(kategoria);
+      }
+    }
+
+    function usunOgloszenie(kategoria, index) {
+      if (confirm("Czy na pewno chcesz usunąć to ogłoszenie?")) {
+        ogloszenia[kategoria].splice(index, 1);
+        localStorage.setItem("ogloszenia", JSON.stringify(ogloszenia));
+        pokazOgloszenia(kategoria);
+      }
+    }
+
+    // Funkcja formatująca datę w formie "x minut/godzin/dni temu"
     function formatujDate(isoString) {
       const date = new Date(isoString);
       const now = new Date();
@@ -312,9 +525,6 @@
       const diffDays = Math.floor(diffHours / 24);
       return diffDays + " dni temu";
     }
-
-    // Inicjalizacja strony
-    inicjalizuj();
   </script>
 </body>
 </html>
