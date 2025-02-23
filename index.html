@@ -4,240 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ogłoszenia</title>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 80%;
-            margin: 0 auto;
             padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #f4f4f4;
         }
-
-        h1, h2 {
-            color: #333;
-        }
-
-        form {
+        .menu {
             margin-bottom: 20px;
         }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        .announcement {
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .announcement h3 {
-            margin-top: 0;
-        }
-
-        .announcement p {
-            margin: 5px 0;
-        }
-
-        .announcement button {
+        .menu button {
             margin-right: 10px;
+        }
+        .announcement {
+            background: #fff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Ogłoszenia</h1>
-        <form id="addForm">
-            <label for="category">Kategoria:</label>
-            <select id="category" required>
-                <option value="ogólne">Ogólne</option>
-                <option value="nieobecności">Nieobecności</option>
-                <option value="samorząd">Samorząd</option>
-            </select>
-            <label for="title">Tytuł:</label>
-            <input type="text" id="title" required>
-            <label for="content">Treść:</label>
-            <textarea id="content" required></textarea>
-            <button type="submit">Dodaj ogłoszenie</button>
-        </form>
 
-        <div id="announcements">
-            <h2>Lista ogłoszeń</h2>
-            <div id="announcementsList"></div>
-        </div>
-    </div>
+<div class="menu">
+    <button onclick="showCategory('Ważne')">Ważne</button>
+    <button onclick="showCategory('Nieobecności')">Nieobecności</button>
+    <button onclick="showCategory('Wydarzenia')">Wydarzenia</button>
+    <button onclick="showCategory('Klasy 1-3')">Klasy 1-3</button>
+    <button onclick="showCategory('Samorząd')">Samorząd</button>
+    <button onclick="showCategory('Przedmiotowe')">Przedmiotowe</button>
+    <button onclick="showCategory('Dla nauczyciela')">Dla nauczyciela</button>
+</div>
 
-    <script>
-        const BIN_ID = '67b8d2edacd3cb34a8eb7f1e';
-        const X_MASTER_KEY = '$2a$10$Lrw8dNmqRfLDVzjI22oysONmVE3Sur/E4RYw8ZE7DRFpt/nRuzLKG';
-        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+<div id="announcements"></div>
+<button id="addAnnouncementButton" style="display:none;">Dodaj ogłoszenie</button>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAnnouncements();
-            document.getElementById('addForm').addEventListener('submit', addAnnouncement);
-        });
+<script type="module">
+    // Import Firebase functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update, remove, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
-        async function loadAnnouncements() {
-            try {
-                const response = await fetch(API_URL, {
-                    headers: {
-                        'X-Master-Key': X_MASTER_KEY
-                    }
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyA3UTONlMomKz7JnQumtY-Gsojgxvmw4yI",
+        authDomain: "szp57-9a81c.firebaseapp.com",
+        projectId: "szp57-9a81c",
+        storageBucket: "szp57-9a81c.appspot.com",
+        messagingSenderId: "1025214623172",
+        appId: "1:1025214623172:web:4657af9aa44402f5df8891"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let currentCategory = '';
+
+    function showCategory(category) {
+        currentCategory = category;
+        document.getElementById('announcements').innerHTML = '';
+        document.getElementById('addAnnouncementButton').style.display = 'block';
+        loadAnnouncements();
+    }
+
+    function loadAnnouncements() {
+        const announcementsRef = ref(db, `announcements/${currentCategory}`);
+        onValue(announcementsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    displayAnnouncement(key, data[key]);
                 });
-                const data = await response.json();
-                const announcements = data.record || [];
-                displayAnnouncements(announcements);
-            } catch (error) {
-                console.error('Błąd podczas ładowania ogłoszeń:', error);
             }
-        }
+        });
+    }
 
-        function displayAnnouncements(announcements) {
-            const list = document.getElementById('announcementsList');
-            list.innerHTML = '';
-            announcements.forEach((announcement, index) => {
-                const div = document.createElement('div');
-                div.className = 'announcement';
-                div.innerHTML = `
-                    <h3>${announcement.title}</h3>
-                    <p><strong>Kategoria:</strong> ${announcement.category}</p>
-                    <p>${announcement.content}</p>
-                    <button onclick="editAnnouncement(${index})">Edytuj</button>
-                    <button onclick="deleteAnnouncement(${index})">Usuń</button>
-                `;
-                list.appendChild(div);
+    function displayAnnouncement(id, announcement) {
+        const announcementsDiv = document.getElementById('announcements');
+        const announcementDiv = document.createElement('div');
+        announcementDiv.className = 'announcement';
+        announcementDiv.innerHTML = `
+            <h3>${announcement.title}</h3>
+            <p>${announcement.content}</p>
+            <p><small>${timeSince(announcement.timestamp)} temu</small></p>
+            <button onclick="editAnnouncement('${id}')">Edytuj</button>
+            <button onclick="deleteAnnouncement('${id}')">Usuń</button>
+            <button onclick="moveAnnouncement('${id}', 'up')">↑</button>
+            <button onclick="moveAnnouncement('${id}', 'down')">↓</button>
+        `;
+        announcementsDiv.appendChild(announcementDiv);
+    }
+
+    function timeSince(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) return interval + " lat temu";
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) return interval + " miesięcy temu";
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) return interval + " dni temu";
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) return interval + " godzin temu";
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) return interval + " minut temu";
+        return seconds + " sekund temu";
+    }
+
+    document.getElementById('addAnnouncementButton').addEventListener('click', () => {
+        const title = prompt("Podaj tytuł ogłoszenia:");
+        const content = prompt("Podaj treść ogłoszenia:");
+        if (title && content) {
+            const timestamp = new Date().getTime();
+            const newAnnouncementRef = ref(db, `announcements/${currentCategory}`).push();
+            set(newAnnouncementRef, {
+                title: title,
+                content: content,
+                timestamp: timestamp
             });
         }
+    });
 
-        async function addAnnouncement(event) {
-            event.preventDefault();
-            const category = document.getElementById('category').value;
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-
-            const newAnnouncement = {
-                category,
-                title,
-                content
+    function editAnnouncement(id) {
+        const title = prompt("Podaj nowy tytuł ogłoszenia:");
+        const content = prompt("Podaj nową treść ogłoszenia:");
+        if (title && content) {
+            const updates = {};
+            updates[`announcements/${currentCategory}/${id}`] = {
+                title: title,
+                content: content,
+                timestamp: new Date().getTime()
             };
-
-            try {
-                const response = await fetch(API_URL, {
-                    headers: {
-                        'X-Master-Key': X_MASTER_KEY
-                    }
-                });
-                const data = await response.json();
-                const announcements = data.record || [];
-                announcements.push(newAnnouncement);
-
-                await fetch(API_URL, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': X_MASTER_KEY
-                    },
-                    body: JSON.stringify(announcements)
-                });
-
-                loadAnnouncements();
-                document.getElementById('addForm').reset();
-            } catch (error) {
-                console.error('Błąd podczas dodawania ogłoszenia:', error);
-            }
+            update(ref(db), updates);
         }
+    }
 
-        async function editAnnouncement(index) {
-            const category = prompt('Podaj nową kategorię:');
-            const title = prompt('Podaj nowy tytuł:');
-            const content = prompt('Podaj nową treść:');
+    function deleteAnnouncement(id) {
+        remove(ref(db, `announcements/${currentCategory}/${id}`));
+    }
 
-            if (category && title && content) {
-                try {
-                    const response = await fetch(API_URL, {
-                        headers: {
-                            'X-Master-Key': X_MASTER_KEY
-                        }
-                    });
-                    const data = await response.json();
-                    const announcements = data.record || [];
-                    announcements[index] = { category, title, content };
-
-                    await fetch(API_URL, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': X_MASTER_KEY
-                        },
-                        body: JSON.stringify(announcements)
-                    });
-
-                    loadAnnouncements();
-                } catch (error) {
-                    console.error('Błąd podczas edycji ogłoszenia:', error);
-                }
+    function moveAnnouncement(id, direction) {
+        const announcementsRef = ref(db, `announcements/${currentCategory}`);
+        get(announcementsRef).then((snapshot) => {
+            const data = snapshot.val();
+            const keys = Object.keys(data);
+            const index = keys.indexOf(id);
+            if (direction === 'up' && index > 0) {
+                const temp = data[keys[index]];
+                update(ref(db, `announcements/${currentCategory}/${keys[index]}`), data[keys[index - 1]]);
+                update(ref(db, `announcements/${currentCategory}/${keys[index - 1]}`), temp);
+            } else if (direction === 'down' && index < keys.length - 1) {
+                const temp = data[keys[index]];
+                update(ref(db, `announcements/${currentCategory}/${keys[index]}`), data[keys[index + 1]]);
+                update(ref(db, `announcements/${currentCategory}/${keys[index + 1]}`), temp);
             }
-        }
+        });
+    }
+</script>
 
-        async function deleteAnnouncement(index) {
-            if (confirm('Czy na pewno chcesz usunąć to ogłoszenie?')) {
-                try {
-                    const response = await fetch(API_URL, {
-                        headers: {
-                            'X-Master-Key': X_MASTER_KEY
-                        }
-                    });
-                    const data = await response.json();
-                    const announcements = data.record || [];
-                    announcements.splice(index, 1);
-
-                    await fetch(API_URL, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': X_MASTER_KEY
-                        },
-                        body: JSON.stringify(announcements)
-                    });
-
-                    loadAnnouncements();
-                } catch (error) {
-                    console.error('Błąd podczas usuwania ogłoszenia:', error);
-                }
-            }
-        }
-    </script>
 </body>
 </html>
