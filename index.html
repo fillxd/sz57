@@ -2,168 +2,46 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ogłoszenia</title>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .menu {
-            margin-bottom: 20px;
-        }
-        .menu button {
-            margin-right: 10px;
-        }
-        .announcement {
-            background: #fff;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-    </style>
 </head>
 <body>
+    <h1>Dodaj ogłoszenie</h1>
+    <input type="text" id="announcement" placeholder="Wpisz ogłoszenie">
+    <button onclick="addAnnouncement()">Dodaj</button>
 
-<div class="menu">
-    <button onclick="showCategory('Ważne')">Ważne</button>
-    <button onclick="showCategory('Nieobecności')">Nieobecności</button>
-    <button onclick="showCategory('Wydarzenia')">Wydarzenia</button>
-    <button onclick="showCategory('Klasy 1-3')">Klasy 1-3</button>
-    <button onclick="showCategory('Samorząd')">Samorząd</button>
-    <button onclick="showCategory('Przedmiotowe')">Przedmiotowe</button>
-    <button onclick="showCategory('Dla nauczyciela')">Dla nauczyciela</button>
-</div>
+    <h2>Lista ogłoszeń</h2>
+    <ul id="list"></ul>
 
-<div id="announcements"></div>
-<button id="addAnnouncementButton" style="display:none;">Dodaj ogłoszenie</button>
+    <script>
+        function addAnnouncement() {
+            const text = document.getElementById("announcement").value;
+            if (!text) return;
 
-<script type="module">
-    // Import Firebase functions
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update, remove, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyA3UTONlMomKz7JnQumtY-Gsojgxvmw4yI",
-        authDomain: "szp57-9a81c.firebaseapp.com",
-        projectId: "szp57-9a81c",
-        storageBucket: "szp57-9a81c.appspot.com",
-        messagingSenderId: "1025214623172",
-        appId: "1:1025214623172:web:4657af9aa44402f5df8891"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let currentCategory = '';
-
-    function showCategory(category) {
-        currentCategory = category;
-        document.getElementById('announcements').innerHTML = '';
-        document.getElementById('addAnnouncementButton').style.display = 'block';
-        loadAnnouncements();
-    }
-
-    function loadAnnouncements() {
-        const announcementsRef = ref(db, `announcements/${currentCategory}`);
-        onValue(announcementsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    displayAnnouncement(key, data[key]);
-                });
-            }
-        });
-    }
-
-    function displayAnnouncement(id, announcement) {
-        const announcementsDiv = document.getElementById('announcements');
-        const announcementDiv = document.createElement('div');
-        announcementDiv.className = 'announcement';
-        announcementDiv.innerHTML = `
-            <h3>${announcement.title}</h3>
-            <p>${announcement.content}</p>
-            <p><small>${timeSince(announcement.timestamp)} temu</small></p>
-            <button onclick="editAnnouncement('${id}')">Edytuj</button>
-            <button onclick="deleteAnnouncement('${id}')">Usuń</button>
-            <button onclick="moveAnnouncement('${id}', 'up')">↑</button>
-            <button onclick="moveAnnouncement('${id}', 'down')">↓</button>
-        `;
-        announcementsDiv.appendChild(announcementDiv);
-    }
-
-    function timeSince(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        let interval = Math.floor(seconds / 31536000);
-        if (interval > 1) return interval + " lat temu";
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) return interval + " miesięcy temu";
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) return interval + " dni temu";
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) return interval + " godzin temu";
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) return interval + " minut temu";
-        return seconds + " sekund temu";
-    }
-
-    document.getElementById('addAnnouncementButton').addEventListener('click', () => {
-        const title = prompt("Podaj tytuł ogłoszenia:");
-        const content = prompt("Podaj treść ogłoszenia:");
-        if (title && content) {
-            const timestamp = new Date().getTime();
-            const newAnnouncementRef = ref(db, `announcements/${currentCategory}`).push();
-            set(newAnnouncementRef, {
-                title: title,
-                content: content,
-                timestamp: timestamp
+            fetch("save.php", {
+                method: "POST",
+                body: JSON.stringify({ text }),
+                headers: { "Content-Type": "application/json" }
+            }).then(() => {
+                document.getElementById("announcement").value = "";
+                loadAnnouncements();
             });
         }
-    });
 
-    function editAnnouncement(id) {
-        const title = prompt("Podaj nowy tytuł ogłoszenia:");
-        const content = prompt("Podaj nową treść ogłoszenia:");
-        if (title && content) {
-            const updates = {};
-            updates[`announcements/${currentCategory}/${id}`] = {
-                title: title,
-                content: content,
-                timestamp: new Date().getTime()
-            };
-            update(ref(db), updates);
+        function loadAnnouncements() {
+            fetch("get.php")
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("list");
+                    list.innerHTML = "";
+                    data.forEach(item => {
+                        const li = document.createElement("li");
+                        li.textContent = item.text;
+                        list.appendChild(li);
+                    });
+                });
         }
-    }
 
-    function deleteAnnouncement(id) {
-        remove(ref(db, `announcements/${currentCategory}/${id}`));
-    }
-
-    function moveAnnouncement(id, direction) {
-        const announcementsRef = ref(db, `announcements/${currentCategory}`);
-        get(announcementsRef).then((snapshot) => {
-            const data = snapshot.val();
-            const keys = Object.keys(data);
-            const index = keys.indexOf(id);
-            if (direction === 'up' && index > 0) {
-                const temp = data[keys[index]];
-                update(ref(db, `announcements/${currentCategory}/${keys[index]}`), data[keys[index - 1]]);
-                update(ref(db, `announcements/${currentCategory}/${keys[index - 1]}`), temp);
-            } else if (direction === 'down' && index < keys.length - 1) {
-                const temp = data[keys[index]];
-                update(ref(db, `announcements/${currentCategory}/${keys[index]}`), data[keys[index + 1]]);
-                update(ref(db, `announcements/${currentCategory}/${keys[index + 1]}`), temp);
-            }
-        });
-    }
-</script>
-
+        loadAnnouncements();
+    </script>
 </body>
 </html>
