@@ -2,46 +2,591 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Ogłoszenia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ogłoszenia - SP 57 Wrocław</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .header {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #4a90e2, #34495e);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            animation: titleSlide 1s ease-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes titleSlide {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -50px; }
+            100% { left: 110%; }
+        }
+
+        .search-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .search-container a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .search-container a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        nav {
+            background: linear-gradient(135deg, #4a90e2, #34495e);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap; /* Zawijanie kategorii do nowej linii */
+            gap: 0.5rem; /* Mniejszy odstęp między kategoriami */
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem; /* Mniejszy padding */
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            flex: 1 1 20%; /* 5 kategorii w jednej linii */
+            text-align: center;
+            justify-content: center;
+        }
+
+        .menu a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .menu a.active {
+            background-color: #e74c3c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .announcement-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        .announcement-card h2 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-card p {
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .announcement-card .time {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: block;
+        }
+
+        .announcement-card .actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .announcement-card .actions span {
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .announcement-card .actions span:hover {
+            transform: scale(1.1);
+        }
+
+        .announcement-card .actions .delete {
+            color: #e74c3c;
+        }
+
+        .announcement-card .actions .edit {
+            color: #3498db;
+        }
+
+        .announcement-card .actions .move {
+            color: #2ecc71;
+        }
+
+        .homepage-content {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            line-height: 1.8;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .su-info {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 0.95rem;
+            color: #34495e;
+        }
+
+        .su-info h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .teachers-table, .tutors-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .teachers-table th, .teachers-table td,
+        .tutors-table th, .tutors-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        .teachers-table th, .tutors-table th {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .teachers-table tr:hover, .tutors-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .add-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .add-button:hover {
+            background: #219a52;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-    <h1>Dodaj ogłoszenie</h1>
-    <input type="text" id="announcement" placeholder="Wpisz ogłoszenie">
-    <button onclick="addAnnouncement()">Dodaj</button>
+    <div class="header">
+        <h1>Szkoła Podstawowa nr 57<br>we Wrocławiu</h1>
+        <div class="search-container">
+            <a href="#" id="searchBtn">🔍 Szukaj</a>
+        </div>
+    </div>
 
-    <h2>Lista ogłoszeń</h2>
-    <ul id="list"></ul>
+    <nav>
+        <div class="menu">
+            <a href="#" class="active" data-category="1">Strona Główna</a>
+            <a href="#" data-category="2">Ważne</a>
+            <a href="#" data-category="3">Ogłoszenia</a>
+            <a href="#" data-category="4">Nieobecności</a>
+            <a href="#" data-category="5">Wycieczki</a>
+            <a href="#" data-category="6">Samorząd Uczniowski i Wolontariat</a>
+            <a href="#" data-category="7">Klasy 1-3 i Świetlica</a>
+            <a href="#" data-category="8">Dla Nauczycieli</a>
+            <a href="#" data-category="9">Grono Pedagogiczne</a>
+            <a href="#" data-category="10">Wychowawcy</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
+        <div id="announcements"></div>
+    </div>
 
     <script>
-        function addAnnouncement() {
-            const text = document.getElementById("announcement").value;
-            if (!text) return;
+        let currentCategory = 1;
+        let announcements = JSON.parse(localStorage.getItem('announcements')) || {
+            2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: []
+        };
 
-            fetch("save.php", {
-                method: "POST",
-                body: JSON.stringify({ text }),
-                headers: { "Content-Type": "application/json" }
-            }).then(() => {
-                document.getElementById("announcement").value = "";
-                loadAnnouncements();
+        // Menu i wyszukiwarka
+        document.querySelectorAll('.menu a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                if(link === document.getElementById('searchBtn')) {
+                    const query = prompt('Wpisz szukaną frazę:');
+                    if(query) performSearch(query);
+                    return;
+                }
+                
+                currentCategory = parseInt(link.dataset.category);
+                document.querySelector('.menu a.active').classList.remove('active');
+                link.classList.add('active');
+                toggleAddButton();
+                showAnnouncements();
+            });
+        });
+
+        // Wyświetlanie
+        function showAnnouncements() {
+            const container = document.getElementById('announcements');
+            container.innerHTML = '';
+            
+            if(currentCategory === 1) {
+                container.innerHTML = `
+                    <div class="homepage-content">
+                        <h2>Witamy w SP 57!</h2>
+                        <p>Witamy na stronie najlepszej szkoły we Wrocławiu!<br>
+                        Zapraszamy do naszej szkoły! <br>
+                        Email: fillzxster@gmail.com</p>
+                        
+                        <h3>O naszej szkole</h3>
+                        <p>Jesteśmy szkołą której niczego nie brakuje! Klasy ogólne, sportowe, muzyczne, a nawet językowe! Posiadamy wykwalifikowaną kadrę i cudowną dyrekcję!</p>
+                        
+                        <h3>Godziny otwarcia</h3>
+                        <p>Pon-Pt: 6:30-18:00<br>
+						
+                        <h3>Sekretariat</h3>
+						 <p>Pon-Pt: 7:10-16:20<br>
+                    </div>
+                `;
+                return;
+            }
+
+            if(currentCategory === 6) {
+                container.innerHTML = `
+                    <div class="su-info">
+                        <h3>Samorząd Uczniowski 4-8</h3>
+                        <p>Opiekun Samorządu i Wolontariatu: Michał Tarczyn<br>
+                        Przewodnicząca Szkoły: Olga Siwiec<br>
+                        Godzina Dostępności: Środa 11:35-13:35<br>
+                        Zebranie Samorządu Uczniowskiego: Środa 12:30-12:50</p>
+                    </div>
+                `;
+            }
+
+            if(currentCategory === 9) {
+                container.innerHTML = `
+                    <table class="teachers-table">
+                        <thead>
+                            <tr>
+                                <th>Przedmiot</th>
+                                <th>Nauczyciele</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Język Polski</td><td>Oliwia Żabkiewicz, Anna Burakowska, Dorota Maszkiewska, Jowita Kuter, Elżbieta Gawin</td></tr>
+                            <tr><td>Matematyka</td><td>Bożena Szpilkiewicz, Renata Skleszewska, Joanna Małek, Michał Tarczyn, Tadeusz Ostrowski</td></tr>
+                            <tr><td>Język Angielski</td><td>Katarzyna Sieczko, Zofia Lisek, Celina Włodarczyk, Anna Gocał, Karolina Dominiak, Magdalena Wisłowicz</td></tr>
+                            <tr><td>Język Niemiecki</td><td>Magdalena Joelesh, Barbara Strzegomska</td></tr>
+                            <tr><td>Wychowanie Fizyczne</td><td>Małgorzata Domagała, Sylwia Cześniewicz, Mateusz Gigołła, Kinga Młodzik, Natalia Raczyńska</td></tr>
+                            <tr><td>Historia</td><td>Paweł Grzegorzewski, Karol Dębowicz</td></tr>
+                            <tr><td>Biologia, Przyroda</td><td>Michalina Woźniak</td></tr>
+                            <tr><td>Plastyka</td><td>Barbara Trzaskowska</td></tr>
+                            <tr><td>Technika</td><td>Ludwik Parkowiak</td></tr>
+                            <tr><td>Chemia</td><td>Tadeusz Ostrowski</td></tr>
+                            <tr><td>Fizyka</td><td>Marian Woźniak</td></tr>
+                            <tr><td>Wiedza o społeczeństwie</td><td>Ludwik Parkowiak</td></tr>
+                            <tr><td>Edukacja dla bezpieczeństwa</td><td>Dariusz Drzemała</td></tr>
+                            <tr><td>Geografia</td><td>Mateusz Gigołła</td></tr>
+                            <tr><td>Informatyka</td><td>Ewelina Śmigalska</td></tr>
+                            <tr><td>Muzyka</td><td>Hanna Brzeska, Magdalena Joelesh, Antonina Pawelczyk</td></tr>
+                            <tr><td>Religia</td><td>ks. Ignacy Włoszek, Eugenia Nowodworska</td></tr>
+                            <tr><td>Kształcenie Słuchu, Nauka o Muzyce</td><td>Antonina Pawelczyk</td></tr>
+                            <tr><td>Edukacja Wczesnoszkolna</td><td>Rozalia Lipska, Faustyna Dobrzek, Daria Musherina, Anna Brzeska, Agnieszka Miłasz, Danuta Kapciuszko, Katarzyna Buzdro, Jolanta Bosak, Alicja Rajewicz-Drzemała, Weronika Rogalska</td></tr>
+                            <tr><td>Basen</td><td>Małgorzata Domagała, Kinga Młodzik</td></tr>
+                            <tr><td>Trening Zewnętrzny</td><td>Małgorzata Domagała, Rozalia Lipska, Faustyna Dobrzek</td></tr>
+                            <tr><td>Świetlica</td><td>Alicja Struś-Michalska, Katarzyna Borzędzin, Barbara Strzegomska, Anna Brzeska, Elżbieta Gawin, Daria Musherina, Ignacy Włoszek, Urszula Złocińska, Barbara Brzóska, Martyna Kołodziejczyk, Mateusz Gigołła, Anna Gocał</td></tr>
+                            <tr><td>Etyka</td><td>Renata Halczyk</td></tr>
+                            <tr><td>Pedagog</td><td>Aleksandra Wykaz</td></tr>
+                            <tr><td>Biblioteka</td><td>Karolina Młotek</td></tr>
+                        </tbody>
+                    </table>
+                `;
+                return;
+            }
+
+            if(currentCategory === 10) {
+                container.innerHTML = `
+                    <table class="tutors-table">
+                        <thead>
+                            <tr>
+                                <th>Klasa</th>
+                                <th>Wychowawca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1a</td><td>Jolanta Bosak</td></tr>
+                            <tr><td>1b</td><td>Rozalia Lipska</td></tr>
+                            <tr><td>1c</td><td>Faustyna Dobrzek</td></tr>
+                            <tr><td>2a</td><td>Alicja Rajewicz-Drzemała</td></tr>
+                            <tr><td>2b</td><td>Agnieszka Miłasz</td></tr>
+                            <tr><td>2c</td><td>Daria Musherina</td></tr>
+                            <tr><td>3a</td><td>Katarzyna Buzdro</td></tr>
+                            <tr><td>3b</td><td>Anna Brzeska</td></tr>
+                            <tr><td>3c</td><td>Danuta Kapciuszko</td></tr>
+                            <tr><td>4a</td><td>Renata Skleszewska</td></tr>
+                            <tr><td>4b</td><td>Mateusz Gigołła</td></tr>
+                            <tr><td>4c</td><td>Natalia Raczyńska</td></tr>
+                            <tr><td>5a</td><td>Katarzyna Sieczko</td></tr>
+                            <tr><td>5b</td><td>Dorota Maszkiewska</td></tr>
+                            <tr><td>5m</td><td>Antonina Pawelczyk</td></tr>
+                            <tr><td>6a</td><td>Bożena Szpilkiewicz</td></tr>
+                            <tr><td>6b</td><td>Kinga Młodzik</td></tr>
+                            <tr><td>6m</td><td>Małgorzata Domagała</td></tr>
+                            <tr><td>7a</td><td>Celina Włodarczyk</td></tr>
+                            <tr><td>7b</td><td>Magdalena Joelesh</td></tr>
+                            <tr><td>7m</td><td>Ewelina Śmigalska</td></tr>
+                            <tr><td>8a</td><td>Karol Dębowicz</td></tr>
+                            <tr><td>8b</td><td>Michał Tarczyn</td></tr>
+                            <tr><td>8m</td><td>Ludwik Parkowiak</td></tr>
+                        </tbody>
+                    </table>
+                `;
+                return;
+            }
+
+            announcements[currentCategory].forEach((ann, index) => {
+                container.appendChild(createAnnouncementCard(ann, index));
             });
         }
 
-        function loadAnnouncements() {
-            fetch("get.php")
-                .then(response => response.json())
-                .then(data => {
-                    const list = document.getElementById("list");
-                    list.innerHTML = "";
-                    data.forEach(item => {
-                        const li = document.createElement("li");
-                        li.textContent = item.text;
-                        list.appendChild(li);
-                    });
-                });
+        // Tworzenie karty ogłoszenia/nieobecności
+        function createAnnouncementCard(ann, index) {
+            const div = document.createElement('div');
+            div.className = 'announcement-card';
+            div.innerHTML = `
+                <div class="actions">
+                    <span class="delete" onclick="deleteAnnouncement(${index})">🗑️</span>
+                    <span class="edit" onclick="editAnnouncement(${index})">✏️</span>
+                    <span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
+                    <span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
+                </div>
+                ${currentCategory === 4 ? `
+                    <h2>${ann.date} ${ann.hours ? `(${ann.hours})` : ''}</h2>
+                    <p><strong>${ann.teacher}</strong></p>
+                    <p>${ann.reason}</p>
+                ` : `
+                    <h2>${ann.title}</h2>
+                    <p>${ann.content}</p>
+                    <span class="time">${timeAgo(ann.timestamp)}</span>
+                `}
+            `;
+            return div;
         }
 
-        loadAnnouncements();
+        // Dodawanie ogłoszenia
+        function addAnnouncement() {
+            const title = prompt('Podaj tytuł ogłoszenia:');
+            if (!title) return;
+            
+            const content = prompt('Podaj treść ogłoszenia:');
+            if (!content) return;
+
+            const newAnn = {
+                title,
+                content,
+                timestamp: new Date().getTime()
+            };
+
+            announcements[currentCategory].push(newAnn);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            showAnnouncements();
+        }
+
+        // Dodawanie nieobecności
+        function addAbsence() {
+            const date = prompt('Podaj datę nieobecności (np. 2023-10-15):');
+            if (!date) return;
+
+            const hours = prompt('Podaj godziny nieobecności (np. 8:00-12:00) lub wpisz "cały dzień":');
+            if (!hours) return;
+
+            const teacher = prompt('Podaj imię i nazwisko nauczyciela:');
+            if (!teacher) return;
+
+            const reason = prompt('Podaj powód nieobecności:');
+            if (!reason) return;
+
+            const newAbsence = {
+                date,
+                hours: hours === 'cały dzień' ? null : hours,
+                teacher,
+                reason,
+                timestamp: new Date().getTime()
+            };
+
+            announcements[currentCategory].push(newAbsence);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            showAnnouncements();
+        }
+
+        // Obsługa przycisku dodawania
+        function handleAddButton() {
+            if (currentCategory === 4) {
+                addAbsence();
+            } else {
+                addAnnouncement();
+            }
+        }
+
+        // Usuwanie
+        function deleteAnnouncement(index) {
+            if(confirm('Czy na pewno chcesz usunąć ten wpis?')) {
+                announcements[currentCategory].splice(index, 1);
+                localStorage.setItem('announcements', JSON.stringify(announcements));
+                showAnnouncements();
+            }
+        }
+
+        // Edycja
+        function editAnnouncement(index) {
+            if (currentCategory === 4) {
+                const absence = announcements[currentCategory][index];
+                const newDate = prompt('Edytuj datę:', absence.date);
+                if (!newDate) return;
+
+                const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
+                if (!newHours) return;
+
+                const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
+                if (!newTeacher) return;
+
+                const newReason = prompt('Edytuj powód:', absence.reason);
+                if (!newReason) return;
+
+                absence.date = newDate;
+                absence.hours = newHours === 'cały dzień' ? null : newHours;
+                absence.teacher = newTeacher;
+                absence.reason = newReason;
+            } else {
+                const newTitle = prompt('Edytuj tytuł:', announcements[currentCategory][index].title);
+                if (!newTitle) return;
+
+                const newContent = prompt('Edytuj treść:', announcements[currentCategory][index].content);
+                if (!newContent) return;
+
+                announcements[currentCategory][index].title = newTitle;
+                announcements[currentCategory][index].content = newContent;
+            }
+
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            showAnnouncements();
+        }
+
+        // Przenoszenie
+        function moveAnnouncement(index, direction) {
+            const arr = announcements[currentCategory];
+            if(direction === 'up' && index > 0) {
+                [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
+            } else if(direction === 'down' && index < arr.length - 1) {
+                [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+            }
+            localStorage.setItem('announcements', JSON.stringify(announcements));
+            showAnnouncements();
+        }
+
+        // Formatowanie czasu
+        function timeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days} dni temu`;
+            if (hours > 0) return `${hours} godz. temu`;
+            if (minutes > 0) return `${minutes} min. temu`;
+            return `${seconds} sek. temu`;
+        }
+
+        // Przycisk dodawania
+        function toggleAddButton() {
+            const btn = document.getElementById('addButton');
+            btn.style.display = currentCategory === 1 || currentCategory === 9 || currentCategory === 10 ? 'none' : 'block';
+            btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 'Dodaj Ogłoszenie';
+        }
+
+        // Inicjalizacja
+        showAnnouncements();
+        toggleAddButton();
     </script>
 </body>
 </html>
