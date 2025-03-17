@@ -261,6 +261,7 @@
     <nav>
         <div class="menu">
             <a href="#" class="active" data-category="1">Strona Główna</a>
+	    <a href="#" data-category="11">Aktualności</a>
             <a href="#" data-category="2">Wydarzenia</a>
             <a href="#" data-category="9">Grono Pedagogiczne</a>
             <a href="#" data-category="10">Wychowawcy</a>
@@ -330,6 +331,17 @@
                 return;
             }
 
+		   if(currentCategory === 11) {
+                container.innerHTML = `
+                    <div class="homepage-content">
+                        <h1>Aktualności</h1>
+                        <h3>Apel Wiosenny</h3>
+                        <p>17.03.2025 19:20</p>
+                        <img src="https://raw.githubusercontent.com/fillxd/sz57/8aefdb7bf4ab42866953c32612ee4d92a64e7549/apel%20wiosenny%202025.png" alt="Apel" width="350">
+
+                `;
+                return;
+            }
             if(currentCategory === 6) {
                 container.innerHTML = `
                     <div class="su-info">
@@ -341,7 +353,7 @@
                         Przewodnicząca Szkoły: Olga Siwiec<br>
                         Godzina Dostępności: Środa 11:35-13:35<br>
                         Zebranie Samorządu Uczniowskiego: Środa 12:30-12:50</p>
-<img src="https://raw.githubusercontent.com/fillxd/sz57/8aefdb7bf4ab42866953c32612ee4d92a64e7549/apel%20wiosenny%202025.png" alt="Apel Wiosenny 2025" width="600">
+<img src="" alt="Apel Wiosenny 2025" width="600">
 
                     </div>
                 `;
