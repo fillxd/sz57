@@ -11,6 +11,10 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+	       .tekst {
+            white-space: pre-line;
+            font-size: 18px; /* Opcjonalnie: zmiana wielkości czcionki */
+        }
 
         body {
             background-color: #f0f2f5;
@@ -333,9 +337,29 @@
                 container.innerHTML = `
                     <div class="homepage-content">
                         <h1>Aktualności</h1>
-                        <h3>Apel Wiosenny</h3>
-                        <p>17.03.2025 19:20</p>
-                        <img src="https://raw.githubusercontent.com/fillxd/sz57/8aefdb7bf4ab42866953c32612ee4d92a64e7549/apel%20wiosenny%202025.png" alt="Apel" width="350">
+                       <div class="tekst">
+		       Egzaminy Próbne - Arkusze testowe, kl.8 (24.03-26.03)
+oraz
+DIAGNOZY Przygotowujące, kl. 3 (25.03)
+
+
+PONIEDZIAŁEK (24.03)
+kl. 8a: Matematyka, Michał Tarczyn (7:40-9:45)
+kl. 8b: Język Angielski, Zofia Lisek (7:55-9:45)
+kl. 8m: Język Polski, Anna Burakowska (8:05-10:35)
+
+WTOREK (25.03)
+kl. 3a: Ogólny, Katarzyna Buzdro (9:00-11:00)
+kl. 3b: Ogólny, Anna Brzeska (8:30-10:30)
+kl. 3c: Ogólny, Danuta Kapciuszko (10:45-12:45)
+kl. 8a: Język Angielski, Karolina Dominiak (7:55-9:45)
+kl. 8b: Język Polski, Oliwia Żabkiewicz (8:05-10:35)
+kl. 8m:  Matematyka, Joanna Małek (8:50-10:45)
+
+ŚRODA (26.03)
+kl. 8a: Język Polski, Dorota Maszkiewska (7:10-9:40)
+kl. 8b: Matematyka, Michał Tarczyn (7:40-9:45)
+kl. 8m: Język Angielski, Celina Włodarczyk (8:00-9:50) </div>
 
                 `;
                 return;
@@ -351,6 +375,7 @@
                         Przewodnicząca Szkoły: Olga Siwiec<br>
                         Godzina Dostępności: Środa 11:35-13:35<br>
                         Zebranie Samorządu Uczniowskiego: Środa 12:30-12:50</p>
+			<p></p>
 <img src="https://raw.githubusercontent.com/fillxd/sz57/a1a7657b33999bc4c120299d3d9ef2f8001960ca/Samorz%C4%85d%20Uczniowski.png
 " alt="Samorząd" width="500">
 
@@ -492,10 +517,10 @@
 
         // Dodawanie nieobecności
         function addAbsence() {
-            const date = prompt('Podaj datę nieobecności (np. 2023-10-15):');
+            const date = prompt('Podaj datę nieobecności:');
             if (!date) return;
 
-            const hours = prompt('Podaj godziny nieobecności (np. 8:00-12:00) lub wpisz "cały dzień":');
+            const hours = prompt('Podaj godziny nieobecności lub wpisz "cały dzień":');
             if (!hours) return;
 
             const teacher = prompt('Podaj imię i nazwisko nauczyciela:');
