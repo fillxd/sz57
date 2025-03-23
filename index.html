@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sz57</title>
-	<link rel="icon" type="image/x-icon" href="favicon.png">
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <title>S57</title>
     <style>
         * {
             margin: 0;
@@ -18,9 +15,11 @@
             white-space: pre-line;
             font-size: 18px;
         }
+
         body {
             background-color: #f0f2f5;
         }
+
         .header {
             text-align: center;
             padding: 3rem 1rem;
@@ -29,16 +28,19 @@
             position: relative;
             overflow: hidden;
         }
+
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             animation: titleSlide 1s ease-out;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
         @keyframes titleSlide {
             from { transform: translateY(-100px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
         .header::after {
             content: '';
             position: absolute;
@@ -50,15 +52,18 @@
             transform: rotate(45deg);
             animation: shine 4s infinite;
         }
+
         @keyframes shine {
             0% { left: -50px; }
             100% { left: 110%; }
         }
+
         .search-container {
             position: absolute;
             top: 20px;
             right: 20px;
         }
+
         .search-container a {
             color: white;
             text-decoration: none;
@@ -70,10 +75,12 @@
             align-items: center;
             white-space: nowrap;
         }
+
         .search-container a:hover {
             background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
+
         nav {
             background: linear-gradient(135deg, #4a90e2, #34495e);
             padding: 1rem;
@@ -82,11 +89,13 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 100;
         }
+
         .menu {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
+
         .menu a {
             color: white;
             text-decoration: none;
@@ -101,18 +110,22 @@
             text-align: center;
             justify-content: center;
         }
+
         .menu a:hover {
             background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
+
         .menu a.active {
             background-color: #e74c3c;
         }
+
         .container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
+
         .announcement-card {
             background: white;
             border-radius: 10px;
@@ -122,20 +135,24 @@
             animation: fadeIn 0.5s ease;
             position: relative;
         }
+
         .announcement-card h2 {
             color: #2c3e50;
             margin-bottom: 0.5rem;
         }
+
         .announcement-card p {
             color: #34495e;
             line-height: 1.6;
         }
+
         .announcement-card .time {
             color: #7f8c8d;
             font-size: 0.9rem;
             margin-top: 1rem;
             display: block;
         }
+
         .announcement-card .actions {
             position: absolute;
             top: 1rem;
@@ -143,23 +160,29 @@
             display: flex;
             gap: 0.5rem;
         }
+
         .announcement-card .actions span {
             cursor: pointer;
             font-size: 1.2rem;
             transition: all 0.2s ease;
         }
+
         .announcement-card .actions span:hover {
             transform: scale(1.1);
         }
+
         .announcement-card .actions .delete {
             color: #e74c3c;
         }
+
         .announcement-card .actions .edit {
             color: #3498db;
         }
+
         .announcement-card .actions .move {
             color: #2ecc71;
         }
+
         .homepage-content {
             background: white;
             border-radius: 10px;
@@ -167,6 +190,7 @@
             line-height: 1.8;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
+
         .su-info {
             background: white;
             border-radius: 10px;
@@ -176,10 +200,12 @@
             font-size: 0.95rem;
             color: #34495e;
         }
+
         .su-info h3 {
             color: #2c3e50;
             margin-bottom: 1rem;
         }
+
         .teachers-table, .tutors-table {
             width: 100%;
             border-collapse: collapse;
@@ -188,23 +214,28 @@
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
+
         .teachers-table th, .teachers-table td,
         .tutors-table th, .tutors-table td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #f0f2f5;
         }
+
         .teachers-table th, .tutors-table th {
             background-color: #4a90e2;
             color: white;
         }
+
         .teachers-table tr:hover, .tutors-table tr:hover {
             background-color: #f9f9f9;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         .add-button {
             background: #27ae60;
             color: white;
@@ -216,10 +247,12 @@
             transition: all 0.3s ease;
             margin-bottom: 2rem;
         }
+
         .add-button:hover {
             background: #219a52;
             transform: scale(1.05);
         }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -232,6 +265,7 @@
             align-items: center;
             z-index: 1000;
         }
+
         .modal-content {
             background: white;
             padding: 2rem;
@@ -239,14 +273,17 @@
             width: 90%;
             max-width: 500px;
         }
+
         .form-group {
             margin-bottom: 1rem;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: #2c3e50;
         }
+
         .form-group input,
         .form-group select {
             width: 100%;
@@ -255,19 +292,23 @@
             border-radius: 4px;
             font-size: 1rem;
         }
+
         .date-range-container {
             display: flex;
             gap: 1rem;
         }
+
         .date-range-item {
             flex: 1;
         }
+
         .form-buttons {
             margin-top: 1.5rem;
             display: flex;
             gap: 1rem;
             justify-content: flex-end;
         }
+
         .form-buttons button {
             padding: 0.8rem 1.5rem;
             border: none;
@@ -275,10 +316,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .form-buttons button[type="submit"] {
             background: #27ae60;
             color: white;
         }
+
         .form-buttons button[type="button"] {
             background: #e74c3c;
             color: white;
@@ -293,7 +336,7 @@
     <nav>
         <div class="menu">
             <a href="#" class="active" data-category="1">Strona Główna</a>
-            <a href="#" data-category="11">Aktualności</a>
+            <a href="#" data-category="11">Dokumenty</a>
             <a href="#" data-category="2">Wydarzenia</a>
             <a href="#" data-category="5">Wycieczki</a>
             <a href="#" data-category="9">Grono Pedagogiczne</a>
@@ -404,38 +447,15 @@
     </div>
 
     <script>
-        // KONFIGURACJA FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyCFOF0WtZfOSzXFO6gr6kTXwtHlymwGjNU",
-            authDomain: "szkola57-ccc80.firebaseapp.com",
-            databaseURL: "https://szkola57-ccc80-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "szkola57-ccc80",
-            storageBucket: "szkola57-ccc80.firebasestorage.app",
-            messagingSenderId: "422165475378",
-            appId: "1:422165475378:web:dc7cd50c37451dd7ec4c2b"
-        };
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
         let currentCategory = 1;
-        let announcements = {};
+        let announcements = JSON.parse(localStorage.getItem('announcements')) || {};
         
         const requiredCategories = [2, 3, 4, 5, 6, 7, 8];
-
-        function saveAnnouncements() {
-            database.ref('announcements').set(announcements);
-        }
-
-        function loadAnnouncements(callback) {
-            database.ref('announcements').on('value', (snapshot) => {
-                const data = snapshot.val() || {};
-                requiredCategories.forEach(cat => {
-                    if (!data[cat]) data[cat] = [];
-                });
-                announcements = data;
-                callback();
-            });
-        }
+        requiredCategories.forEach(cat => {
+            if (!announcements.hasOwnProperty(cat)) {
+                announcements[cat] = [];
+            }
+        });
 
         const nauczyciele = [
             "Jolanta Bosak", "Katarzyna Borzędzin", "Hanna Brzeska", "Anna Brzeska", "Barbara Brzóska",
@@ -486,8 +506,7 @@
                         <p>Jesteśmy szkołą której niczego nie brakuje! Klasy ogólne, sportowe, muzyczne, a nawet językowe! Posiadamy wykwalifikowaną kadrę i cudowną dyrekcję!</p>
                         
                         <h3>Godziny otwarcia</h3>
-                        <p>Szkoła: Pon-Pt: 7:00-17:00<br>
-						<p>Sekretariat: Pon-Pt: 7:50-15:50<br>
+                        <p>Pon-Pt: 6:45-17:00<br>
                 `;
                 return;
             }
@@ -705,8 +724,8 @@ Dokument podpisany przez dyrektora SP 57.
                 timestamp: new Date().getTime()
             };
 
-            announcements[currentCategory].unshift(newAnn);
-            saveAnnouncements();
+            announcements[currentCategory].push(newAnn);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
             showAnnouncements();
         }
 
@@ -735,8 +754,8 @@ Dokument podpisany przez dyrektora SP 57.
                 return;
             }
 
-            announcements[currentCategory].unshift(newAbsence);
-            saveAnnouncements();
+            announcements[currentCategory].push(newAbsence);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
             showAnnouncements();
             document.getElementById('absenceModal').style.display = 'none';
             this.reset();
@@ -758,8 +777,8 @@ Dokument podpisany przez dyrektora SP 57.
                 return;
             }
 
-            announcements[currentCategory].unshift(newEvent);
-            saveAnnouncements();
+            announcements[currentCategory].push(newEvent);
+            localStorage.setItem('announcements', JSON.stringify(announcements));
             showAnnouncements();
             document.getElementById('eventModal').style.display = 'none';
             this.reset();
@@ -778,7 +797,7 @@ Dokument podpisany przez dyrektora SP 57.
         function deleteAnnouncement(index) {
             if(confirm('Czy na pewno chcesz usunąć ten wpis?')) {
                 announcements[currentCategory].splice(index, 1);
-                saveAnnouncements();
+                localStorage.setItem('announcements', JSON.stringify(announcements));
                 showAnnouncements();
             }
         }
@@ -835,7 +854,7 @@ Dokument podpisany przez dyrektora SP 57.
                 announcements[currentCategory][index].content = newContent;
             }
 
-            saveAnnouncements();
+            localStorage.setItem('announcements', JSON.stringify(announcements));
             showAnnouncements();
         }
 
@@ -846,7 +865,7 @@ Dokument podpisany przez dyrektora SP 57.
             } else if(direction === 'down' && index < arr.length - 1) {
                 [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
             }
-            saveAnnouncements();
+            localStorage.setItem('announcements', JSON.stringify(announcements));
             showAnnouncements();
         }
 
@@ -873,12 +892,8 @@ Dokument podpisany przez dyrektora SP 57.
                              'Dodaj Ogłoszenie';
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAnnouncements(() => {
-                showAnnouncements();
-                toggleAddButton();
-            });
-        });
+        showAnnouncements();
+        toggleAddButton();
     </script>
 </body>
 </html>
