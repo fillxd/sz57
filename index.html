@@ -126,10 +126,6 @@
             color: #2c3e50;
             margin-bottom: 0.5rem;
         }
-        .announcement-card p {
-            color: #34495e;
-            line-height: 1.6;
-        }
         .announcement-card .time {
             color: #7f8c8d;
             font-size: 0.9rem;
@@ -248,12 +244,18 @@
             color: #2c3e50;
         }
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1rem;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            white-space: pre-wrap;
         }
         .date-range-container {
             display: flex;
@@ -283,7 +285,6 @@
             background: #e74c3c;
             color: white;
         }
-        /* PAGINACJA */
         .pagination {
             display: flex;
             justify-content: center;
@@ -305,6 +306,11 @@
         }
         .page-btn:hover:not(.active) {
             background: #f0f2f5;
+        }
+        .announcement-content {
+            white-space: pre-line;
+            line-height: 1.6;
+            margin: 1rem 0;
         }
     </style>
 </head>
@@ -426,6 +432,71 @@
         </div>
     </div>
 
+    <!-- Modal dla ogłoszeń -->
+    <div class="modal-overlay" id="announcementModal">
+        <div class="modal-content">
+            <form id="announcementForm">
+                <div class="form-group">
+                    <label for="announcementTeacher">Nauczyciel:</label>
+                    <select id="announcementTeacher" required>
+                        <option value="">Wybierz nauczyciela</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="announcementTitle">Tytuł ogłoszenia:</label>
+                    <input type="text" id="announcementTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="announcementContent">Treść ogłoszenia:</label>
+                    <textarea id="announcementContent" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Okres ważności:</label>
+                    <div class="date-range-container">
+                        <div class="date-range-item">
+                            <label for="announcementDateFrom">Od:</label>
+                            <input type="date" id="announcementDateFrom" required>
+                        </div>
+                        <div class="date-range-item">
+                            <label for="announcementDateTo">Do:</label>
+                            <input type="date" id="announcementDateTo" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" onclick="document.getElementById('announcementModal').style.display = 'none'">Anuluj</button>
+                    <button type="submit">Zapisz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal dla aktualności -->
+    <div class="modal-overlay" id="newsModal">
+        <div class="modal-content">
+            <form id="newsForm">
+                <div class="form-group">
+                    <label for="newsTitle">Tytuł aktualności:</label>
+                    <input type="text" id="newsTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newsContent">Treść aktualności:</label>
+                    <textarea id="newsContent" rows="4" required></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" onclick="document.getElementById('newsModal').style.display = 'none'">Anuluj</button>
+                    <button type="submit">Zapisz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // KONFIGURACJA FIREBASE
         const firebaseConfig = {
@@ -476,19 +547,21 @@
             "Oliwia Żabkiewicz"
         ];
 
-        const teacherSelect = document.getElementById('absenceTeacher');
-        nauczyciele.forEach(teacher => {
-            const option = document.createElement('option');
-            option.value = teacher;
-            option.textContent = teacher;
-            teacherSelect.appendChild(option);
+        // Inicjalizacja list nauczycieli
+        [document.getElementById('absenceTeacher'), document.getElementById('announcementTeacher')].forEach(select => {
+            nauczyciele.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher;
+                option.textContent = teacher;
+                select.appendChild(option);
+            });
         });
 
         document.querySelectorAll('.menu a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 currentCategory = parseInt(link.dataset.category);
-                currentPage = 1; // Resetuj stronę przy zmianie kategorii
+                currentPage = 1;
                 document.querySelector('.menu a.active').classList.remove('active');
                 link.classList.add('active');
                 toggleAddButton();
@@ -510,19 +583,19 @@
                         
                         <h3>O naszej szkole</h3>
                         <p>Jesteśmy szkołą której niczego nie brakuje! Klasy ogólne, sportowe, muzyczne, a nawet językowe! Posiadamy wykwalifikowaną kadrę i cudowną dyrekcję!</p>
-                          <h3>REKRUTACJA 2025/2026</h3>
-  <p> UWAGA! Rekrutacja na rok 2025/2026 rusza już 31 marca 2025r. !! Rekrutacja potrwa do dnia 13 kwietnia 2025 r. lub jeśli przed terminem liczba uczniów osiągnie liczbę 75.</p>
-  <p> Oto klasy pierwsze na rok 2025/2026 </p>
-  <h3>1A - klasa ogólna</h3>
-    <h3>1B - klasa ogólno-językowa (język angielski, niemiecki)</h3>
-  <h3>1M - klasa Muzyczna (kształcenie słuchu, nauka o muzyce)</h3>
-    <p>Klasa muzyczna POWRACA DO REKRUTACJI po 5 LATACH!</p>
-      <h3>DO ZOBACZENIA!</h3>
+                        <h3>REKRUTACJA 2025/2026</h3>
+                        <p> UWAGA! Rekrutacja na rok 2025/2026 rusza już 31 marca 2025r. !! Rekrutacja potrwa do dnia 13 kwietnia 2025 r. lub jeśli przed terminem liczba uczniów osiągnie liczbę 75.</p>
+                        <p> Oto klasy pierwsze na rok 2025/2026 </p>
+                        <h3>1A - klasa ogólna</h3>
+                        <h3>1B - klasa ogólno-językowa (język angielski, niemiecki)</h3>
+                        <h3>1M - klasa Muzyczna (kształcenie słuchu, nauka o muzyce)</h3>
+                        <p>Klasa muzyczna POWRACA DO REKRUTACJI po 5 LATACH!</p>
+                        <h3>DO ZOBACZENIA!</h3>
 
                         <h3>Godziny otwarcia</h3>
                         <p>Szkoła: Pon-Pt: 7:00-17:00<br>
                         <p>Sekretariat: Pon-Pt: 7:50-15:50<br>
-                `;
+                    </div>`;
                 return;
             }
 
@@ -530,77 +603,75 @@
                 container.innerHTML = `
                     <div class="homepage-content">
                         <h1>Szkolne Ważne Dokumenty</h1>
-<h2> DZIEŃ SPORTU W SP57 </h2>
-<div class="tekst">
-Światowy Dzień Sportu
-4 kwietnia 2025 r. (piątek)
-OMÓWIENIE
-Światowy Dzień Sportu to wydarzenie mające na celu promowanie aktywności fizycznej i zdrowego stylu życia wśród uczniów, a także integrację społeczności szkolnej poprzez wspólne uczestnictwo w różnych formach aktywności. Tegoroczna edycja odbędzie się 4 kwietnia 2025 roku na boisku szkolnym i będzie składać się z wielu różnorodnych stacji sportowych, które pozwolą uczniom na rozwijanie swoich umiejętności, a także na wspólną zabawę i rywalizację w duchu fair play.
-HARMONOGRAM
-7:10-9:40 - Zajęcia odbywają się wg. planu lekcji. 
-9:50-14:30 - Świętujemy Dzień Sportu na szkolnym boisku - klasy są pod opieką swoich wychowawców lub nauczycieli zastępczych. Lekcje są odwołane.
-14:40-16:20 - Zajęcia są odwołane - w planie lekcji nie ma zajęć, ale dzień sportu dalej trwa (dla chętnych).
-OD GODZINY 14:30 NA BOISKO MOGĄ PRZYCHODZIĆ OSOBY ZEWNĘTRZNE (rodzina, znajomi)
-HARMONOGRAM SZCZEGÓŁOWY
-9:50-10:00 - Organizacja z wychowawcą, wyjście na boisko.
-10:00 - Uroczyste rozpoczęcie dnia sportu.
-10:00-10:15 - Przemówienia osób ważnych, wstęp do dnia sportu.
-10:15-12:00 - Czas Wolny - uczniowie zaliczają stacje lub odpoczywają.
-12:00-12:30 - Konkurs, Losowanie nagród
-12:30-14:30 - Czas Wolny - uczniowie zaliczają stacje lub odpoczywają.
-14:30-16:30 - Czas Wolny (DLA CHĘTNYCH), w każdej chwili można opuścić teren szkoły - świetlica szkolna wychodzi na boisko.
-STACJE ORAZ PODZIAŁ NAUCZYCIELI
-Za organizację dnia odpowiadają nauczyciele wf-u oraz dyrekcja.
-Dźwięk, przemówienia, wystrój na scenie - Antonina Pawelczyk, Hanna Brzeska
-Losowanie nagród , Konkurs - Michał Tarczyn, Zofia Lisek, (wolontariusze szkolni)
-Opieka nad uczniami: Nauczyciele rozpisani w rozpisce klas.
+                        <h2> DZIEŃ SPORTU W SP57 </h2>
+                        <div class="tekst">
+                            Światowy Dzień Sportu
+                            4 kwietnia 2025 r. (piątek)
+                            OMÓWIENIE
+                            Światowy Dzień Sportu to wydarzenie mające na celu promowanie aktywności fizycznej i zdrowego stylu życia wśród uczniów, a także integrację społeczności szkolnej poprzez wspólne uczestnictwo w różnych formach aktywności. Tegoroczna edycja odbędzie się 4 kwietnia 2025 roku na boisku szkolnym i będzie składać się z wielu różnorodnych stacji sportowych, które pozwolą uczniom na rozwijanie swoich umiejętności, a także na wspólną zabawę i rywalizację w duchu fair play.
+                            HARMONOGRAM
+                            7:10-9:40 - Zajęcia odbywają się wg. planu lekcji. 
+                            9:50-14:30 - Świętujemy Dzień Sportu na szkolnym boisku - klasy są pod opieką swoich wychowawców lub nauczycieli zastępczych. Lekcje są odwołane.
+                            14:40-16:20 - Zajęcia są odwołane - w planie lekcji nie ma zajęć, ale dzień sportu dalej trwa (dla chętnych).
+                            OD GODZINY 14:30 NA BOISKO MOGĄ PRZYCHODZIĆ OSOBY ZEWNĘTRZNE (rodzina, znajomi)
+                            HARMONOGRAM SZCZEGÓŁOWY
+                            9:50-10:00 - Organizacja z wychowawcą, wyjście na boisko.
+                            10:00 - Uroczyste rozpoczęcie dnia sportu.
+                            10:00-10:15 - Przemówienia osób ważnych, wstęp do dnia sportu.
+                            10:15-12:00 - Czas Wolny - uczniowie zaliczają stacje lub odpoczywają.
+                            12:00-12:30 - Konkurs, Losowanie nagród
+                            12:30-14:30 - Czas Wolny - uczniowie zaliczają stacje lub odpoczywają.
+                            14:30-16:30 - Czas Wolny (DLA CHĘTNYCH), w każdej chwili można opuścić teren szkoły - świetlica szkolna wychodzi na boisko.
+                            STACJE ORAZ PODZIAŁ NAUCZYCIELI
+                            Za organizację dnia odpowiadają nauczyciele wf-u oraz dyrekcja.
+                            Dźwięk, przemówienia, wystrój na scenie - Antonina Pawelczyk, Hanna Brzeska
+                            Losowanie nagród , Konkurs - Michał Tarczyn, Zofia Lisek, (wolontariusze szkolni)
+                            Opieka nad uczniami: Nauczyciele rozpisani w rozpisce klas.
 
-1. Rzut do celu - Natalia Raczyńska
-	Uczestnik rzuca piłeczką z odległości 5 metrów do kosza, jeśli trafi dostaję 		pieczątkę.
-2. Skok w dal - Marcin Krupnicki
-	Uczestnik skacze w dal - jak najdalej do piaskownicy, bez rozbiegu. Za każdy 		skok z dobrą techniką dostaję pieczątkę.
-3. Balans na piłce - Kinga Młodzik
-	Uczestnik staje na półkuli równowagi, jeżeli wytrzyma ponad 15 sekund 		dostaję pieczątkę.
-4. Przeciąganie Sznura - Małgorzata Domagała
-	Dwóch uczestników podobnej kategorii wiekowej ciągną linię, osoba która 		przeciągnie linę na swoją stronę - wygrywa, oboje uczestników dostają 			pieczątkę.
-5. Tor Przeszkód - Mateusz Gigołła
-	Uczestnik przechodzi przez tor przeszkód. Najpierw skok przez płotki, potem 		pod drutem, a na koniec w tunelu (dostosowanym do klas 1-4 i 5-8). Każdy kto 		przejdzie przez tor - dostaję pieczątkę.
-	6. Bieg w workach - Sylwia Cześniewicz
-	Bieg w workach na śmieci, uczestnicy wchodzą do worków, jeżeli dotrą do 		mety cali i zdrowi - dostaną pieczątkę.
-	7. Skok na skakance - Kinga Młodzik
-		Uczestnik skacze na skakance, jeżeli uda się bez przerwy 20 sekund - dostaje 		pieczątkę	.
+                            1. Rzut do celu - Natalia Raczyńska
+                                Uczestnik rzuca piłeczką z odległości 5 metrów do kosza, jeśli trafi dostaję pieczątkę.
+                            2. Skok w dal - Marcin Krupnicki
+                                Uczestnik skacze w dal - jak najdalej do piaskownicy, bez rozbiegu. Za każdy skok z dobrą techniką dostaję pieczątkę.
+                            3. Balans na piłce - Kinga Młodzik
+                                Uczestnik staje na półkuli równowagi, jeżeli wytrzyma ponad 15 sekund dostaję pieczątkę.
+                            4. Przeciąganie Sznura - Małgorzata Domagała
+                                Dwóch uczestników podobnej kategorii wiekowej ciągną linię, osoba która przeciągnie linę na swoją stronę - wygrywa, oboje uczestników dostają pieczątkę.
+                            5. Tor Przeszkód - Mateusz Gigołła
+                                Uczestnik przechodzi przez tor przeszkód. Najpierw skok przez płotki, potem pod drutem, a na koniec w tunelu (dostosowanym do klas 1-4 i 5-8). Każdy kto przejdzie przez tor - dostaję pieczątkę.
+                            6. Bieg w workach - Sylwia Cześniewicz
+                                Bieg w workach na śmieci, uczestnicy wchodzą do worków, jeżeli dotrą do mety cali i zdrowi - dostaną pieczątkę.
+                            7. Skok na skakance - Kinga Młodzik
+                                Uczestnik skacze na skakance, jeżeli uda się bez przerwy 20 sekund - dostaje pieczątkę.
 
-  
-7 pieczątek = 6 z Wychowania Fizycznego
+                            7 pieczątek = 6 z Wychowania Fizycznego
 
-Podział na opiekunów.
-1a - Jolanta Bosak, Katarzyna Borzędzin
-1b - Rozalia Lipska, Anna Grześkowiak
-1c - Faustyna Dobrzek, Eugenia Nowodworska
-2a - Alicja Rajewicz - Drzemała, Lena Skwierzyńska
-2b - Agnieszka Miłasz, Ignacy Jasiński
-2c - Daria Musherina, Irynna Goshevniyk
-3a - Katarzyna Buzdro, Barbara Brzóska
-3b - Anna Brzeska, Aleksandra Wykaz
-3c - Danuta Kapciuszko, Renata Halczyk
-4a - Renata Skleszewska, Urszula Złocińska
-4b - Oliwia Żabkiewicz, Barbara Trzaskowska
-4c - Anna Burakowska, Marlena Wyszyńska
-5a - Katarzyna Sieczko, Magdalena Wisłowicz
-5b - Dorota Maszkiewska, Ignacy Włoszek
-5m - Karolina Dominiak, Martyna Kołodziejczyk
-6a - Bożena Szpilkiewicz, Grażyna Gruszka
-6b - Joanna Małek, Paweł Grzegorzewski
-6m - Dariusz Drzemała, Michalina Woźniak
-7a - Celina Włodarczyk, Aleksandra Malczyk
-7b - Elżbieta Gawin, Magdalena Joelesh
-7m - Kuter Janina, Ewelina Śmigalska
-8a - Karol Dębowicz, Tadeusz Ostrowski
-8b - Michał Tarczyn, Marian Woźniak
-8m - Ludwik Parkowiak, Karolina Młotek
-
-</div>
-                `;
+                            Podział na opiekunów.
+                            1a - Jolanta Bosak, Katarzyna Borzędzin
+                            1b - Rozalia Lipska, Anna Grześkowiak
+                            1c - Faustyna Dobrzek, Eugenia Nowodworska
+                            2a - Alicja Rajewicz - Drzemała, Lena Skwierzyńska
+                            2b - Agnieszka Miłasz, Ignacy Jasiński
+                            2c - Daria Musherina, Irynna Goshevniyk
+                            3a - Katarzyna Buzdro, Barbara Brzóska
+                            3b - Anna Brzeska, Aleksandra Wykaz
+                            3c - Danuta Kapciuszko, Renata Halczyk
+                            4a - Renata Skleszewska, Urszula Złocińska
+                            4b - Oliwia Żabkiewicz, Barbara Trzaskowska
+                            4c - Anna Burakowska, Marlena Wyszyńska
+                            5a - Katarzyna Sieczko, Magdalena Wisłowicz
+                            5b - Dorota Maszkiewska, Ignacy Włoszek
+                            5m - Karolina Dominiak, Martyna Kołodziejczyk
+                            6a - Bożena Szpilkiewicz, Grażyna Gruszka
+                            6b - Joanna Małek, Paweł Grzegorzewski
+                            6m - Dariusz Drzemała, Michalina Woźniak
+                            7a - Celina Włodarczyk, Aleksandra Malczyk
+                            7b - Elżbieta Gawin, Magdalena Joelesh
+                            7m - Kuter Janina, Ewelina Śmigalska
+                            8a - Karol Dębowicz, Tadeusz Ostrowski
+                            8b - Michał Tarczyn, Marian Woźniak
+                            8m - Ludwik Parkowiak, Karolina Młotek
+                        </div>
+                    </div>`;
                 return;
             }
 
@@ -617,8 +688,8 @@ Podział na opiekunów.
                         Zebranie Samorządu Uczniowskiego: Środa 12:30-12:50</p>
                         <p></p>
                         <img src="https://raw.githubusercontent.com/fillxd/sz57/a1a7657b33999bc4c120299d3d9ef2f8001960ca/Samorz%C4%85d%20Uczniowski.png" alt="Samorząd" width="500">
-                    </div>
-                `;
+                    </div>`;
+                return;
             }
 
             if(currentCategory === 9) {
@@ -661,8 +732,7 @@ Podział na opiekunów.
                             <tr><td>Dyrekcja</td><td>Lena Skwierzyńska (1-3), Mateusz Gigołła (4-8)</td></tr>
                             <tr><td>Kierownik</td><td>Katarzyna Borzędzin, Renata Halczyk</td></tr>
                         </tbody>
-                    </table>
-                `;
+                    </table>`;
                 return;
             }
 
@@ -702,8 +772,7 @@ Podział na opiekunów.
                             <tr><td>8b</td><td>Michał Tarczyn</td><td></td></tr>
                             <tr><td>8m</td><td>Ludwik Parkowiak</td><td></td></tr>
                         </tbody>
-                    </table>
-                `;
+                    </table>`;
                 return;
             }
 
@@ -743,7 +812,6 @@ Podział na opiekunów.
             }
         }
 
-        // RESZTA FUNKCJI BEZ ZMIAN
         function createAnnouncementCard(ann, index) {
             const div = document.createElement('div');
             div.className = 'announcement-card';
@@ -757,7 +825,7 @@ Podział na opiekunów.
             if(ann.dateFrom && ann.dateTo) {
                 const from = formatDate(ann.dateFrom);
                 const to = formatDate(ann.dateTo);
-                dateRange = from === to ? from : `${from}-${to}`;
+                dateRange = from === to ? from : `${from} - ${to}`;
             }
             
             div.innerHTML = `
@@ -775,96 +843,21 @@ Podział na opiekunów.
                     <h2>${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
                     <p><strong>${ann.name}</strong></p>
                     <p>Kategoria: ${ann.category}</p>
+                ` : currentCategory === 3 ? `
+                    <h2>${ann.teacher}: ${ann.title} (${dateRange})</h2>
+                    <div class="announcement-content">${ann.content}</div>
+                    <span class="time">${timeAgo(ann.timestamp)}</span>
+                ` : currentCategory === 5 ? `
+                    <h2>${ann.title}</h2>
+                    <div class="announcement-content">${ann.content}</div>
+                    <span class="time">${timeAgo(ann.timestamp)}</span>
                 ` : `
                     <h2>${ann.title}</h2>
-                    <p>${ann.content}</p>
+                    <div class="announcement-content">${ann.content}</div>
                     <span class="time">${timeAgo(ann.timestamp)}</span>
                 `}
             `;
             return div;
-        }
-
-        function addAnnouncement() {
-            const title = prompt('Podaj tytuł ogłoszenia:');
-            if (!title) return;
-            
-            const content = prompt('Podaj treść ogłoszenia:');
-            if (!content) return;
-
-            const newAnn = {
-                title,
-                content,
-                timestamp: new Date().getTime()
-            };
-
-            announcements[currentCategory].unshift(newAnn);
-            saveAnnouncements();
-            showAnnouncements();
-        }
-
-        function addAbsence() {
-            document.getElementById('absenceModal').style.display = 'flex';
-        }
-
-        function addEvent() {
-            document.getElementById('eventModal').style.display = 'flex';
-        }
-
-        document.getElementById('absenceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newAbsence = {
-                dateFrom: document.getElementById('absenceDateFrom').value,
-                dateTo: document.getElementById('absenceDateTo').value,
-                hours: document.getElementById('absenceHours').value,
-                teacher: document.getElementById('absenceTeacher').value,
-                reason: document.getElementById('absenceReason').value,
-                timestamp: new Date().getTime()
-            };
-
-            if (!newAbsence.dateFrom || !newAbsence.dateTo || !newAbsence.hours || !newAbsence.teacher || !newAbsence.reason) {
-                alert('Proszę wypełnić wszystkie pola!');
-                return;
-            }
-
-            announcements[currentCategory].unshift(newAbsence);
-            saveAnnouncements();
-            showAnnouncements();
-            document.getElementById('absenceModal').style.display = 'none';
-            this.reset();
-        });
-
-        document.getElementById('eventForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newEvent = {
-                date: document.getElementById('eventDate').value,
-                hours: document.getElementById('eventHours').value,
-                name: document.getElementById('eventName').value,
-                category: document.getElementById('eventCategory').value,
-                timestamp: new Date().getTime()
-            };
-
-            if (!newEvent.date || !newEvent.hours || !newEvent.name || !newEvent.category) {
-                alert('Proszę wypełnić wszystkie pola!');
-                return;
-            }
-
-            announcements[currentCategory].unshift(newEvent);
-            saveAnnouncements();
-            showAnnouncements();
-            document.getElementById('eventModal').style.display = 'none';
-            this.reset();
-        });
-
-        function handleAddButton() {
-            if (currentCategory === 4) {
-                addAbsence();
-            } else if (currentCategory === 2) {
-                addEvent();
-            } else {
-                addAnnouncement();
-            }
         }
 
         function deleteAnnouncement(index) {
@@ -916,6 +909,38 @@ Podział na opiekunów.
                 event.hours = newHours === 'cały dzień' ? null : newHours;
                 event.name = newName;
                 event.category = newCategory;
+            } else if (currentCategory === 3) {
+                const announcement = announcements[currentCategory][index];
+                const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
+                if (!newTeacher) return;
+
+                const newTitle = prompt('Edytuj tytuł:', announcement.title);
+                if (!newTitle) return;
+
+                const newContent = prompt('Edytuj treść:', announcement.content);
+                if (!newContent) return;
+
+                const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
+                if (!newDateFrom) return;
+
+                const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
+                if (!newDateTo) return;
+
+                announcement.teacher = newTeacher;
+                announcement.title = newTitle;
+                announcement.content = newContent;
+                announcement.dateFrom = newDateFrom;
+                announcement.dateTo = newDateTo;
+            } else if (currentCategory === 5) {
+                const news = announcements[currentCategory][index];
+                const newTitle = prompt('Edytuj tytuł:', news.title);
+                if (!newTitle) return;
+
+                const newContent = prompt('Edytuj treść:', news.content);
+                if (!newContent) return;
+
+                news.title = newTitle;
+                news.content = newContent;
             } else {
                 const newTitle = prompt('Edytuj tytuł:', announcements[currentCategory][index].title);
                 if (!newTitle) return;
@@ -962,6 +987,8 @@ Podział na opiekunów.
             btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
             btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
                              currentCategory === 2 ? 'Dodaj Wydarzenie' : 
+                             currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
+                             currentCategory === 5 ? 'Dodaj Aktualność' :
                              'Dodaj Ogłoszenie';
         }
 
@@ -971,6 +998,143 @@ Podział na opiekunów.
                 toggleAddButton();
             });
         });
+
+        // Obsługa formularzy
+        document.getElementById('absenceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newAbsence = {
+                dateFrom: document.getElementById('absenceDateFrom').value,
+                dateTo: document.getElementById('absenceDateTo').value,
+                hours: document.getElementById('absenceHours').value,
+                teacher: document.getElementById('absenceTeacher').value,
+                reason: document.getElementById('absenceReason').value,
+                timestamp: new Date().getTime()
+            };
+
+            if (!newAbsence.dateFrom || !newAbsence.dateTo || !newAbsence.hours || !newAbsence.teacher || !newAbsence.reason) {
+                alert('Proszę wypełnić wszystkie pola!');
+                return;
+            }
+
+            announcements[currentCategory].unshift(newAbsence);
+            saveAnnouncements();
+            showAnnouncements();
+            document.getElementById('absenceModal').style.display = 'none';
+            this.reset();
+        });
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newEvent = {
+                date: document.getElementById('eventDate').value,
+                hours: document.getElementById('eventHours').value,
+                name: document.getElementById('eventName').value,
+                category: document.getElementById('eventCategory').value,
+                timestamp: new Date().getTime()
+            };
+
+            if (!newEvent.date || !newEvent.hours || !newEvent.name || !newEvent.category) {
+                alert('Proszę wypełnić wszystkie pola!');
+                return;
+            }
+
+            announcements[currentCategory].unshift(newEvent);
+            saveAnnouncements();
+            showAnnouncements();
+            document.getElementById('eventModal').style.display = 'none';
+            this.reset();
+        });
+
+        document.getElementById('announcementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newAnnouncement = {
+                teacher: document.getElementById('announcementTeacher').value,
+                title: document.getElementById('announcementTitle').value,
+                content: document.getElementById('announcementContent').value,
+                dateFrom: document.getElementById('announcementDateFrom').value,
+                dateTo: document.getElementById('announcementDateTo').value,
+                timestamp: new Date().getTime()
+            };
+
+            if (!newAnnouncement.teacher || !newAnnouncement.title || !newAnnouncement.content || !newAnnouncement.dateFrom || !newAnnouncement.dateTo) {
+                alert('Proszę wypełnić wszystkie pola!');
+                return;
+            }
+
+            announcements[3].unshift(newAnnouncement);
+            saveAnnouncements();
+            showAnnouncements();
+            document.getElementById('announcementModal').style.display = 'none';
+            this.reset();
+        });
+
+        document.getElementById('newsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newNews = {
+                title: document.getElementById('newsTitle').value,
+                content: document.getElementById('newsContent').value,
+                timestamp: new Date().getTime()
+            };
+
+            if (!newNews.title || !newNews.content) {
+                alert('Proszę wypełnić wszystkie pola!');
+                return;
+            }
+
+            announcements[5].unshift(newNews);
+            saveAnnouncements();
+            showAnnouncements();
+            document.getElementById('newsModal').style.display = 'none';
+            this.reset();
+        });
+
+        function handleAddButton() {
+            if (currentCategory === 4) {
+                addAbsence();
+            } else if (currentCategory === 2) {
+                addEvent();
+            } else if (currentCategory === 3) {
+                addAnnouncement();
+            } else if (currentCategory === 5) {
+                addNews();
+            } else {
+                const title = prompt('Podaj tytuł ogłoszenia:');
+                if (!title) return;
+                
+                const content = prompt('Podaj treść ogłoszenia:');
+                if (!content) return;
+
+                const newAnn = {
+                    title,
+                    content,
+                    timestamp: new Date().getTime()
+                };
+
+                announcements[currentCategory].unshift(newAnn);
+                saveAnnouncements();
+                showAnnouncements();
+            }
+        }
+
+        function addAbsence() {
+            document.getElementById('absenceModal').style.display = 'flex';
+        }
+
+        function addEvent() {
+            document.getElementById('eventModal').style.display = 'flex';
+        }
+
+        function addAnnouncement() {
+            document.getElementById('announcementModal').style.display = 'flex';
+        }
+
+        function addNews() {
+            document.getElementById('newsModal').style.display = 'flex';
+        }
     </script>
 </body>
 </html>
