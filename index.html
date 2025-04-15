@@ -58,6 +58,8 @@
             position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
         }
         .search-container a {
             color: white;
@@ -312,11 +314,54 @@
             line-height: 1.6;
             margin: 1rem 0;
         }
+        /* Archiwum modal */
+        .archive-modal {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .archive-item {
+            background: #f9f9f9;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            border-left: 4px solid #4a90e2;
+        }
+        .archive-item h3 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        .archive-item p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .archive-item .actions {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .archive-item .actions button {
+            padding: 0.3rem 0.6rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .archive-item .actions .restore {
+            background: #2ecc71;
+            color: white;
+        }
+        .archive-item .actions .delete-permanent {
+            background: #e74c3c;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1>
+        <div class="search-container">
+            <a href="#" id="archiveButton">Archiwum</a>
+        </div>
     </div>
 
     <nav>
@@ -497,6 +542,17 @@
         </div>
     </div>
 
+    <!-- Modal dla archiwum -->
+    <div class="modal-overlay" id="archiveModal">
+        <div class="modal-content archive-modal">
+            <h2>Archiwum</h2>
+            <div id="archiveContent"></div>
+            <div class="form-buttons">
+                <button type="button" onclick="document.getElementById('archiveModal').style.display = 'none'">Zamknij</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // KONFIGURACJA FIREBASE
         const firebaseConfig = {
@@ -504,33 +560,65 @@
             authDomain: "szkola57-ccc80.firebaseapp.com",
             databaseURL: "https://szkola57-ccc80-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "szkola57-ccc80",
-            storageBucket: "szkola57-ccc80.firebasestorage.app",
+            storageBucket: "szkola57-ccc80.appspot.com",
             messagingSenderId: "422165475378",
             appId: "1:422165475378:web:dc7cd50c37451dd7ec4c2b"
         };
+        
+        // Inicjalizacja Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         let currentCategory = 1;
         let announcements = {};
+        let archive = [];
         let currentPage = 1;
         const itemsPerPage = 8;
         
         const requiredCategories = [2, 3, 4, 5, 6, 7, 8];
 
         function saveAnnouncements() {
-            database.ref('announcements').set(announcements);
+            // Zapisz zarówno ogłoszenia jak i archiwum w jednej transakcji
+            const updates = {
+                '/announcements': announcements,
+                '/archive': archive
+            };
+            return database.ref().update(updates);
         }
 
         function loadAnnouncements(callback) {
-            database.ref('announcements').on('value', (snapshot) => {
-                const data = snapshot.val() || {};
-                requiredCategories.forEach(cat => {
-                    if (!data[cat]) data[cat] = [];
+            // Ładuj obie kolekcje równocześnie
+            const announcementsPromise = new Promise(resolve => {
+                database.ref('announcements').on('value', snapshot => {
+                    const data = snapshot.val() || {};
+                    // Upewnij się, że wszystkie wymagane kategorie istnieją
+                    requiredCategories.forEach(cat => {
+                        if (!data[cat]) data[cat] = [];
+                    });
+                    announcements = data;
+                    resolve();
                 });
-                announcements = data;
-                callback();
             });
+
+            const archivePromise = new Promise(resolve => {
+                database.ref('archive').on('value', snapshot => {
+                    archive = snapshot.val() || [];
+                    resolve();
+                });
+            });
+
+            Promise.all([announcementsPromise, archivePromise])
+                .then(callback)
+                .catch(error => {
+                    console.error("Błąd ładowania danych:", error);
+                    // Ustaw domyślne wartości w przypadku błędu
+                    announcements = {};
+                    requiredCategories.forEach(cat => {
+                        announcements[cat] = [];
+                    });
+                    archive = [];
+                    callback();
+                });
         }
 
         const nauczyciele = [
@@ -568,6 +656,128 @@
                 showAnnouncements();
             });
         });
+
+        // Obsługa przycisku archiwum
+        document.getElementById('archiveButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            showArchive();
+        });
+
+        function showArchive() {
+            const archiveContent = document.getElementById('archiveContent');
+            archiveContent.innerHTML = '';
+            
+            if (archive.length === 0) {
+                archiveContent.innerHTML = '<p>Archiwum jest puste.</p>';
+            } else {
+                archive.forEach((item, index) => {
+                    const archiveItem = document.createElement('div');
+                    archiveItem.className = 'archive-item';
+                    
+                    const formatDate = (dateStr) => {
+                        if (!dateStr) return '';
+                        const [year, month, day] = dateStr.split('-');
+                        return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
+                    };
+                    
+                    let content = '';
+                    if (item.category === 4) {
+                        // Nieobecność
+                        const from = formatDate(item.dateFrom);
+                        const to = formatDate(item.dateTo);
+                        content = `
+                            <h3>Nieobecność: ${item.teacher}</h3>
+                            <p>Okres: ${from} - ${to} ${item.hours ? `(${item.hours})` : ''}</p>
+                            <p>Powód: ${item.reason}</p>
+                        `;
+                    } else if (item.category === 2) {
+                        // Wydarzenie
+                        content = `
+                            <h3>Wydarzenie: ${item.name}</h3>
+                            <p>Data: ${formatDate(item.date)} ${item.hours ? `(${item.hours})` : ''}</p>
+                            <p>Kategoria: ${item.category}</p>
+                        `;
+                    } else if (item.category === 3) {
+                        // Ogłoszenie
+                        const from = formatDate(item.dateFrom);
+                        const to = formatDate(item.dateTo);
+                        content = `
+                            <h3>Ogłoszenie: ${item.teacher} - ${item.title}</h3>
+                            <p>Okres ważności: ${from} - ${to}</p>
+                            <p>${item.content}</p>
+                        `;
+                    } else if (item.category === 5) {
+                        // Aktualność
+                        content = `
+                            <h3>Aktualność: ${item.title}</h3>
+                            <p>${item.content}</p>
+                        `;
+                    } else {
+                        // Inne
+                        content = `
+                            <h3>${item.title || 'Brak tytułu'}</h3>
+                            <p>${item.content || 'Brak treści'}</p>
+                        `;
+                    }
+                    
+                    const deletedDate = new Date(item.deletedAt || Date.now());
+                    content += `
+                        <p><small>Usunięte: ${deletedDate.toLocaleString()}</small></p>
+                        <p><small>Kategoria: ${getCategoryName(item.category)}</small></p>
+                        <div class="actions">
+                            <button class="restore" onclick="restoreFromArchive(${index})">Przywróć</button>
+                            <button class="delete-permanent" onclick="deleteFromArchive(${index})">Usuń na zawsze</button>
+                        </div>
+                    `;
+                    
+                    archiveItem.innerHTML = content;
+                    archiveContent.appendChild(archiveItem);
+                });
+            }
+            
+            document.getElementById('archiveModal').style.display = 'flex';
+        }
+
+        function restoreFromArchive(index) {
+            const item = archive[index];
+            if (confirm(`Czy na pewno chcesz przywrócić to ogłoszenie do kategorii ${getCategoryName(item.category)}?`)) {
+                // Dodaj do odpowiedniej kategorii
+                announcements[item.category].unshift(item);
+                // Usuń z archiwum
+                archive.splice(index, 1);
+                // Zapisz zmiany
+                saveAnnouncements().then(() => {
+                    showArchive();
+                    showAnnouncements();
+                });
+            }
+        }
+
+        function deleteFromArchive(index) {
+            if (confirm('Czy na pewno chcesz trwale usunąć to ogłoszenie z archiwum?')) {
+                archive.splice(index, 1);
+                saveAnnouncements().then(() => {
+                    showArchive();
+                });
+            }
+        }
+
+        function getCategoryName(categoryId) {
+            const categories = {
+                1: 'Strona Główna',
+                2: 'Wydarzenia',
+                3: 'Ogłoszenia',
+                4: 'Nieobecności',
+                5: 'Aktualności',
+                6: 'Samorząd Uczniowski i Wolontariat',
+                7: 'Klasy 1-3 i Świetlica',
+                8: 'Dla Nauczycieli',
+                9: 'Grono Pedagogiczne',
+                10: 'Wychowawcy',
+                11: 'Ważne Informacje'
+            };
+            return categories[categoryId] || 'Nieznana kategoria';
+        }
 
         function showAnnouncements() {
             const container = document.getElementById('announcements');
@@ -778,7 +988,7 @@
 
             // PAGINACJA TYLKO DLA KATEGORII 5
             if(currentCategory === 5) {
-                const allAnnouncements = announcements[currentCategory];
+                const allAnnouncements = announcements[currentCategory] || [];
                 const startIndex = (currentPage - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
                 const pagedAnnouncements = allAnnouncements.slice(startIndex, endIndex);
@@ -806,7 +1016,8 @@
                 }
             } else {
                 // DLA INNYCH KATEGORII BEZ PAGINACJI
-                announcements[currentCategory].forEach((ann, index) => {
+                const categoryAnnouncements = announcements[currentCategory] || [];
+                categoryAnnouncements.forEach((ann, index) => {
                     container.appendChild(createAnnouncementCard(ann, index));
                 });
             }
@@ -817,6 +1028,7 @@
             div.className = 'announcement-card';
             
             const formatDate = (dateStr) => {
+                if (!dateStr) return '';
                 const [year, month, day] = dateStr.split('-');
                 return `${day.padStart(2, '0')}.${month.padStart(2, '0')}`;
             };
@@ -837,23 +1049,23 @@
                 </div>
                 ${currentCategory === 4 ? `
                     <h2>${dateRange}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-                    <p><strong>${ann.teacher}</strong></p>
-                    <p>${ann.reason}</p>
+                    <p><strong>${ann.teacher || 'Brak danych'}</strong></p>
+                    <p>${ann.reason || 'Brak powodu'}</p>
                 ` : currentCategory === 2 ? `
                     <h2>${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-                    <p><strong>${ann.name}</strong></p>
-                    <p>Kategoria: ${ann.category}</p>
+                    <p><strong>${ann.name || 'Brak nazwy'}</strong></p>
+                    <p>Kategoria: ${ann.category || 'Brak kategorii'}</p>
                 ` : currentCategory === 3 ? `
-                    <h2>${ann.teacher}: ${ann.title} (${dateRange})</h2>
-                    <div class="announcement-content">${ann.content}</div>
+                    <h2>${ann.teacher || 'Brak nauczyciela'}: ${ann.title || 'Brak tytułu'} (${dateRange})</h2>
+                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
                     <span class="time">${timeAgo(ann.timestamp)}</span>
                 ` : currentCategory === 5 ? `
-                    <h2>${ann.title}</h2>
-                    <div class="announcement-content">${ann.content}</div>
+                    <h2>${ann.title || 'Brak tytułu'}</h2>
+                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
                     <span class="time">${timeAgo(ann.timestamp)}</span>
                 ` : `
-                    <h2>${ann.title}</h2>
-                    <div class="announcement-content">${ann.content}</div>
+                    <h2>${ann.title || 'Brak tytułu'}</h2>
+                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
                     <span class="time">${timeAgo(ann.timestamp)}</span>
                 `}
             `;
@@ -861,10 +1073,26 @@
         }
 
         function deleteAnnouncement(index) {
-            if(confirm('Czy na pewno chcesz usunąć ten wpis?')) {
+            if(confirm('Czy na pewno chcesz przenieść ten wpis do archiwum?')) {
+                const deletedItem = announcements[currentCategory][index];
+                // Dodaj informacje o kategorii i czasie usunięcia
+                deletedItem.category = currentCategory;
+                deletedItem.deletedAt = Date.now();
+                
+                // Dodaj do archiwum
+                archive.unshift(deletedItem);
+                // Usuń z aktualnej kategorii
                 announcements[currentCategory].splice(index, 1);
-                saveAnnouncements();
-                showAnnouncements();
+                
+                // Zapisz zmiany
+                saveAnnouncements()
+                    .then(() => {
+                        showAnnouncements();
+                    })
+                    .catch(error => {
+                        console.error("Błąd podczas zapisywania:", error);
+                        alert("Wystąpił błąd podczas przenoszenia do archiwum.");
+                    });
             }
         }
 
@@ -952,8 +1180,12 @@
                 announcements[currentCategory][index].content = newContent;
             }
 
-            saveAnnouncements();
-            showAnnouncements();
+            saveAnnouncements()
+                .then(() => showAnnouncements())
+                .catch(error => {
+                    console.error("Błąd podczas zapisywania:", error);
+                    alert("Wystąpił błąd podczas zapisywania zmian.");
+                });
         }
 
         function moveAnnouncement(index, direction) {
@@ -963,11 +1195,16 @@
             } else if(direction === 'down' && index < arr.length - 1) {
                 [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
             }
-            saveAnnouncements();
-            showAnnouncements();
+            saveAnnouncements()
+                .then(() => showAnnouncements())
+                .catch(error => {
+                    console.error("Błąd podczas zapisywania:", error);
+                    alert("Wystąpił błąd podczas przesuwania ogłoszenia.");
+                });
         }
 
         function timeAgo(timestamp) {
+            if (!timestamp) return 'brak daty';
             const now = Date.now();
             const diff = now - timestamp;
             
@@ -1009,7 +1246,7 @@
                 hours: document.getElementById('absenceHours').value,
                 teacher: document.getElementById('absenceTeacher').value,
                 reason: document.getElementById('absenceReason').value,
-                timestamp: new Date().getTime()
+                timestamp: Date.now()
             };
 
             if (!newAbsence.dateFrom || !newAbsence.dateTo || !newAbsence.hours || !newAbsence.teacher || !newAbsence.reason) {
@@ -1018,10 +1255,16 @@
             }
 
             announcements[currentCategory].unshift(newAbsence);
-            saveAnnouncements();
-            showAnnouncements();
-            document.getElementById('absenceModal').style.display = 'none';
-            this.reset();
+            saveAnnouncements()
+                .then(() => {
+                    showAnnouncements();
+                    document.getElementById('absenceModal').style.display = 'none';
+                    this.reset();
+                })
+                .catch(error => {
+                    console.error("Błąd podczas zapisywania:", error);
+                    alert("Wystąpił błąd podczas dodawania nieobecności.");
+                });
         });
 
         document.getElementById('eventForm').addEventListener('submit', function(e) {
@@ -1032,7 +1275,7 @@
                 hours: document.getElementById('eventHours').value,
                 name: document.getElementById('eventName').value,
                 category: document.getElementById('eventCategory').value,
-                timestamp: new Date().getTime()
+                timestamp: Date.now()
             };
 
             if (!newEvent.date || !newEvent.hours || !newEvent.name || !newEvent.category) {
@@ -1041,10 +1284,16 @@
             }
 
             announcements[currentCategory].unshift(newEvent);
-            saveAnnouncements();
-            showAnnouncements();
-            document.getElementById('eventModal').style.display = 'none';
-            this.reset();
+            saveAnnouncements()
+                .then(() => {
+                    showAnnouncements();
+                    document.getElementById('eventModal').style.display = 'none';
+                    this.reset();
+                })
+                .catch(error => {
+                    console.error("Błąd podczas zapisywania:", error);
+                    alert("Wystąpił błąd podczas dodawania wydarzenia.");
+                });
         });
 
         document.getElementById('announcementForm').addEventListener('submit', function(e) {
@@ -1056,7 +1305,7 @@
                 content: document.getElementById('announcementContent').value,
                 dateFrom: document.getElementById('announcementDateFrom').value,
                 dateTo: document.getElementById('announcementDateTo').value,
-                timestamp: new Date().getTime()
+                timestamp: Date.now()
             };
 
             if (!newAnnouncement.teacher || !newAnnouncement.title || !newAnnouncement.content || !newAnnouncement.dateFrom || !newAnnouncement.dateTo) {
@@ -1065,10 +1314,16 @@
             }
 
             announcements[3].unshift(newAnnouncement);
-            saveAnnouncements();
-            showAnnouncements();
-            document.getElementById('announcementModal').style.display = 'none';
-            this.reset();
+            saveAnnouncements()
+                .then(() => {
+                    showAnnouncements();
+                    document.getElementById('announcementModal').style.display = 'none';
+                    this.reset();
+                })
+                .catch(error => {
+                    console.error("Błąd podczas zapisywania:", error);
+                    alert("Wystąpił błąd podczas dodawania ogłoszenia.");
+                });
         });
 
         document.getElementById('newsForm').addEventListener('submit', function(e) {
@@ -1077,7 +1332,7 @@
             const newNews = {
                 title: document.getElementById('newsTitle').value,
                 content: document.getElementById('newsContent').value,
-                timestamp: new Date().getTime()
+                timestamp: Date.now()
             };
 
             if (!newNews.title || !newNews.content) {
@@ -1086,10 +1341,16 @@
             }
 
             announcements[5].unshift(newNews);
-            saveAnnouncements();
-            showAnnouncements();
-            document.getElementById('newsModal').style.display = 'none';
-            this.reset();
+            saveAnnouncements()
+                .then(() => {
+                    showAnnouncements();
+                    document.getElementById('newsModal').style.display = 'none';
+                    this.reset();
+                })
+                .catch(error => {
+                    console.error("Błąd podczas zapisywania:", error);
+                    alert("Wystąpił błąd podczas dodawania aktualności.");
+                });
         });
 
         function handleAddButton() {
@@ -1111,12 +1372,16 @@
                 const newAnn = {
                     title,
                     content,
-                    timestamp: new Date().getTime()
+                    timestamp: Date.now()
                 };
 
                 announcements[currentCategory].unshift(newAnn);
-                saveAnnouncements();
-                showAnnouncements();
+                saveAnnouncements()
+                    .then(() => showAnnouncements())
+                    .catch(error => {
+                        console.error("Błąd podczas zapisywania:", error);
+                        alert("Wystąpił błąd podczas dodawania ogłoszenia.");
+                    });
             }
         }
 
