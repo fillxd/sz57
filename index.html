@@ -1,802 +1,800 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strona Szkolna</title>
-    <link rel="icon" type="image/x-icon" href="favicon.png">
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .tekst {
-            white-space: pre-line;
-            font-size: 18px;
-        }
-        body {
-            background-color: #f0f2f5;
-        }
-        .header {
-            text-align: center;
-            padding: 3rem 1rem;
-            background: linear-gradient(135deg, #4a90e2, #34495e);
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            animation: titleSlide 1s ease-out;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        @keyframes titleSlide {
-            from { transform: translateY(-100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -50px;
-            left: -50px;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(45deg);
-            animation: shine 4s infinite;
-        }
-        @keyframes shine {
-            0% { left: -50px; }
-            100% { left: 110%; }
-        }
-        .search-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .search-container a {
-            color: white;
-            text-decoration: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-        }
-        .search-container a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        nav {
-            background: linear-gradient(135deg, #4a90e2, #34495e);
-            padding: 1rem;
-            position: sticky;
-            top: 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-        .menu {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .menu a {
-            color: white;
-            text-decoration: none;
-            padding: 0.8rem 1rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-            flex: 1 1 20%;
-            text-align: center;
-            justify-content: center;
-        }
-        .menu a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        .menu a.active {
-            background-color: #e74c3c;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .announcement-card {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            animation: fadeIn 0.5s ease;
-            position: relative;
-        }
-        .announcement-card h2 {
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-        .announcement-card .time {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            display: block;
-        }
-        .announcement-card .actions {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-        .announcement-card .actions span {
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.2s ease;
-        }
-        .announcement-card .actions span:hover {
-            transform: scale(1.1);
-        }
-        .announcement-card .actions .delete {
-            color: #e74c3c;
-        }
-        .announcement-card .actions .edit {
-            color: #3498db;
-        }
-        .announcement-card .actions .move {
-            color: #2ecc71;
-        }
-        .homepage-content {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            line-height: 1.8;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        .su-info {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            font-size: 0.95rem;
-            color: #34495e;
-        }
-        .su-info h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-        .teachers-table, .tutors-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        .teachers-table th, .teachers-table td,
-        .tutors-table th, .tutors-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #f0f2f5;
-        }
-        .teachers-table th, .tutors-table th {
-            background-color: #4a90e2;
-            color: white;
-        }
-        .teachers-table tr:hover, .tutors-table tr:hover {
-            background-color: #f9f9f9;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .add-button {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            margin-bottom: 2rem;
-        }
-        .add-button:hover {
-            background: #219a52;
-            transform: scale(1.05);
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-            white-space: pre-wrap;
-        }
-        .date-range-container {
-            display: flex;
-            gap: 1rem;
-        }
-        .date-range-item {
-            flex: 1;
-        }
-        .form-buttons {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-        .form-buttons button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .form-buttons button[type="submit"] {
-            background: #27ae60;
-            color: white;
-        }
-        .form-buttons button[type="button"] {
-            background: #e74c3c;
-            color: white;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 2rem 0;
-        }
-        .page-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #4a90e2;
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .page-btn.active {
-            background: #4a90e2;
-            color: white;
-            border-color: #4a90e2;
-        }
-        .page-btn:hover:not(.active) {
-            background: #f0f2f5;
-        }
-        .announcement-content {
-            white-space: pre-line;
-            line-height: 1.6;
-            margin: 1rem 0;
-        }
-        /* Archiwum modal */
-        .archive-modal {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .archive-item {
-            background: #f9f9f9;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 5px;
-            border-left: 4px solid #4a90e2;
-        }
-        .archive-item h3 {
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-        .archive-item p {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        .archive-item .actions {
-            margin-top: 0.5rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-        .archive-item .actions button {
-            padding: 0.3rem 0.6rem;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        .archive-item .actions .restore {
-            background: #2ecc71;
-            color: white;
-        }
-        .archive-item .actions .delete-permanent {
-            background: #e74c3c;
-            color: white;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strona Szkolna</title>
+<link rel="icon" type="image/x-icon" href="favicon.png">
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.tekst {
+white-space: pre-line;
+font-size: 18px;
+}
+body {
+background-color: #f0f2f5;
+}
+.header {
+text-align: center;
+padding: 3rem 1rem;
+background: linear-gradient(135deg, #4a90e2, #34495e);
+color: white;
+position: relative;
+overflow: hidden;
+}
+.header h1 {
+font-size: 2.5rem;
+margin-bottom: 0.5rem;
+animation: titleSlide 1s ease-out;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+@keyframes titleSlide {
+from { transform: translateY(-100px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+.header::after {
+content: '';
+position: absolute;
+bottom: -50px;
+left: -50px;
+width: 100px;
+height: 100px;
+background: rgba(255, 255, 255, 0.1);
+transform: rotate(45deg);
+animation: shine 4s infinite;
+}
+@keyframes shine {
+0% { left: -50px; }
+100% { left: 110%; }
+}
+.search-container {
+position: absolute;
+top: 20px;
+right: 20px;
+display: flex;
+gap: 10px;
+}
+.search-container a {
+color: white;
+text-decoration: none;
+padding: 0.8rem 1.5rem;
+border-radius: 25px;
+transition: all 0.3s ease;
+background-color: rgba(255, 255, 255, 0.1);
+display: flex;
+align-items: center;
+white-space: nowrap;
+}
+.search-container a:hover {
+background-color: rgba(255, 255, 255, 0.2);
+transform: translateY(-2px);
+}
+nav {
+background: linear-gradient(135deg, #4a90e2, #34495e);
+padding: 1rem;
+position: sticky;
+top: 0;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+z-index: 100;
+}
+.menu {
+display: flex;
+flex-wrap: wrap;
+gap: 0.5rem;
+}
+.menu a {
+color: white;
+text-decoration: none;
+padding: 0.8rem 1rem;
+border-radius: 25px;
+transition: all 0.3s ease;
+background-color: rgba(255, 255, 255, 0.1);
+display: flex;
+align-items: center;
+white-space: nowrap;
+flex: 1 1 20%;
+text-align: center;
+justify-content: center;
+}
+.menu a:hover {
+background-color: rgba(255, 255, 255, 0.2);
+transform: translateY(-2px);
+}
+.menu a.active {
+background-color: #e74c3c;
+}
+.container {
+max-width: 1200px;
+margin: 2rem auto;
+padding: 0 1rem;
+}
+.announcement-card {
+background: white;
+border-radius: 10px;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+animation: fadeIn 0.5s ease;
+position: relative;
+}
+.announcement-card h2 {
+color: #2c3e50;
+margin-bottom: 0.5rem;
+}
+.announcement-card .time {
+color: #7f8c8d;
+font-size: 0.9rem;
+margin-top: 1rem;
+display: block;
+}
+.announcement-card .actions {
+position: absolute;
+top: 1rem;
+right: 1rem;
+display: flex;
+gap: 0.5rem;
+}
+.announcement-card .actions span {
+cursor: pointer;
+font-size: 1.2rem;
+transition: all 0.2s ease;
+}
+.announcement-card .actions span:hover {
+transform: scale(1.1);
+}
+.announcement-card .actions .delete {
+color: #e74c3c;
+}
+.announcement-card .actions .edit {
+color: #3498db;
+}
+.announcement-card .actions .move {
+color: #2ecc71;
+}
+.homepage-content {
+background: white;
+border-radius: 10px;
+padding: 2rem;
+line-height: 1.8;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.su-info {
+background: white;
+border-radius: 10px;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+font-size: 0.95rem;
+color: #34495e;
+}
+.su-info h3 {
+color: #2c3e50;
+margin-bottom: 1rem;
+}
+.teachers-table, .tutors-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 1rem;
+background: white;
+border-radius: 10px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.teachers-table th, .teachers-table td,
+.tutors-table th, .tutors-table td {
+padding: 1rem;
+text-align: left;
+border-bottom: 1px solid #f0f2f5;
+}
+.teachers-table th, .tutors-table th {
+background-color: #4a90e2;
+color: white;
+}
+.teachers-table tr:hover, .tutors-table tr:hover {
+background-color: #f9f9f9;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.add-button {
+background: #27ae60;
+color: white;
+border: none;
+padding: 1rem 2rem;
+border-radius: 30px;
+cursor: pointer;
+font-size: 1.1rem;
+transition: all 0.3s ease;
+margin-bottom: 2rem;
+}
+.add-button:hover {
+background: #219a52;
+transform: scale(1.05);
+}
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0,0,0,0.5);
+display: none;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+}
+.modal-content {
+background: white;
+padding: 2rem;
+border-radius: 10px;
+width: 90%;
+max-width: 500px;
+}
+.form-group {
+margin-bottom: 1rem;
+}
+.form-group label {
+display: block;
+margin-bottom: 0.5rem;
+color: #2c3e50;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+width: 100%;
+padding: 0.8rem;
+border: 1px solid #ddd;
+border-radius: 4px;
+font-size: 1rem;
+}
+.form-group textarea {
+resize: vertical;
+min-height: 100px;
+white-space: pre-wrap;
+}
+.date-range-container {
+display: flex;
+gap: 1rem;
+}
+.date-range-item {
+flex: 1;
+}
+.form-buttons {
+margin-top: 1.5rem;
+display: flex;
+gap: 1rem;
+justify-content: flex-end;
+}
+.form-buttons button {
+padding: 0.8rem 1.5rem;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.form-buttons button[type="submit"] {
+background: #27ae60;
+color: white;
+}
+.form-buttons button[type="button"] {
+background: #e74c3c;
+color: white;
+}
+.pagination {
+display: flex;
+justify-content: center;
+gap: 0.5rem;
+margin: 2rem 0;
+}
+.page-btn {
+padding: 0.5rem 1rem;
+border: 1px solid #4a90e2;
+border-radius: 4px;
+background: white;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.page-btn.active {
+background: #4a90e2;
+color: white;
+border-color: #4a90e2;
+}
+.page-btn:hover:not(.active) {
+background: #f0f2f5;
+}
+.announcement-content {
+white-space: pre-line;
+line-height: 1.6;
+margin: 1rem 0;
+}
+/* Archiwum modal */
+.archive-modal {
+max-height: 80vh;
+overflow-y: auto;
+}
+.archive-item {
+background: #f9f9f9;
+padding: 1rem;
+margin-bottom: 0.5rem;
+border-radius: 5px;
+border-left: 4px solid #4a90e2;
+}
+.archive-item h3 {
+margin-bottom: 0.5rem;
+color: #2c3e50;
+}
+.archive-item p {
+color: #7f8c8d;
+font-size: 0.9rem;
+}
+.archive-item .actions {
+margin-top: 0.5rem;
+display: flex;
+gap: 0.5rem;
+}
+.archive-item .actions button {
+padding: 0.3rem 0.6rem;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+font-size: 0.8rem;
+}
+.archive-item .actions .restore {
+background: #2ecc71;
+color: white;
+}
+.archive-item .actions .delete-permanent {
+background: #e74c3c;
+color: white;
+}
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1>
-        <div class="search-container">
-            <a href="#" id="archiveButton">Kosz</a>
-        </div>
-    </div>
+<div class="header">
+<h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1>
+<div class="search-container">
+<a href="#" id="archiveButton">Kosz</a>
+</div>
+</div>
 
-    <nav>
-        <div class="menu">
-            <a href="#" class="active" data-category="1">Strona Główna</a>
-            <a href="#" data-category="5">Aktualności</a>
-            <a href="#" data-category="11">Dokumenty</a>
-            <a href="#" data-category="2">Wydarzenia</a>
-            <a href="#" data-category="9">Grono Pedagogiczne</a>
-            <a href="#" data-category="10">Wychowawcy</a>
-            <a href="#" data-category="7">Klasy 1-3 i Świetlica</a>
-            <a href="#" data-category="6">Samorząd Uczniowski i Wolontariat</a>
-            <a href="#" data-category="8">Dla Nauczycieli</a>
-            <a href="#" data-category="3">Ogłoszenia</a>
-            <a href="#" data-category="4">Nieobecności</a>
-        </div>
-    </nav>
+<nav>
+<div class="menu">
+<a href="#" class="active" data-category="1">Strona Główna</a>
+<a href="#" data-category="5">Aktualności</a>
+<a href="#" data-category="11">Dokumenty</a>
+<a href="#" data-category="2">Wydarzenia</a>
+<a href="#" data-category="9">Grono Pedagogiczne</a>
+<a href="#" data-category="10">Wychowawcy</a>
+<a href="#" data-category="7">Klasy 1-3 i Świetlica</a>
+<a href="#" data-category="6">Samorząd Uczniowski i Wolontariat</a>
+<a href="#" data-category="8">Dla Nauczycieli</a>
+<a href="#" data-category="3">Ogłoszenia</a>
+<a href="#" data-category="4">Nieobecności</a>
+</div>
+</nav>
 
-    <div class="container">
-        <button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
-        <div id="announcements"></div>
-    </div>
+<div class="container">
+<button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
+<div id="announcements"></div>
+</div>
 
-    <!-- Modal dla nieobecności -->
-    <div class="modal-overlay" id="absenceModal">
-        <div class="modal-content">
-            <form id="absenceForm">
-                <div class="form-group">
-                    <label>Okres nieobecności:</label>
-                    <div class="date-range-container">
-                        <div class="date-range-item">
-                            <label for="absenceDateFrom">Od:</label>
-                            <input type="date" id="absenceDateFrom" required>
-                        </div>
-                        <div class="date-range-item">
-                            <label for="absenceDateTo">Do:</label>
-                            <input type="date" id="absenceDateTo" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="absenceHours">Godziny (lub "cały dzień"):</label>
-                    <input type="text" id="absenceHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
-                </div>
+<!-- Modal dla nieobecności -->
+<div class="modal-overlay" id="absenceModal">
+<div class="modal-content">
+<form id="absenceForm">
+<div class="form-group">
+<label>Okres nieobecności:</label>
+<div class="date-range-container">
+<div class="date-range-item">
+<label for="absenceDateFrom">Od:</label>
+<input type="date" id="absenceDateFrom" required>
+</div>
+<div class="date-range-item">
+<label for="absenceDateTo">Do:</label>
+<input type="date" id="absenceDateTo" required>
+</div>
+</div>
+</div>
 
-                <div class="form-group">
-                    <label for="absenceTeacher">Nauczyciel:</label>
-                    <select id="absenceTeacher" required>
-                        <option value="">Wybierz nauczyciela</option>
-                    </select>
-                </div>
+<div class="form-group">
+<label for="absenceHours">Godziny (lub "cały dzień"):</label>
+<input type="text" id="absenceHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
+</div>
 
-                <div class="form-group">
-                    <label for="absenceReason">Powód:</label>
-                    <select id="absenceReason" required>
-                        <option value="">brak</option>
-			     <option value="Zwolnienie Lekarskie">Zwolnienie Lekarskie</option>
-                        <option value="Choroba">Choroba</option>
-                         <option value="Długotrwała Choroba">Długotrwała Choroba</option>
-			     <option value="Sprawy szkolne">Sprawy szkolne</option>
-			       <option value="Sprawy prywatne">Sprawy prywatne</option>
-			    <option value="Urlop Płatny">Urlop Płatny</option>
-                        <option value="Urlop Bezpłatny">Urlop Bezpłatny</option>
-			     <option value="Urlop Rodzinny">Urlop Rodzinny</option>
-                        <option value="Szkolenie">Szkolenie</option>
-			     <option value="Rada/Konsultacje">Rada/Konsultacje</option>
-			     <option value="Odpracowanie">Odpracowanie</option>
-                     		   <option value="Wycieczka">Wycieczka</option>
-				  <option value="Inne">Inne</option>
-                    </select>
-                </div>
+<div class="form-group">
+<label for="absenceTeacher">Nauczyciel:</label>
+<select id="absenceTeacher" required>
+<option value="">Wybierz nauczyciela</option>
+</select>
+</div>
 
-                <div class="form-buttons">
-                    <button type="button" onclick="document.getElementById('absenceModal').style.display = 'none'">Anuluj</button>
-                    <button type="submit">Zapisz</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="form-group">
+<label for="absenceReason">Powód:</label>
+<select id="absenceReason" required>
+<option value="">brak</option>
+<option value="Choroba">Choroba</option>
+<option value="Zwolnienie Lekarskie">Zwolnienie Lekarskie</option>
+<option value="Szkolenie">Szkolenie</option>
+<option value="Długotrwała Choroba">Długotrwała Choroba</option>
+<option value="Rada/Konsultacje">Rada/Konsultacje</option>
+<option value="Sprawy szkolne">Sprawy szkolne</option>
+<option value="Sprawy prywatne">Sprawy prywatne</option>
+<option value="Urlop Płatny">Urlop Płatny</option>
+<option value="Urlop Bezpłatny">Urlop Bezpłatny</option>
+<option value="Wycieczka">Wycieczka</option>
+			    <option value="Odpracowanie">Odpracowanie</option>
+</select>
+</div>
 
-    <!-- Modal dla wydarzeń -->
-    <div class="modal-overlay" id="eventModal">
-        <div class="modal-content">
-            <form id="eventForm">
-                <div class="form-group">
-                    <label for="eventDate">Data:</label>
-                    <input type="date" id="eventDate" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="eventHours">Godziny (lub "cały dzień"):</label>
-                    <input type="text" id="eventHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
-                </div>
+<div class="form-buttons">
+<button type="button" onclick="document.getElementById('absenceModal').style.display = 'none'">Anuluj</button>
+<button type="submit">Zapisz</button>
+</div>
+</form>
+</div>
+</div>
 
-                <div class="form-group">
-                    <label for="eventName">Nazwa wydarzenia:</label>
-                    <input type="text" id="eventName" required>
-                </div>
+<!-- Modal dla wydarzeń -->
+<div class="modal-overlay" id="eventModal">
+<div class="modal-content">
+<form id="eventForm">
+<div class="form-group">
+<label for="eventDate">Data:</label>
+<input type="date" id="eventDate" required>
+</div>
 
-                <div class="form-group">
-                    <label for="eventCategory">Działanie:</label>
-                    <select id="eventCategory" required>
-                        <option value="">brak</option>
-                        <option value="zajęcia odwołane.">zajęcia odwołane.</option>
-                        <option value="Zajęcia związane z tematem wydarzenia.">Zajęcia związane z tematem wydarzenia.</option>
-                        <option value="Dzień wolny od zajęć dydaktyczno-wychowawczych">Dzień wolny od zajęć dydaktyczno-wychowawczych</option>
-                    </select>
-                </div>
+<div class="form-group">
+<label for="eventHours">Godziny (lub "cały dzień"):</label>
+<input type="text" id="eventHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
+</div>
 
-                <div class="form-buttons">
-                    <button type="button" onclick="document.getElementById('eventModal').style.display = 'none'">Anuluj</button>
-                    <button type="submit">Zapisz</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="form-group">
+<label for="eventName">Nazwa wydarzenia:</label>
+<input type="text" id="eventName" required>
+</div>
 
-    <!-- Modal dla ogłoszeń -->
-    <div class="modal-overlay" id="announcementModal">
-        <div class="modal-content">
-            <form id="announcementForm">
-                <div class="form-group">
-                    <label for="announcementTeacher">Nauczyciel:</label>
-                    <select id="announcementTeacher" required>
-                        <option value="">Wybierz nauczyciela</option>
-                    </select>
-                </div>
+<div class="form-group">
+<label for="eventCategory">Działanie:</label>
+<select id="eventCategory" required>
+<option value="">brak</option>
+<option value="zajęcia odwołane.">zajęcia odwołane.</option>
+<option value="Zajęcia związane z tematem wydarzenia.">Zajęcia związane z tematem wydarzenia.</option>
+<option value="Dzień wolny od zajęć dydaktyczno-wychowawczych">Dzień wolny od zajęć dydaktyczno-wychowawczych</option>
+</select>
+</div>
 
-                <div class="form-group">
-                    <label for="announcementTitle">Tytuł ogłoszenia:</label>
-                    <input type="text" id="announcementTitle" required>
-                </div>
+<div class="form-buttons">
+<button type="button" onclick="document.getElementById('eventModal').style.display = 'none'">Anuluj</button>
+<button type="submit">Zapisz</button>
+</div>
+</form>
+</div>
+</div>
 
-                <div class="form-group">
-                    <label for="announcementContent">Treść ogłoszenia:</label>
-                    <textarea id="announcementContent" rows="4" required></textarea>
-                </div>
+<!-- Modal dla ogłoszeń -->
+<div class="modal-overlay" id="announcementModal">
+<div class="modal-content">
+<form id="announcementForm">
+<div class="form-group">
+<label for="announcementTeacher">Nauczyciel:</label>
+<select id="announcementTeacher" required>
+<option value="">Wybierz nauczyciela</option>
+</select>
+</div>
 
-                <div class="form-group">
-                    <label>Okres ważności:</label>
-                    <div class="date-range-container">
-                        <div class="date-range-item">
-                            <label for="announcementDateFrom">Od:</label>
-                            <input type="date" id="announcementDateFrom" required>
-                        </div>
-                        <div class="date-range-item">
-                            <label for="announcementDateTo">Do:</label>
-                            <input type="date" id="announcementDateTo" required>
-                        </div>
-                    </div>
-                </div>
+<div class="form-group">
+<label for="announcementTitle">Tytuł ogłoszenia:</label>
+<input type="text" id="announcementTitle" required>
+</div>
 
-                <div class="form-buttons">
-                    <button type="button" onclick="document.getElementById('announcementModal').style.display = 'none'">Anuluj</button>
-                    <button type="submit">Zapisz</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="form-group">
+<label for="announcementContent">Treść ogłoszenia:</label>
+<textarea id="announcementContent" rows="4" required></textarea>
+</div>
 
-    <!-- Modal dla aktualności -->
-    <div class="modal-overlay" id="newsModal">
-        <div class="modal-content">
-            <form id="newsForm">
-                <div class="form-group">
-                    <label for="newsTitle">Tytuł aktualności:</label>
-                    <input type="text" id="newsTitle" required>
-                </div>
+<div class="form-group">
+<label>Okres ważności:</label>
+<div class="date-range-container">
+<div class="date-range-item">
+<label for="announcementDateFrom">Od:</label>
+<input type="date" id="announcementDateFrom" required>
+</div>
+<div class="date-range-item">
+<label for="announcementDateTo">Do:</label>
+<input type="date" id="announcementDateTo" required>
+</div>
+</div>
+</div>
 
-                <div class="form-group">
-                    <label for="newsContent">Treść aktualności:</label>
-                    <textarea id="newsContent" rows="4" required></textarea>
-                </div>
+<div class="form-buttons">
+<button type="button" onclick="document.getElementById('announcementModal').style.display = 'none'">Anuluj</button>
+<button type="submit">Zapisz</button>
+</div>
+</form>
+</div>
+</div>
 
-                <div class="form-buttons">
-                    <button type="button" onclick="document.getElementById('newsModal').style.display = 'none'">Anuluj</button>
-                    <button type="submit">Zapisz</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- Modal dla aktualności -->
+<div class="modal-overlay" id="newsModal">
+<div class="modal-content">
+<form id="newsForm">
+<div class="form-group">
+<label for="newsTitle">Tytuł aktualności:</label>
+<input type="text" id="newsTitle" required>
+</div>
 
-    <!-- Modal dla archiwum -->
-    <div class="modal-overlay" id="archiveModal">
-        <div class="modal-content archive-modal">
-            <h2>Archiwum</h2>
-            <div id="archiveContent"></div>
-            <div class="form-buttons">
-                <button type="button" onclick="document.getElementById('archiveModal').style.display = 'none'">Zamknij</button>
-            </div>
-        </div>
-    </div>
+<div class="form-group">
+<label for="newsContent">Treść aktualności:</label>
+<textarea id="newsContent" rows="4" required></textarea>
+</div>
 
-    <script>
-        // KONFIGURACJA FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyCFOF0WtZfOSzXFO6gr6kTXwtHlymwGjNU",
-            authDomain: "szkola57-ccc80.firebaseapp.com",
-            databaseURL: "https://szkola57-ccc80-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "szkola57-ccc80",
-            storageBucket: "szkola57-ccc80.appspot.com",
-            messagingSenderId: "422165475378",
-            appId: "1:422165475378:web:dc7cd50c37451dd7ec4c2b"
-        };
-        
-        // Inicjalizacja Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+<div class="form-buttons">
+<button type="button" onclick="document.getElementById('newsModal').style.display = 'none'">Anuluj</button>
+<button type="submit">Zapisz</button>
+</div>
+</form>
+</div>
+</div>
 
-        let currentCategory = 1;
-        let announcements = {};
-        let archive = [];
-        let currentPage = 1;
-        const itemsPerPage = 8;
-        
-        const requiredCategories = [2, 3, 4, 5, 6, 7, 8];
+<!-- Modal dla archiwum -->
+<div class="modal-overlay" id="archiveModal">
+<div class="modal-content archive-modal">
+<h2>Archiwum</h2>
+<div id="archiveContent"></div>
+<div class="form-buttons">
+<button type="button" onclick="document.getElementById('archiveModal').style.display = 'none'">Zamknij</button>
+</div>
+</div>
+</div>
 
-        function saveAnnouncements() {
-            // Zapisz zarówno ogłoszenia jak i archiwum w jednej transakcji
-            const updates = {
-                '/announcements': announcements,
-                '/archive': archive
-            };
-            return database.ref().update(updates);
-        }
+<script>
+// KONFIGURACJA FIREBASE
+const firebaseConfig = {
+apiKey: "AIzaSyCFOF0WtZfOSzXFO6gr6kTXwtHlymwGjNU",
+authDomain: "szkola57-ccc80.firebaseapp.com",
+databaseURL: "https://szkola57-ccc80-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "szkola57-ccc80",
+storageBucket: "szkola57-ccc80.appspot.com",
+messagingSenderId: "422165475378",
+appId: "1:422165475378:web:dc7cd50c37451dd7ec4c2b"
+};
 
-        function loadAnnouncements(callback) {
-            // Ładuj obie kolekcje równocześnie
-            const announcementsPromise = new Promise(resolve => {
-                database.ref('announcements').on('value', snapshot => {
-                    const data = snapshot.val() || {};
-                    // Upewnij się, że wszystkie wymagane kategorie istnieją
-                    requiredCategories.forEach(cat => {
-                        if (!data[cat]) data[cat] = [];
-                    });
-                    announcements = data;
-                    resolve();
-                });
-            });
+// Inicjalizacja Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-            const archivePromise = new Promise(resolve => {
-                database.ref('archive').on('value', snapshot => {
-                    archive = snapshot.val() || [];
-                    resolve();
-                });
-            });
+let currentCategory = 1;
+let announcements = {};
+let archive = [];
+let currentPage = 1;
+const itemsPerPage = 8;
 
-            Promise.all([announcementsPromise, archivePromise])
-                .then(callback)
-                .catch(error => {
-                    console.error("Błąd ładowania danych:", error);
-                    // Ustaw domyślne wartości w przypadku błędu
-                    announcements = {};
-                    requiredCategories.forEach(cat => {
-                        announcements[cat] = [];
-                    });
-                    archive = [];
-                    callback();
-                });
-        }
+const requiredCategories = [2, 3, 4, 5, 6, 7, 8];
 
-        const nauczyciele = [
-            "Jolanta Bosak", "Katarzyna Borzędzin", "Hanna Brzeska", "Anna Brzeska", "Barbara Brzóska",
-            "Anna Burakowska", "Katarzyna Buzdro", "Sylwia Cześniewicz", "Karol Dębowicz", "Faustyna Dobrzek", "Karolina Dominiak",
-            "Małgorzata Domagała", "Dariusz Drzemała", "Alicja Rajewicz-Drzemała", "Elżbieta Gawin", "Mateusz Gig",
-            "Anna Gocał", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak", "Renata Halczyk", "Danuta Kapciuszko", "Zuzanna Kośnicka", "Marcin Krupnicki", "Jowita Kuter", "Martyna Kołodziejczyk",
-            "Rozalia Lipska", "Zofia Lisek", "Kinga Młodzik", "Karolina Młotek", "Agnieszka Miłasz", "Daria Musherina", "Aleksandra Malczyk"
-            "Joanna Małek", "Dorota Maszkiewska", "Magdalena Joelesh", "Eugenia Nowodworska", "Tadeusz Ostrowski",
-            "Antonina Pawelczyk", "Ludwik Parkowiak", "Natalia Raczyńska", "Weronika Rogalska", "Renata Skleszewska",
-            "Lena Skwierzyńska", "Katarzyna Sieczko", "Bożena Szpilkiewicz", "Barbara Strzegomska", "Alicja Struś-Michalska",
-            "Michał Tarczyn", "Barbara Trzaskowska", "Ewelina Śmigalska", "ks. Ignacy Włoszek", "Celina Włodarczyk",
-            "Aleksandra Wykaz", "Michalina Woźniak", "Marian Woźniak", "Magdalena Wisłowicz", "Marlena Wyszyńska", "Urszula Złocińska",
-            "Oliwia Żabkiewicz"
-        ];
+function saveAnnouncements() {
+// Zapisz zarówno ogłoszenia jak i archiwum w jednej transakcji
+const updates = {
+'/announcements': announcements,
+'/archive': archive
+};
+return database.ref().update(updates);
+}
 
-        // Inicjalizacja list nauczycieli
-        [document.getElementById('absenceTeacher'), document.getElementById('announcementTeacher')].forEach(select => {
-            nauczyciele.forEach(teacher => {
-                const option = document.createElement('option');
-                option.value = teacher;
-                option.textContent = teacher;
-                select.appendChild(option);
-            });
-        });
+function loadAnnouncements(callback) {
+// Ładuj obie kolekcje równocześnie
+const announcementsPromise = new Promise(resolve => {
+database.ref('announcements').on('value', snapshot => {
+const data = snapshot.val() || {};
+// Upewnij się, że wszystkie wymagane kategorie istnieją
+requiredCategories.forEach(cat => {
+if (!data[cat]) data[cat] = [];
+});
+announcements = data;
+resolve();
+});
+});
 
-        document.querySelectorAll('.menu a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentCategory = parseInt(link.dataset.category);
-                currentPage = 1;
-                document.querySelector('.menu a.active').classList.remove('active');
-                link.classList.add('active');
-                toggleAddButton();
-                showAnnouncements();
-            });
-        });
+const archivePromise = new Promise(resolve => {
+database.ref('archive').on('value', snapshot => {
+archive = snapshot.val() || [];
+resolve();
+});
+});
 
-        // Obsługa przycisku archiwum
-        document.getElementById('archiveButton').addEventListener('click', (e) => {
-            e.preventDefault();
-            showArchive();
-        });
+Promise.all([announcementsPromise, archivePromise])
+.then(callback)
+.catch(error => {
+console.error("Błąd ładowania danych:", error);
+// Ustaw domyślne wartości w przypadku błędu
+announcements = {};
+requiredCategories.forEach(cat => {
+announcements[cat] = [];
+});
+archive = [];
+callback();
+});
+}
 
-        function showArchive() {
-            const archiveContent = document.getElementById('archiveContent');
-            archiveContent.innerHTML = '';
-            
-            if (archive.length === 0) {
-                archiveContent.innerHTML = '<p>Archiwum jest puste.</p>';
-            } else {
-                archive.forEach((item, index) => {
-                    const archiveItem = document.createElement('div');
-                    archiveItem.className = 'archive-item';
-                    
-                    const formatDate = (dateStr) => {
-                        if (!dateStr) return '';
-                        const [year, month, day] = dateStr.split('-');
-                        return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
-                    };
-                    
-                    let content = '';
-                    if (item.category === 4) {
-                        // Nieobecność
-                        const from = formatDate(item.dateFrom);
-                        const to = formatDate(item.dateTo);
-                        content = `
-                            <h3>Nieobecność: ${item.teacher}</h3>
-                            <p>Okres: ${from} - ${to} ${item.hours ? `(${item.hours})` : ''}</p>
-                            <p>Powód: ${item.reason}</p>
-                        `;
-                    } else if (item.category === 2) {
-                        // Wydarzenie
-                        content = `
-                            <h3>Wydarzenie: ${item.name}</h3>
-                            <p>Data: ${formatDate(item.date)} ${item.hours ? `(${item.hours})` : ''}</p>
-                            <p>Kategoria: ${item.category}</p>
-                        `;
-                    } else if (item.category === 3) {
-                        // Ogłoszenie
-                        const from = formatDate(item.dateFrom);
-                        const to = formatDate(item.dateTo);
-                        content = `
-                            <h3>Ogłoszenie: ${item.teacher} - ${item.title}</h3>
-                            <p>Okres ważności: ${from} - ${to}</p>
-                            <p>${item.content}</p>
-                        `;
-                    } else if (item.category === 5) {
-                        // Aktualność
-                        content = `
-                            <h3>Aktualność: ${item.title}</h3>
-                            <p>${item.content}</p>
-                        `;
-                    } else {
-                        // Inne
-                        content = `
-                            <h3>${item.title || 'Brak tytułu'}</h3>
-                            <p>${item.content || 'Brak treści'}</p>
-                        `;
-                    }
-                    
-                    const deletedDate = new Date(item.deletedAt || Date.now());
-                    content += `
-                        <p><small>Usunięte: ${deletedDate.toLocaleString()}</small></p>
-                        <p><small>Kategoria: ${getCategoryName(item.category)}</small></p>
-                        <div class="actions">
-                            <button class="restore" onclick="restoreFromArchive(${index})">Przywróć</button>
-                            <button class="delete-permanent" onclick="deleteFromArchive(${index})">Usuń na zawsze</button>
-                        </div>
-                    `;
-                    
-                    archiveItem.innerHTML = content;
-                    archiveContent.appendChild(archiveItem);
-                });
-            }
-            
-            document.getElementById('archiveModal').style.display = 'flex';
-        }
+const nauczyciele = [
+"Jolanta Bosak", "Katarzyna Borzędzin", "Hanna Brzeska", "Anna Brzeska", "Barbara Brzóska",
+"Anna Burakowska", "Sylwia Cześniewicz", "Karol Dębowicz", "Faustyna Dobrzek", "Karolina Dominiak",
+"Małgorzata Domagała", "Dariusz Drzemała", "Alicja Rajewicz-Drzemała", "Elżbieta Gawin", "Mateusz Gig",
+"Anna Gocał", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak", "Renata Halczyk", "Danuta Kapciuszko", "Zuzanna Kośnicka", "Marcin Krupnicki", "Jowita Kuter", "Martyna Kołodziejczyk",
+"Rozalia Lipska", "Zofia Lisek", "Kinga Młodzik", "Karolina Młotek", "Agnieszka Miłasz", "Daria Musherina",
+"Joanna Małek", "Dorota Maszkiewska", "Magdalena Joelesh", "Eugenia Nowodworska", "Tadeusz Ostrowski",
+"Antonina Pawelczyk", "Ludwik Parkowiak", "Natalia Raczyńska", "Weronika Rogalska", "Renata Skleszewska",
+"Lena Skwierzyńska", "Katarzyna Sieczko", "Bożena Szpilkiewicz", "Barbara Strzegomska", "Alicja Struś-Michalska",
+"Michał Tarczyn", "Barbara Trzaskowska", "Ewelina Śmigalska", "ks. Ignacy Włoszek", "Celina Włodarczyk",
+"Aleksandra Wykaz", "Michalina Woźniak", "Marian Woźniak", "Magdalena Wisłowicz", "Marlena Wyszyńska", "Urszula Złocińska",
+"Oliwia Żabkiewicz"
+];
 
-        function restoreFromArchive(index) {
-            const item = archive[index];
-            if (confirm(`Czy na pewno chcesz przywrócić to ogłoszenie do kategorii ${getCategoryName(item.category)}?`)) {
-                // Dodaj do odpowiedniej kategorii
-                announcements[item.category].unshift(item);
-                // Usuń z archiwum
-                archive.splice(index, 1);
-                // Zapisz zmiany
-                saveAnnouncements().then(() => {
-                    showArchive();
-                    showAnnouncements();
-                });
-            }
-        }
+// Inicjalizacja list nauczycieli
+[document.getElementById('absenceTeacher'), document.getElementById('announcementTeacher')].forEach(select => {
+nauczyciele.forEach(teacher => {
+const option = document.createElement('option');
+option.value = teacher;
+option.textContent = teacher;
+select.appendChild(option);
+});
+});
 
-        function deleteFromArchive(index) {
-            if (confirm('Czy na pewno chcesz trwale usunąć to ogłoszenie z archiwum?')) {
-                archive.splice(index, 1);
-                saveAnnouncements().then(() => {
-                    showArchive();
-                });
-            }
-        }
+document.querySelectorAll('.menu a').forEach(link => {
+link.addEventListener('click', (e) => {
+e.preventDefault();
+currentCategory = parseInt(link.dataset.category);
+currentPage = 1;
+document.querySelector('.menu a.active').classList.remove('active');
+link.classList.add('active');
+toggleAddButton();
+showAnnouncements();
+});
+});
 
-        function getCategoryName(categoryId) {
-            const categories = {
-                1: 'Strona Główna',
-                2: 'Wydarzenia',
-                3: 'Ogłoszenia',
-                4: 'Nieobecności',
-                5: 'Aktualności',
-                6: 'Samorząd Uczniowski i Wolontariat',
-                7: 'Klasy 1-3 i Świetlica',
-                8: 'Dla Nauczycieli',
-                9: 'Grono Pedagogiczne',
-                10: 'Wychowawcy',
-                11: 'Dokumenty'
-            };
-            return categories[categoryId] || 'Nieznana kategoria';
-        }
+// Obsługa przycisku archiwum
+document.getElementById('archiveButton').addEventListener('click', (e) => {
+e.preventDefault();
+showArchive();
+});
 
-        function showAnnouncements() {
-            const container = document.getElementById('announcements');
-            container.innerHTML = '';
-            
-            if(currentCategory === 1) {
-                container.innerHTML = `
-                    <div class="homepage-content">
-                        <h2>Witamy w Szkole Podstawowej nr 57 we Wrocławiu!</h2>
-                        <p>Witamy na stronie najlepszej szkoły w Polsce!<br>
-                        Zapraszamy do naszej krainy edukacji! <br>
-                        Email: fillzster@gmail.com</p>
-                        
-                        <h3>O naszej szkole</h3>
-                        <p>Jesteśmy szkołą której niczego nie brakuje! Klasy ogólne, sportowe, muzyczne, a nawet językowe! Posiadamy wykwalifikowaną kadrę i cudowną dyrekcję!</p>
-                        <h3>O Patronie</h3>
+function showArchive() {
+const archiveContent = document.getElementById('archiveContent');
+archiveContent.innerHTML = '';
+
+if (archive.length === 0) {
+archiveContent.innerHTML = '<p>Archiwum jest puste.</p>';
+} else {
+archive.forEach((item, index) => {
+const archiveItem = document.createElement('div');
+archiveItem.className = 'archive-item';
+
+const formatDate = (dateStr) => {
+if (!dateStr) return '';
+const [year, month, day] = dateStr.split('-');
+return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
+};
+
+let content = '';
+if (item.category === 4) {
+// Nieobecność
+const from = formatDate(item.dateFrom);
+const to = formatDate(item.dateTo);
+content = `
+                           <h3>Nieobecność: ${item.teacher}</h3>
+                           <p>Okres: ${from} - ${to} ${item.hours ? `(${item.hours})` : ''}</p>
+                           <p>Powód: ${item.reason}</p>
+                       `;
+} else if (item.category === 2) {
+// Wydarzenie
+content = `
+                           <h3>Wydarzenie: ${item.name}</h3>
+                           <p>Data: ${formatDate(item.date)} ${item.hours ? `(${item.hours})` : ''}</p>
+                           <p>Kategoria: ${item.category}</p>
+                       `;
+} else if (item.category === 3) {
+// Ogłoszenie
+const from = formatDate(item.dateFrom);
+const to = formatDate(item.dateTo);
+content = `
+                           <h3>Ogłoszenie: ${item.teacher} - ${item.title}</h3>
+                           <p>Okres ważności: ${from} - ${to}</p>
+                           <p>${item.content}</p>
+                       `;
+} else if (item.category === 5) {
+// Aktualność
+content = `
+                           <h3>Aktualność: ${item.title}</h3>
+                           <p>${item.content}</p>
+                       `;
+} else {
+// Inne
+content = `
+                           <h3>${item.title || 'Brak tytułu'}</h3>
+                           <p>${item.content || 'Brak treści'}</p>
+                       `;
+}
+
+const deletedDate = new Date(item.deletedAt || Date.now());
+content += `
+                       <p><small>Usunięte: ${deletedDate.toLocaleString()}</small></p>
+                       <p><small>Kategoria: ${getCategoryName(item.category)}</small></p>
+                       <div class="actions">
+                           <button class="restore" onclick="restoreFromArchive(${index})">Przywróć</button>
+                           <button class="delete-permanent" onclick="deleteFromArchive(${index})">Usuń na zawsze</button>
+                       </div>
+                   `;
+
+archiveItem.innerHTML = content;
+archiveContent.appendChild(archiveItem);
+});
+}
+
+document.getElementById('archiveModal').style.display = 'flex';
+}
+
+function restoreFromArchive(index) {
+const item = archive[index];
+if (confirm(`Czy na pewno chcesz przywrócić to ogłoszenie do kategorii ${getCategoryName(item.category)}?`)) {
+// Dodaj do odpowiedniej kategorii
+announcements[item.category].unshift(item);
+// Usuń z archiwum
+archive.splice(index, 1);
+// Zapisz zmiany
+saveAnnouncements().then(() => {
+showArchive();
+showAnnouncements();
+});
+}
+}
+
+function deleteFromArchive(index) {
+if (confirm('Czy na pewno chcesz trwale usunąć to ogłoszenie z archiwum?')) {
+archive.splice(index, 1);
+saveAnnouncements().then(() => {
+showArchive();
+});
+}
+}
+
+function getCategoryName(categoryId) {
+const categories = {
+1: 'Strona Główna',
+2: 'Wydarzenia',
+3: 'Ogłoszenia',
+4: 'Nieobecności',
+5: 'Aktualności',
+6: 'Samorząd Uczniowski i Wolontariat',
+7: 'Klasy 1-3 i Świetlica',
+8: 'Dla Nauczycieli',
+9: 'Grono Pedagogiczne',
+10: 'Wychowawcy',
+11: 'Dokumenty'
+};
+return categories[categoryId] || 'Nieznana kategoria';
+}
+
+function showAnnouncements() {
+const container = document.getElementById('announcements');
+container.innerHTML = '';
+
+if(currentCategory === 1) {
+container.innerHTML = `
+                   <div class="homepage-content">
+                       <h2>Witamy w Szkole Podstawowej nr 57 we Wrocławiu!</h2>
+                       <p>Witamy na stronie najlepszej szkoły w Polsce!<br>
+                       Zapraszamy do naszej krainy edukacji! <br>
+                       Email: fillzster@gmail.com</p>
+                       
+                       <h3>O naszej szkole</h3>
+                       <p>Jesteśmy szkołą której niczego nie brakuje! Klasy ogólne, sportowe, muzyczne, a nawet językowe! Posiadamy wykwalifikowaną kadrę i cudowną dyrekcję!</p>
+                       <h3>O Patronie</h3>
 			<p>Stanisław Moniuszko urodził się 5 maja 1819 roku w Ubielu (dzisiejsza Białoruś). Był jednym z najwybitniejszych polskich kompozytorów XIX wieku, często nazywany "ojcem polskiej opery narodowej". Od najmłodszych lat miał kontakt z muzyką – pierwsze lekcje gry na fortepianie otrzymał od matki.
 
 W wieku 18 lat wyjechał do Berlina, gdzie studiował kompozycję i teorię muzyki u Carla Rungenhagena. Po powrocie do kraju objął posadę organisty w Wilnie i rozpoczął działalność kompozytorską oraz organizował koncerty. W tym czasie tworzył pieśni, muzykę kościelną, a także utwory sceniczne.
@@ -807,25 +805,27 @@ W 1858 roku został dyrektorem Teatru Wielkiego w Warszawie, gdzie napisał kole
 
 Moniuszko zmarł nagle 4 czerwca 1872 roku w Warszawie. Został pochowany na Cmentarzu Powązkowskim. Jego twórczość, mocno zakorzeniona w polskim folklorze i tradycji narodowej, do dziś jest symbolem muzycznego patriotyzmu.</p>
 
-                        <h3>Godziny otwarcia</h3>
-                        <p>Szkoła: Pon-Pt: 7:00-17:00<br>
-                        <p>Sekretariat: Pon-Pt: 7:30-15:30<br>
-                    </div>`;
-                return;
-            }
+                       <h3>Godziny otwarcia</h3>
+                       <p>Szkoła: Pon-Pt: 7:00-17:00<br>
+                       <p>Sekretariat: Pon-Pt: 7:30-15:30<br>
+                   </div>`;
+return;
+}
 
-     if(currentCategory === 11) {
-                container.innerHTML = `
-                    <div class="homepage-content">
-                        <h1>DOKUMENTY</h1>
+if(currentCategory === 11) {
+container.innerHTML = `
+                   <div class="homepage-content">
+                       <h1>DOKUMENTY</h1>
+			<h3>Podział Egzaminów Ósmoklasisty 2025 </h3>
+		<img src="https://raw.githubusercontent.com/fillxd/sz57/refs/heads/main/Zrzut%20ekranu%202025-05-09%20181408.png" alt="Zrzut ekranu">
 			<h3>o </h3>
 		<img src="" alt="Zrzut ekranu">
 
 
 
-                        <div class="tekst">
-                    Informacje, Dokumenty, Treść
-                        </div> </div>
+                       <div class="tekst">
+                   Informacje, Dokumenty, Treść
+                       </div> </div>
 <div style="text-align: center; font-size: 70px; margin: 60px 0;">
 PLAN LEKCJI
 </div>
@@ -834,1247 +834,1246 @@ Klasa 1a (Wychowawca: Jolanta Bosak  )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
 
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td> </td><td>Wychowanie Fizyczne (MD)</td><td>OOE (JB)</td><td>OOE (JB)</td><td>OOE (JB)</td></tr>
-    <tr><td>2</td><td>OOE (JB)</td><td>Trening Zewnętrzny (MD) </td><td>OOE (JB)</td><td>OOE (JB)</td><td>OOE (JB)</td></tr>
-    <tr><td>3</td><td>OOE (JB)</td><td>Trening Zewnętrzny (MD) </td><td>OOE (JB)</td><td>OOE (JB)</td><td>OOE (JB)</td></tr>
-    <tr><td>4</td><td>OOE (JB)</td><td>OOE (JB) </td><td>OOE (JB)</td><td>OInformatyka (JB)</td><td>OWychowanie Fizyczne (JB)</td></tr>
-    <tr><td>5</td><td>OOE (JB)</td><td>OOE (JB) </td><td>Religia (IW)</td><td>Język Angielski (MW)</td><td></td></tr>
-    <tr><td>6</td><td>Religia (IW)</td><td>Język Angielski (MW)</td><td></td><td></td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td> </td><td> </td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td> </td><td>Wychowanie Fizyczne (MD)</td><td>OOE (JB)</td><td>OOE (JB)</td><td>OOE (JB)</td></tr>
+   <tr><td>2</td><td>OOE (JB)</td><td>Trening Zewnętrzny (MD) </td><td>OOE (JB)</td><td>OOE (JB)</td><td>OOE (JB)</td></tr>
+   <tr><td>3</td><td>OOE (JB)</td><td>Trening Zewnętrzny (MD) </td><td>OOE (JB)</td><td>OOE (JB)</td><td>OOE (JB)</td></tr>
+   <tr><td>4</td><td>OOE (JB)</td><td>OOE (JB) </td><td>OOE (JB)</td><td>OInformatyka (JB)</td><td>OWychowanie Fizyczne (JB)</td></tr>
+   <tr><td>5</td><td>OOE (JB)</td><td>OOE (JB) </td><td>Religia (IW)</td><td>Język Angielski (MW)</td><td></td></tr>
+   <tr><td>6</td><td>Religia (IW)</td><td>Język Angielski (MW)</td><td></td><td></td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 1b (Wychowawca:Rozalia Lipska)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td> </td><td> </td><td> </td><td> </td><td></td></tr>
-    <tr><td>1</td><td>OOE (RL)</td><td>OWychowanie Fizyczne (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL)</td></tr>
-    <tr><td>2</td><td>OOE (RL) </td><td>Trening Zewnętrzny (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL)</td></tr>
-    <tr><td>3</td><td>OOE (RL) </td><td>Trening Zewnętrzny (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OInformatyka (RL)</td></tr>
-    <tr><td>4</td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td></tr>
-    <tr><td>5</td><td>OOE (RL) </td><td>Język Angielski (ZL) </td><td>Wychowanie Fizyczne (KM)</td><td>Język Angielski (ZL)</td><td> </td></tr>
-    <tr><td>6</td><td>Religia (EN) </td><td> </td><td>Religia (EN)</td><td> </td><td></td></tr>
-    <tr><td>7</td><td> </td><td> </td><td> </td><td> </td><td></td></tr>
-    <tr><td>8</td><td> </td><td> </td><td> </td><td> </td><td></td></tr>
-    <tr><td>9</td><td> </td><td> </td><td>Etyka (RH)</td><td> </td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td> </td><td> </td><td> </td><td> </td><td></td></tr>
+   <tr><td>1</td><td>OOE (RL)</td><td>OWychowanie Fizyczne (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL)</td></tr>
+   <tr><td>2</td><td>OOE (RL) </td><td>Trening Zewnętrzny (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL)</td></tr>
+   <tr><td>3</td><td>OOE (RL) </td><td>Trening Zewnętrzny (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OInformatyka (RL)</td></tr>
+   <tr><td>4</td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td><td>OOE (RL) </td></tr>
+   <tr><td>5</td><td>OOE (RL) </td><td>Język Angielski (ZL) </td><td>Wychowanie Fizyczne (KM)</td><td>Język Angielski (ZL)</td><td> </td></tr>
+   <tr><td>6</td><td>Religia (EN) </td><td> </td><td>Religia (EN)</td><td> </td><td></td></tr>
+   <tr><td>7</td><td> </td><td> </td><td> </td><td> </td><td></td></tr>
+   <tr><td>8</td><td> </td><td> </td><td> </td><td> </td><td></td></tr>
+   <tr><td>9</td><td> </td><td> </td><td>Etyka (RH)</td><td> </td><td></td></tr>
+ </tbody>
 </table>
 
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 1c (Wychowawca: Faustyna Dobrzek)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td>OWychowanie Fizyczne (FD)</td><td></td><td></td><td></td></tr>
-    <tr><td>2</td><td></td><td>Trening Zewnętrzny (FD)</td><td></td><td></td><td></td></tr>
-    <tr><td>3</td><td></td><td>Trening Zewnętrzny (FD)</td><td></td><td></td><td></td></tr>
-    <tr><td>4</td><td>Religia (EN)</td><td>OInformatyka (FD))</td><td>Religia (EN)</td><td>Język Angielski (ZL)</td><td>Język Angielski (ZL)</td></tr>
-    <tr><td>5</td><td>Wychowanie Fizyczne (NR)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td></tr>
-    <tr><td>6</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td></tr>
-    <tr><td>7</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td></tr>
-    <tr><td>8</td><td>OOE (FD)</td><td></td><td>OOE (FD)</td><td>OOE (FD)</td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td>OWychowanie Fizyczne (FD)</td><td></td><td></td><td></td></tr>
+   <tr><td>2</td><td></td><td>Trening Zewnętrzny (FD)</td><td></td><td></td><td></td></tr>
+   <tr><td>3</td><td></td><td>Trening Zewnętrzny (FD)</td><td></td><td></td><td></td></tr>
+   <tr><td>4</td><td>Religia (EN)</td><td>OInformatyka (FD))</td><td>Religia (EN)</td><td>Język Angielski (ZL)</td><td>Język Angielski (ZL)</td></tr>
+   <tr><td>5</td><td>Wychowanie Fizyczne (NR)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td></tr>
+   <tr><td>6</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td></tr>
+   <tr><td>7</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td><td>OOE (FD)</td></tr>
+   <tr><td>8</td><td>OOE (FD)</td><td></td><td>OOE (FD)</td><td>OOE (FD)</td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 2a (Wychowawca: Alicja Rajewicz-Drzemała ) 
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td></td><td></td><td></td><td>OOE (ARD)</td></tr>
-    <tr><td>2</td><td>OWychowanie Fizyczne (ARD)</td><td>OOE (ARD)</td><td>OInformatyka (ARD)</td><td>Wychowanie Fizyczne (NR)</td><td>OOE (ARD)</td></tr>
-    <tr><td>3</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>Język Angielski (KS)</td></tr>
-    <tr><td>4</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td></tr>
-    <tr><td>5</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td></td></tr>
-    <tr><td>6</td><td></td><td>Religia (IW)</td><td>Religia (IW)</td><td>Język Angielski (KS)</td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td></td><td></td><td></td><td>OOE (ARD)</td></tr>
+   <tr><td>2</td><td>OWychowanie Fizyczne (ARD)</td><td>OOE (ARD)</td><td>OInformatyka (ARD)</td><td>Wychowanie Fizyczne (NR)</td><td>OOE (ARD)</td></tr>
+   <tr><td>3</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>Język Angielski (KS)</td></tr>
+   <tr><td>4</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td></tr>
+   <tr><td>5</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td>OOE (ARD)</td><td></td></tr>
+   <tr><td>6</td><td></td><td>Religia (IW)</td><td>Religia (IW)</td><td>Język Angielski (KS)</td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 2b (Wychowawca: Agnieszka Miłasz )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td></tr>
-    <tr><td>2</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td></tr>
-    <tr><td>3</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td></tr>
-    <tr><td>4</td><td>OInformatyka (AM)</td><td>OOE (AM)</td><td>OWychowanie Fizyczne (AM)</td><td>Język Angielski (KS)</td><td>Język Angielski (KS)</td></tr>
-    <tr><td>5</td><td>Religia (EN)</td><td></td><td>Religia (EN)</td><td></td><td>Wychowanie Fizyczne (NR)</td></tr>
-    <tr><td>6</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td></tr>
+   <tr><td>2</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td></tr>
+   <tr><td>3</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td><td>OOE (AM)</td></tr>
+   <tr><td>4</td><td>OInformatyka (AM)</td><td>OOE (AM)</td><td>OWychowanie Fizyczne (AM)</td><td>Język Angielski (KS)</td><td>Język Angielski (KS)</td></tr>
+   <tr><td>5</td><td>Religia (EN)</td><td></td><td>Religia (EN)</td><td></td><td>Wychowanie Fizyczne (NR)</td></tr>
+   <tr><td>6</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 2c (Wychowawca: Daria Musherina ) klasa językowa
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>2</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>3</td><td>Religia (EN)</td><td>Język Angielski (AG)</td><td>OInformatyka (DM)</td><td>Wychowanie Fizyczne (NR)</td><td>Religia (EN)</td></tr>
-    <tr><td>4</td><td>OOE (DM)</td><td>Język Angielski (AG)</td><td>Język Angielski (AG)</td><td>OOE (DM)</td><td>OOE (DM)</td></tr>
-    <tr><td>5</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td></tr>
-    <tr><td>6</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td></tr>
-    <tr><td>7</td><td></td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OWychowanie Fizyczne (DM)</td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>2</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>3</td><td>Religia (EN)</td><td>Język Angielski (AG)</td><td>OInformatyka (DM)</td><td>Wychowanie Fizyczne (NR)</td><td>Religia (EN)</td></tr>
+   <tr><td>4</td><td>OOE (DM)</td><td>Język Angielski (AG)</td><td>Język Angielski (AG)</td><td>OOE (DM)</td><td>OOE (DM)</td></tr>
+   <tr><td>5</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td></tr>
+   <tr><td>6</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td></tr>
+   <tr><td>7</td><td></td><td>OOE (DM)</td><td>OOE (DM)</td><td>OOE (DM)</td><td>OWychowanie Fizyczne (DM)</td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 3a (Wychowawca: Katarzyna Buzdro) klasa sportowa
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>Basen (MD)</td><td></td><td>Basen (MD)</td><td></td><td>Język Angielski (KS)</td></tr>
-    <tr><td>2</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>Wychowanie Fizyczne (SC)</td><td>OOE (KB)</td></tr>
-    <tr><td>3</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>Język Angielski (KS)</td><td>OOE (KB)</td></tr>
-    <tr><td>4</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td></tr>
-    <tr><td>5</td><td>OOE (KB)</td><td>OWychowanie Fizyczne (KB)</td><td>OInformatyka (KB)</td><td>OOE (KB)</td><td>Religia (IW)</td></tr>
-    <tr><td>6</td><td></td><td></td><td></td><td>OOE (KB)</td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td>Religia (IW)</td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>Basen (MD)</td><td></td><td>Basen (MD)</td><td></td><td>Język Angielski (KS)</td></tr>
+   <tr><td>2</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>Wychowanie Fizyczne (SC)</td><td>OOE (KB)</td></tr>
+   <tr><td>3</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>Język Angielski (KS)</td><td>OOE (KB)</td></tr>
+   <tr><td>4</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td><td>OOE (KB)</td></tr>
+   <tr><td>5</td><td>OOE (KB)</td><td>OWychowanie Fizyczne (KB)</td><td>OInformatyka (KB)</td><td>OOE (KB)</td><td>Religia (IW)</td></tr>
+   <tr><td>6</td><td></td><td></td><td></td><td>OOE (KB)</td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td>Religia (IW)</td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 3b (Wychowawca: Anna Brzeska )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td>OOE (AB)</td><td> 3b1-Język Angielski (MW) / 3b2-Język Angielski (KS)</td><td></td><td></td></tr>
-    <tr><td>2</td><td>3b1-Basen (MD) / 3b2-Basen (KM)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>Wychowanie Fizyczne (KM)</td><td>OOE (AB)</td></tr>
-    <tr><td>3</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td></tr>
-    <tr><td>4</td><td>OOE (AB)</td><td> 3b1-Język Angielski (MW) /   3b2-Język Angielski (KS)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OWychowanie Fizyczne (AB)</td></tr>
-    <tr><td>5</td><td>OOE (AB)</td><td>Religia (IW)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td></tr>
-    <tr><td>6</td><td>OInformatyka (AB)</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td></td><td></td><td>Religia (IW)</td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td>OOE (AB)</td><td> 3b1-Język Angielski (MW) / 3b2-Język Angielski (KS)</td><td></td><td></td></tr>
+   <tr><td>2</td><td>3b1-Basen (MD) / 3b2-Basen (KM)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>Wychowanie Fizyczne (KM)</td><td>OOE (AB)</td></tr>
+   <tr><td>3</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td></tr>
+   <tr><td>4</td><td>OOE (AB)</td><td> 3b1-Język Angielski (MW) /   3b2-Język Angielski (KS)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OWychowanie Fizyczne (AB)</td></tr>
+   <tr><td>5</td><td>OOE (AB)</td><td>Religia (IW)</td><td>OOE (AB)</td><td>OOE (AB)</td><td>OOE (AB)</td></tr>
+   <tr><td>6</td><td>OInformatyka (AB)</td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td></td><td></td><td>Religia (IW)</td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 3c (Wychowawca:Danuta Kapciuszko )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>2</td><td>OOE (DK)</td><td>OOE (DK)</td><td>Basen (MD)</td><td>OWychowanie Fizyczne (DK)</td><td>OInformatyka (DK)</td></tr>
-    <tr><td>3</td><td>OOE (DK)</td><td>3c1-Język Angielski (MW) / 3c2-Język Angielski (KD)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td></tr>
-    <tr><td>4</td><td>Wychowanie Fizyczne (KM)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td></tr>
-    <tr><td>5</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td></tr>
-    <tr><td>6</td><td></td><td></td><td>OOE (DK)</td><td>3c1-Język Angielski (MW) / 3c2-Język Angielski (KD)</td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td>Religia (IW)</td><td></td><td></td><td>Religia (IW)</td></tr>
-    <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>2</td><td>OOE (DK)</td><td>OOE (DK)</td><td>Basen (MD)</td><td>OWychowanie Fizyczne (DK)</td><td>OInformatyka (DK)</td></tr>
+   <tr><td>3</td><td>OOE (DK)</td><td>3c1-Język Angielski (MW) / 3c2-Język Angielski (KD)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td></tr>
+   <tr><td>4</td><td>Wychowanie Fizyczne (KM)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td></tr>
+   <tr><td>5</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td><td>OOE (DK)</td></tr>
+   <tr><td>6</td><td></td><td></td><td>OOE (DK)</td><td>3c1-Język Angielski (MW) / 3c2-Język Angielski (KD)</td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td>Religia (IW)</td><td></td><td></td><td>Religia (IW)</td></tr>
+   <tr><td>9</td><td></td><td></td><td>Etyka (RH)</td><td></td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 4a  (Wychowawca: Renata Skleszewska ) klasa sportowa
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>Wychowanie Fizyczne (NR)</td><td>Matematyka (RS)</td><td>WDŻ (UZ)</td><td></td><td>Język Angielski (KD)</td></tr>
-    <tr><td>2</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Język Polski (OŻ)</td><td>Język Polski (OŻ)</td></tr>
-    <tr><td>3</td><td>Język Polski (OŻ)</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Matematyka (RS)</td><td>Wychowanie Fizyczne (NR)</td></tr>
-    <tr><td>4</td><td>Informatyka (EŚ)</td><td>Język Polski (OŻ)</td><td>Technika (LP)</td><td>Język Angielski (KD)</td><td>Wychowanie Fizyczne (NR)</td></tr>
-    <tr><td>5</td><td>Plastyka (BT)</td><td>Muzyka (HB)</td><td>Przyroda (MW)</td><td>Zajęcia z Wychowawcą (RS)</td><td>Matematyka (RS)</td></tr>
-    <tr><td>6</td><td>Przyroda (MW)</td><td>Język Angielski (KD)</td><td>Matematyka (RS)</td><td></td><td>Religia (IW)</td></tr>
-    <tr><td>7</td><td></td><td>Historia (KD)</td><td>Język Polski (OŻ)</td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td>Religia (IW)</td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>Wychowanie Fizyczne (NR)</td><td>Matematyka (RS)</td><td>WDŻ (UZ)</td><td></td><td>Język Angielski (KD)</td></tr>
+   <tr><td>2</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Język Polski (OŻ)</td><td>Język Polski (OŻ)</td></tr>
+   <tr><td>3</td><td>Język Polski (OŻ)</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Matematyka (RS)</td><td>Wychowanie Fizyczne (NR)</td></tr>
+   <tr><td>4</td><td>Informatyka (EŚ)</td><td>Język Polski (OŻ)</td><td>Technika (LP)</td><td>Język Angielski (KD)</td><td>Wychowanie Fizyczne (NR)</td></tr>
+   <tr><td>5</td><td>Plastyka (BT)</td><td>Muzyka (HB)</td><td>Przyroda (MW)</td><td>Zajęcia z Wychowawcą (RS)</td><td>Matematyka (RS)</td></tr>
+   <tr><td>6</td><td>Przyroda (MW)</td><td>Język Angielski (KD)</td><td>Matematyka (RS)</td><td></td><td>Religia (IW)</td></tr>
+   <tr><td>7</td><td></td><td>Historia (KD)</td><td>Język Polski (OŻ)</td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td>Religia (IW)</td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 4b (Wychowawca: Mateusz Gig)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td></td><td>WDŻ (UZ)</td><td>Wychowanie Fizyczne (MG)</td><td></td></tr>
-    <tr><td>2</td><td>Język Polski (OŻ)</td><td>Matematyka (RS)</td><td>Język Angielski (ZL)</td><td>Przyroda (MW)</td><td>Wychowanie Fizyczne (MG)</td></tr>
-    <tr><td>3</td><td>Język Angielski (ZL)</td><td>Informatyka (EŚ)</td><td>Przyroda (MW)</td><td>Język Angielski (ZL)</td><td>Język Polski (OŻ)</td></tr>
-    <tr><td>4</td><td>Wychowanie Fizyczne (MG)</td><td>Wychowanie Fizyczne (MG)</td><td>Matematyka (RS)</td><td>Język Polski (OŻ)</td><td>Matematyka (RS)</td></tr>
-    <tr><td>5</td><td>Matematyka (RS)</td><td>Język Polski (OŻ)</td><td>Zajęcia z Wychowawcą (MG)</td><td>Język Polski (OŻ)</td><td>Historia (KD)</td></tr>
-    <tr><td>6</td><td>Technika (LP)</td><td>Muzyka (HB)</td><td>Plastyka (BT)</td><td></td><td></td></tr>
-    <tr><td>7</td><td>Religia (IW)</td><td>Religia (IW)</td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td></td><td>WDŻ (UZ)</td><td>Wychowanie Fizyczne (MG)</td><td></td></tr>
+   <tr><td>2</td><td>Język Polski (OŻ)</td><td>Matematyka (RS)</td><td>Język Angielski (ZL)</td><td>Przyroda (MW)</td><td>Wychowanie Fizyczne (MG)</td></tr>
+   <tr><td>3</td><td>Język Angielski (ZL)</td><td>Informatyka (EŚ)</td><td>Przyroda (MW)</td><td>Język Angielski (ZL)</td><td>Język Polski (OŻ)</td></tr>
+   <tr><td>4</td><td>Wychowanie Fizyczne (MG)</td><td>Wychowanie Fizyczne (MG)</td><td>Matematyka (RS)</td><td>Język Polski (OŻ)</td><td>Matematyka (RS)</td></tr>
+   <tr><td>5</td><td>Matematyka (RS)</td><td>Język Polski (OŻ)</td><td>Zajęcia z Wychowawcą (MG)</td><td>Język Polski (OŻ)</td><td>Historia (KD)</td></tr>
+   <tr><td>6</td><td>Technika (LP)</td><td>Muzyka (HB)</td><td>Plastyka (BT)</td><td></td><td></td></tr>
+   <tr><td>7</td><td>Religia (IW)</td><td>Religia (IW)</td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 4c (Wychowawca: Natalia Raczyńska )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td></td><td>WDŻ (UZ)</td><td>Wychowanie Fizyczne (NR)</td><td></td></tr>
-    <tr><td>2</td><td>Matematyka (MT)</td><td>Matematyka (MT)</td><td>Matematyka (MT)</td><td>Język Polski (AB)</td><td>Wychowanie Fizyczne (NR)</td></tr>
-    <tr><td>3</td><td>Plastyka (BT)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Język Angielski (AG)</td><td>Język Angielski (AG)</td></tr>
-    <tr><td>4</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Historia (PG)</td><td>Informatyka (EŚ)</td><td>Muzyka (AP)</td></tr>
-    <tr><td>5</td><td>Przyroda (MW)</td><td>Język Angielski (AG)</td><td>Zajęcia z Wychowawcą (NR)</td><td>Technika (LP)</td><td>Język Polski (AB)</td></tr>
-    <tr><td>6</td><td>Język Polski (AB)</td><td>Przyroda (MW)</td><td></td><td>Matematyka (MT)</td><td></td></tr>
-    <tr><td>7</td><td>Religia (IW)</td><td>Religia (IW)</td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td></td><td>WDŻ (UZ)</td><td>Wychowanie Fizyczne (NR)</td><td></td></tr>
+   <tr><td>2</td><td>Matematyka (MT)</td><td>Matematyka (MT)</td><td>Matematyka (MT)</td><td>Język Polski (AB)</td><td>Wychowanie Fizyczne (NR)</td></tr>
+   <tr><td>3</td><td>Plastyka (BT)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Język Angielski (AG)</td><td>Język Angielski (AG)</td></tr>
+   <tr><td>4</td><td>Wychowanie Fizyczne (NR)</td><td>Wychowanie Fizyczne (NR)</td><td>Historia (PG)</td><td>Informatyka (EŚ)</td><td>Muzyka (AP)</td></tr>
+   <tr><td>5</td><td>Przyroda (MW)</td><td>Język Angielski (AG)</td><td>Zajęcia z Wychowawcą (NR)</td><td>Technika (LP)</td><td>Język Polski (AB)</td></tr>
+   <tr><td>6</td><td>Język Polski (AB)</td><td>Przyroda (MW)</td><td></td><td>Matematyka (MT)</td><td></td></tr>
+   <tr><td>7</td><td>Religia (IW)</td><td>Religia (IW)</td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 5a (Wychowawca: Katarzyna Sieczko )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td>WDŻ (UZ)</td><td></td></tr>
-    <tr><td>1</td><td>5a1.Język Angielski (KS) 5a2.Informatyka (EŚ)</td><td>5a1.Wychowanie Fizyczne (SC) 5a2.Język Angielski (KS)</td><td></td><td>Język Polski (DM)</td><td></td></tr>
-    <tr><td>2</td><td>Geografia (MG)</td><td>Język Polski (DM)</td><td>Plastyka (BT)</td><td>Język Polski (DM)</td><td>5a1-Język Angielski 5a2.Wychowanie Fizyczne(MD)</td></tr>
-    <tr><td>3</td><td>5a1.Wychowanie Fizyczne (SC) 5a2.Język Angielski (KS)</td><td>Matematyka (GG)</td><td>5a1.Język Angielski (KS) 5a2.Wychowanie Fizyczne(MD)</td><td>5a1.Wychowanie Fizyczne (SC) 5a2.Wychowanie Fizyczne(MD)</td><td>Muzyka (AP)</td></tr>
-    <tr><td>4</td><td>Matematyka (GG)</td><td>Biologia (MW)</td><td>5a1.Wychowanie Fizyczne (SC)  5a2.Język Angielski (KS)</td><td>Matematyka (GG)</td><td>Matematyka (GG)</td></tr>
-    <tr><td>5</td><td>5a1.Informatyka (EŚ)  5a2.Wychowanie Fizyczne(MD)</td><td>Historia (KD)</td><td>Język Polski (DM)</td><td>Zajęcia z Wychowawcą (KS)</td><td>Język Polski (DM)</td></tr>
-    <tr><td>6</td><td></td><td></td><td>Technika (LP)</td><td>Religia (IW)</td><td>Historia (KD)</td></tr>
-    <tr><td>7</td><td></td><td></td><td>Religia (IW)</td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td>WDŻ (UZ)</td><td></td></tr>
+   <tr><td>1</td><td>5a1.Język Angielski (KS) 5a2.Informatyka (EŚ)</td><td>5a1.Wychowanie Fizyczne (SC) 5a2.Język Angielski (KS)</td><td></td><td>Język Polski (DM)</td><td></td></tr>
+   <tr><td>2</td><td>Geografia (MG)</td><td>Język Polski (DM)</td><td>Plastyka (BT)</td><td>Język Polski (DM)</td><td>5a1-Język Angielski 5a2.Wychowanie Fizyczne(MD)</td></tr>
+   <tr><td>3</td><td>5a1.Wychowanie Fizyczne (SC) 5a2.Język Angielski (KS)</td><td>Matematyka (GG)</td><td>5a1.Język Angielski (KS) 5a2.Wychowanie Fizyczne(MD)</td><td>5a1.Wychowanie Fizyczne (SC) 5a2.Wychowanie Fizyczne(MD)</td><td>Muzyka (AP)</td></tr>
+   <tr><td>4</td><td>Matematyka (GG)</td><td>Biologia (MW)</td><td>5a1.Wychowanie Fizyczne (SC)  5a2.Język Angielski (KS)</td><td>Matematyka (GG)</td><td>Matematyka (GG)</td></tr>
+   <tr><td>5</td><td>5a1.Informatyka (EŚ)  5a2.Wychowanie Fizyczne(MD)</td><td>Historia (KD)</td><td>Język Polski (DM)</td><td>Zajęcia z Wychowawcą (KS)</td><td>Język Polski (DM)</td></tr>
+   <tr><td>6</td><td></td><td></td><td>Technika (LP)</td><td>Religia (IW)</td><td>Historia (KD)</td></tr>
+   <tr><td>7</td><td></td><td></td><td>Religia (IW)</td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 5b (Wychowawca: Dorota Maszkiewska )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td>WDŻ (UZ)</td><td></td></tr>
-    <tr><td>1</td><td></td><td>Język Polski (DM)</td><td></td><td>Historia (KD)</td><td>Religia (EN)</td></tr>
-    <tr><td>2</td><td></td><td>Wychowanie Fizyczne (SC)</td><td>Biologia (MW)</td><td>Informatyka (EŚ)</td><td>Matematyka (GG)</td></tr>
-    <tr><td>3</td><td>Język Polski (DM)</td><td>5b1.Język Angielski (ZL) 5b2.Język Angielski (KS)</td><td>Matematyka (GG)</td><td>Geografia (MG)</td><td>Język Polski (DM)</td></tr>
-    <tr><td>4</td><td>Wychowanie Fizyczne (SC)</td><td>Muzyka (HB)</td><td>Język Polski (DM)</td><td>Wychowanie Fizyczne (SC)</td><td>Wychowanie Fizyczne (SC)</td></tr>
-    <tr><td>5</td><td>Historia (KD)</td><td>Matematyka (GG)</td><td>Plastyka (BT)</td><td>Język Polski (DM)</td><td>5b1.Język Angielski (ZL) 5b2.Język Angielski (KS)</td></tr>
-    <tr><td>6</td><td>Matematyka (GG)</td><td></td><td>Zajęcia z Wychowawcą (DM)</td><td>Technika (LP)</td><td></td></tr>
-    <tr><td>7</td><td></td><td></td><td>Religia (EN)</td><td>5b1.Język Angielski (ZL) 5b2.Język Angielski (KS)</td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td>WDŻ (UZ)</td><td></td></tr>
+   <tr><td>1</td><td></td><td>Język Polski (DM)</td><td></td><td>Historia (KD)</td><td>Religia (EN)</td></tr>
+   <tr><td>2</td><td></td><td>Wychowanie Fizyczne (SC)</td><td>Biologia (MW)</td><td>Informatyka (EŚ)</td><td>Matematyka (GG)</td></tr>
+   <tr><td>3</td><td>Język Polski (DM)</td><td>5b1.Język Angielski (ZL) 5b2.Język Angielski (KS)</td><td>Matematyka (GG)</td><td>Geografia (MG)</td><td>Język Polski (DM)</td></tr>
+   <tr><td>4</td><td>Wychowanie Fizyczne (SC)</td><td>Muzyka (HB)</td><td>Język Polski (DM)</td><td>Wychowanie Fizyczne (SC)</td><td>Wychowanie Fizyczne (SC)</td></tr>
+   <tr><td>5</td><td>Historia (KD)</td><td>Matematyka (GG)</td><td>Plastyka (BT)</td><td>Język Polski (DM)</td><td>5b1.Język Angielski (ZL) 5b2.Język Angielski (KS)</td></tr>
+   <tr><td>6</td><td>Matematyka (GG)</td><td></td><td>Zajęcia z Wychowawcą (DM)</td><td>Technika (LP)</td><td></td></tr>
+   <tr><td>7</td><td></td><td></td><td>Religia (EN)</td><td>5b1.Język Angielski (ZL) 5b2.Język Angielski (KS)</td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 5m (Wychowawca: Antonina Pawelczyk) klasa muzyczna
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td>WDŻ (UZ)</td><td></td></tr>
-    <tr><td>1</td><td></td><td></td><td></td><td>Matematyka (RS)</td><td>Religia (EN)</td></tr>
-    <tr><td>2</td><td>Język Angielski (ZL)</td><td>Informatyka (EŚ)</td><td>Matematyka (RS)</td><td>Język Angielski (ZL)</td><td>Historia (KD)</td></tr>
-    <tr><td>3</td><td>Wychowanie Fizyczne (NR)</td><td>Język Polski (OŻ)</td><td>Kształcenie Słuchu (AP)</td><td>Nauka o Muzyce (AP)</td><td>Biologia (MW)</td></tr>
-    <tr><td>4</td><td>Plastyka (BT)</td><td>Matematyka (RS)</td><td>Język Polski (OŻ)</td><td>Wychowanie Fizyczne (NR)</td><td>Geografia (MG)</td></tr>
-    <tr><td>5</td><td>Język Polski (OŻ)</td><td>Kształcenie Słuchu (AP)</td><td>Język Angielski (ZL)</td><td>Historia (KD)</td><td>Język Polski (OŻ)</td></tr>
-    <tr><td>6</td><td>Matematyka (RS)</td><td>Zajęcia z Wychowawcą (AP)</td><td>Wychowanie Fizyczne (NR)</td><td>Język Polski (OŻ)</td><td>Wychowanie Fizyczne (NR)</td></tr>
-    <tr><td>7</td><td></td><td></td><td>Religia (EN)</td><td>Technika (LP)</td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td>WDŻ (UZ)</td><td></td></tr>
+   <tr><td>1</td><td></td><td></td><td></td><td>Matematyka (RS)</td><td>Religia (EN)</td></tr>
+   <tr><td>2</td><td>Język Angielski (ZL)</td><td>Informatyka (EŚ)</td><td>Matematyka (RS)</td><td>Język Angielski (ZL)</td><td>Historia (KD)</td></tr>
+   <tr><td>3</td><td>Wychowanie Fizyczne (NR)</td><td>Język Polski (OŻ)</td><td>Kształcenie Słuchu (AP)</td><td>Nauka o Muzyce (AP)</td><td>Biologia (MW)</td></tr>
+   <tr><td>4</td><td>Plastyka (BT)</td><td>Matematyka (RS)</td><td>Język Polski (OŻ)</td><td>Wychowanie Fizyczne (NR)</td><td>Geografia (MG)</td></tr>
+   <tr><td>5</td><td>Język Polski (OŻ)</td><td>Kształcenie Słuchu (AP)</td><td>Język Angielski (ZL)</td><td>Historia (KD)</td><td>Język Polski (OŻ)</td></tr>
+   <tr><td>6</td><td>Matematyka (RS)</td><td>Zajęcia z Wychowawcą (AP)</td><td>Wychowanie Fizyczne (NR)</td><td>Język Polski (OŻ)</td><td>Wychowanie Fizyczne (NR)</td></tr>
+   <tr><td>7</td><td></td><td></td><td>Religia (EN)</td><td>Technika (LP)</td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 6a (Wychowawca: Bożena Szpilkiewicz )
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>WDŻ (UZ)</td><td>Informatyka (EŚ)</td><td>>Zajęcia z Wychowawcą (BS)</td><td></td><td></td></tr>
-    <tr><td>2</td><td>Plastyka (BT)</td><td>Matematyka (BS)</td><td>Matematyka (BS)</td><td>Geografia (MG)</td><td>Język Polski (AB)</td></tr>
-    <tr><td>3</td><td>Technika (LP)</td><td>Wychowanie Fizyczne (KM)</td><td>Język Angielski (CW)</td><td>Wychowanie Fizyczne (KM)</td><td>Matematyka (BS)</td></tr>
-    <tr><td>4</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Wychowanie Fizyczne (KM)</td><td>Biologia (MW)</td><td>Wychowanie Fizyczne (KM)</td></tr>
-    <tr><td>5</td><td>Matematyka (BS)</td><td>Historia (PG)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Muzyka (AP)</td></tr>
-    <tr><td>6</td><td>Język Angielski (CW)</td><td>Religia (EN)</td><td>Historia (PG)</td><td></td><td>Język Angielski (CW)</td></tr>
-    <tr><td>7</td><td>Religia (EN)</td><td></td><td</td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>WDŻ (UZ)</td><td>Informatyka (EŚ)</td><td>>Zajęcia z Wychowawcą (BS)</td><td></td><td></td></tr>
+   <tr><td>2</td><td>Plastyka (BT)</td><td>Matematyka (BS)</td><td>Matematyka (BS)</td><td>Geografia (MG)</td><td>Język Polski (AB)</td></tr>
+   <tr><td>3</td><td>Technika (LP)</td><td>Wychowanie Fizyczne (KM)</td><td>Język Angielski (CW)</td><td>Wychowanie Fizyczne (KM)</td><td>Matematyka (BS)</td></tr>
+   <tr><td>4</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Wychowanie Fizyczne (KM)</td><td>Biologia (MW)</td><td>Wychowanie Fizyczne (KM)</td></tr>
+   <tr><td>5</td><td>Matematyka (BS)</td><td>Historia (PG)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Muzyka (AP)</td></tr>
+   <tr><td>6</td><td>Język Angielski (CW)</td><td>Religia (EN)</td><td>Historia (PG)</td><td></td><td>Język Angielski (CW)</td></tr>
+   <tr><td>7</td><td>Religia (EN)</td><td></td><td</td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 6b (Wychowawca: Kinga Młodzik)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>WDŻ (UZ)</td><td></td><td>Plastyka (BT)</td><td></td><td>Język Polski (JK)</td></tr>
-    <tr><td>2</td><td>Matematyka (JM)</td><td>Język Angielski (AG)</td><td>Geografia (MG)</td><td>Historia (KD)</td><td>Matematyka (JM)</td></tr>
-    <tr><td>3</td><td>Język Polski (JK)</td><td>Biologia (MW)</td><td>Język Angielski (AG)</td><td>Matematyka (JM)</td><td>Wychowanie Fizyczne (KM)</td></tr>
-    <tr><td>4</td><td>Muzyka (MJ)</td><td>Język Polski (JK)</td><td>Język Polski (JK)</td><td>Wychowanie Fizyczne (KM)</td><td>Historia (KD)</td></tr>
-    <tr><td>5</td><td>Technika (LP)</td><td>Wychowanie Fizyczne (KM)</td><td>Matematyka (JM)</td><td>Informatyka (EŚ)</td><td>Język Angielski (AG)</td></tr>
-    <tr><td>6</td><td>Wychowanie Fizyczne (KM)</td><td>Religia (EN)</td><td>Zajęcia z Wychowawcą (KM)</td><td>Język Polski (JK)</td><td></td></tr>
-    <tr><td>7</td><td>Religia (EN)</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>WDŻ (UZ)</td><td></td><td>Plastyka (BT)</td><td></td><td>Język Polski (JK)</td></tr>
+   <tr><td>2</td><td>Matematyka (JM)</td><td>Język Angielski (AG)</td><td>Geografia (MG)</td><td>Historia (KD)</td><td>Matematyka (JM)</td></tr>
+   <tr><td>3</td><td>Język Polski (JK)</td><td>Biologia (MW)</td><td>Język Angielski (AG)</td><td>Matematyka (JM)</td><td>Wychowanie Fizyczne (KM)</td></tr>
+   <tr><td>4</td><td>Muzyka (MJ)</td><td>Język Polski (JK)</td><td>Język Polski (JK)</td><td>Wychowanie Fizyczne (KM)</td><td>Historia (KD)</td></tr>
+   <tr><td>5</td><td>Technika (LP)</td><td>Wychowanie Fizyczne (KM)</td><td>Matematyka (JM)</td><td>Informatyka (EŚ)</td><td>Język Angielski (AG)</td></tr>
+   <tr><td>6</td><td>Wychowanie Fizyczne (KM)</td><td>Religia (EN)</td><td>Zajęcia z Wychowawcą (KM)</td><td>Język Polski (JK)</td><td></td></tr>
+   <tr><td>7</td><td>Religia (EN)</td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 6m (Wychowawca: Małgorzata Domagała klasa muzyczna
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>WDŻ (UZ)</td><td></td><td></td><td>Informatyka (EŚ)</td><td></td></tr>
-    <tr><td>2</td><td>Język Angielski (KS)</td><td>Język Angielski (KS)</td><td>Język Angielski (KS)</td><td>Nauka o Muzyce (AP)</td><td>Religia (EN)</td></tr>
-    <tr><td>3</td><td>Historia (PG)</td><td>Kształcenie Słuchu (AP)</td><td>Język Polski (DM)</td><td>Język Polski (DM)</td><td>Matematyka (RS)</td></tr>
-    <tr><td>4</td><td>Matematyka (RS)</td><td>Wychowanie Fizyczne (MD)</td><td>Plastyka (BT)</td><td>Wychowanie Fizyczne (MD)</td><td>Język Polski (DM)</td></tr>
-    <tr><td>5</td><td>Język Polski (DM)</td><td>Matematyka (RS)</td><td>Wychowanie Fizyczne (MD)</td><td>Zajęcia z Wychowawcą (MD)</td><td>Biologia (MW)</td></tr>
-    <tr><td>6</td><td>Język Polski (DM)</td><td>Historia (PG)</td><td>Kształcenie Słuchu (AP)</td><td></td><td>Wychowanie Fizyczne (MD)</td></tr>
-    <tr><td>7</td><td>Geografia (MG)</td><td></td><td>Matematyka (RS)</td><td></td><td></td></tr>
-    <tr><td>8</td><td></td><td></td><td>Religia (EN)</td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>WDŻ (UZ)</td><td></td><td></td><td>Informatyka (EŚ)</td><td></td></tr>
+   <tr><td>2</td><td>Język Angielski (KS)</td><td>Język Angielski (KS)</td><td>Język Angielski (KS)</td><td>Nauka o Muzyce (AP)</td><td>Religia (EN)</td></tr>
+   <tr><td>3</td><td>Historia (PG)</td><td>Kształcenie Słuchu (AP)</td><td>Język Polski (DM)</td><td>Język Polski (DM)</td><td>Matematyka (RS)</td></tr>
+   <tr><td>4</td><td>Matematyka (RS)</td><td>Wychowanie Fizyczne (MD)</td><td>Plastyka (BT)</td><td>Wychowanie Fizyczne (MD)</td><td>Język Polski (DM)</td></tr>
+   <tr><td>5</td><td>Język Polski (DM)</td><td>Matematyka (RS)</td><td>Wychowanie Fizyczne (MD)</td><td>Zajęcia z Wychowawcą (MD)</td><td>Biologia (MW)</td></tr>
+   <tr><td>6</td><td>Język Polski (DM)</td><td>Historia (PG)</td><td>Kształcenie Słuchu (AP)</td><td></td><td>Wychowanie Fizyczne (MD)</td></tr>
+   <tr><td>7</td><td>Geografia (MG)</td><td></td><td>Matematyka (RS)</td><td></td><td></td></tr>
+   <tr><td>8</td><td></td><td></td><td>Religia (EN)</td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 7a (Wychowawca: Celina Włodarczyk
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td>WDŻ (UZ)</td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td></td><td>Matematyka (GG)</td><td>Historia (PG)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td></tr>
-    <tr><td>2</td><td>Wychowanie Fizyczne (SC)</td><td>Geografia (MG)</td><td>Język Polski (AB)</td><td>Matematyka (GG)</td><td>Biologia (MW)</td></tr>
-    <tr><td>3</td><td>Matematyka (GG)</td><td>Chemia (TO)</td><td>Język Niemiecki (MJ)</td><td>Język Angielski (CW)</td><td>Geografia (MG)</td></tr>
-    <tr><td>4</td><td>Biologia (MW)</td><td>Historia (PG)</td><td>Matematyka (GG)</td><td>Fizyka (MW)</td><td>Język Angielski (CW)</td></tr>
-    <tr><td>5</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Język Angielski (CW)</td><td>Język Niemiecki (MJ)</td><td>Wychowanie Fizyczne (SC)</td></tr>
-    <tr><td>6</td><td>Chemia (TO)</td><td>Wychowanie Fizyczne (SC)</td><td>Fizyka (MW)</td><td>Informatyka (EŚ)</td><td></td></tr>
-    <tr><td>7</td><td>Plastyka (BT)</td><td>Muzyka (HB)</td><td>Wychowanie Fizyczne (SC)</td><td>Religia (IW)</td><td></td></tr>
-    <tr><td>8</td><td>Zajęcia z Wychowawcą (CW)</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td>Doradztwo Zawodowe (MK)</td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td>WDŻ (UZ)</td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td></td><td>Matematyka (GG)</td><td>Historia (PG)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td></tr>
+   <tr><td>2</td><td>Wychowanie Fizyczne (SC)</td><td>Geografia (MG)</td><td>Język Polski (AB)</td><td>Matematyka (GG)</td><td>Biologia (MW)</td></tr>
+   <tr><td>3</td><td>Matematyka (GG)</td><td>Chemia (TO)</td><td>Język Niemiecki (MJ)</td><td>Język Angielski (CW)</td><td>Geografia (MG)</td></tr>
+   <tr><td>4</td><td>Biologia (MW)</td><td>Historia (PG)</td><td>Matematyka (GG)</td><td>Fizyka (MW)</td><td>Język Angielski (CW)</td></tr>
+   <tr><td>5</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Język Angielski (CW)</td><td>Język Niemiecki (MJ)</td><td>Wychowanie Fizyczne (SC)</td></tr>
+   <tr><td>6</td><td>Chemia (TO)</td><td>Wychowanie Fizyczne (SC)</td><td>Fizyka (MW)</td><td>Informatyka (EŚ)</td><td></td></tr>
+   <tr><td>7</td><td>Plastyka (BT)</td><td>Muzyka (HB)</td><td>Wychowanie Fizyczne (SC)</td><td>Religia (IW)</td><td></td></tr>
+   <tr><td>8</td><td>Zajęcia z Wychowawcą (CW)</td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td>Doradztwo Zawodowe (MK)</td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 7b (Wychowawca: Magdalena Joelesh)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td>WDŻ (UZ)</td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>Muzyka (MJ)</td><td>Język Polski (EG)</td><td>Biologia (MW)</td><td></td><td></td></tr>
-    <tr><td>2</td><td>Historia (PG)</td><td>Język Polski (EG)</td><td>Język Niemiecki (MJ)</td><td>Zajęcia z Wychowawcą (MJ)</td><td>Fizyka (MW)</td></tr>
-    <tr><td>3</td><td>Język Polski (EG)</td><td>Wychowanie Fizyczne (SC)</td><td>Plastyka (BT)</td><td>Język Polski (EG)</td><td>Matematyka (JM)</td></tr>
-    <tr><td>4</td><td>Matematyka (JM)</td><td>Język Angielski (KD)</td><td>Matematyka (JM)</td><td>Język Niemiecki (MJ)</td><td>Język Polski (EG)</td></tr>
-    <tr><td>5</td><td>Wychowanie Fizyczne (SC)</td><td>Chemia (TO)</td><td>Historia (PG)</td><td>Język Angielski (KD)</td><td>Geografia (MG)</td></tr>
-    <tr><td>6</td><td>Geografia (MG)</td><td>Matematyka (JM)</td><td>Wychowanie Fizyczne (SC)</td><td>Biologia (MW)</td><td>Język Angielski (KD)</td></tr>
-    <tr><td>7</td><td>Chemia (TO)</td><td>Informatyka (EŚ)</td><td>Fizyka (MW)</td><td>Religia (IW)</td><td>Wychowanie Fizyczne (SC)</td></tr>
-    <tr><td>8</td><td>Doradztwo Zawodowe (MK)</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td>WDŻ (UZ)</td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>Muzyka (MJ)</td><td>Język Polski (EG)</td><td>Biologia (MW)</td><td></td><td></td></tr>
+   <tr><td>2</td><td>Historia (PG)</td><td>Język Polski (EG)</td><td>Język Niemiecki (MJ)</td><td>Zajęcia z Wychowawcą (MJ)</td><td>Fizyka (MW)</td></tr>
+   <tr><td>3</td><td>Język Polski (EG)</td><td>Wychowanie Fizyczne (SC)</td><td>Plastyka (BT)</td><td>Język Polski (EG)</td><td>Matematyka (JM)</td></tr>
+   <tr><td>4</td><td>Matematyka (JM)</td><td>Język Angielski (KD)</td><td>Matematyka (JM)</td><td>Język Niemiecki (MJ)</td><td>Język Polski (EG)</td></tr>
+   <tr><td>5</td><td>Wychowanie Fizyczne (SC)</td><td>Chemia (TO)</td><td>Historia (PG)</td><td>Język Angielski (KD)</td><td>Geografia (MG)</td></tr>
+   <tr><td>6</td><td>Geografia (MG)</td><td>Matematyka (JM)</td><td>Wychowanie Fizyczne (SC)</td><td>Biologia (MW)</td><td>Język Angielski (KD)</td></tr>
+   <tr><td>7</td><td>Chemia (TO)</td><td>Informatyka (EŚ)</td><td>Fizyka (MW)</td><td>Religia (IW)</td><td>Wychowanie Fizyczne (SC)</td></tr>
+   <tr><td>8</td><td>Doradztwo Zawodowe (MK)</td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 7m (Wychowawca: Ewelina Śmigalska) klasa muzyczna
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td>WDŻ (UZ)</td><td></td><td></td><td></td></tr>
-    <tr><td>1</td><td>Język Polski (JK)</td><td>Chemia (TO)</td><td>Geografia (MG)</td><td>Fizyka (MW)</td><td>Biologia (MW)</td></tr>
-    <tr><td>2</td><td>Język Niemiecki (MJ)</td><td>Język Polski (JK)</td><td>Historia (PG)</td><td>7m1.Język Angielski (CW) 7m2Wychowanie Fizyczne(MD)</td><td>Język Polski (JK)</td></tr>
-    <tr><td>3</td><td>7m1.Informatyka (EŚ) 7m2Wychowanie Fizyczne(MD)</td><td>Geografia (MG)</td><td>Język Polski (JK)</td><td>Biologia (MW)</td><td>7m1.Język Angielski (CW) 7m2Wychowanie Fizyczne(MD)</td></tr>
-    <tr><td>4</td><td>Historia (PG)</td><td>Zajęcia z Wychowawcą (EŚ)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Język Angielski (CW)</td><td>Matematyka (RS)</td><td>Fizyka (MW)</td></tr>
-    <tr><td>5</td><td>Chemia (TO)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Informatyka</td><td>Matematyka (RS)</td><td>Nauka o Muzyce (AP)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Język Angielski (CW)</td></tr>
-    <tr><td>6</td><td>Plastyka (BT)</td><td>Matematyka (RS)</td><td>7m1.Język Angielski (CW) 7m2Wychowanie Fizyczne(MD)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Język Angielski (CW)</td><td>Matematyka (RS)</td></tr>
-    <tr><td>7</td><td></td><td>Kształcenie Słuchu (AP)</td><td>Kształcenie Słuchu (AP)</td><td>Język Polski (JK)</td><td></td></tr>
-    <tr><td>8</td><td></td><td>Religia (EN)</td><td>Doradztwo Zawodowe (MK)</td><td>Język Niemiecki (MJ)</td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td>WDŻ (UZ)</td><td></td><td></td><td></td></tr>
+   <tr><td>1</td><td>Język Polski (JK)</td><td>Chemia (TO)</td><td>Geografia (MG)</td><td>Fizyka (MW)</td><td>Biologia (MW)</td></tr>
+   <tr><td>2</td><td>Język Niemiecki (MJ)</td><td>Język Polski (JK)</td><td>Historia (PG)</td><td>7m1.Język Angielski (CW) 7m2Wychowanie Fizyczne(MD)</td><td>Język Polski (JK)</td></tr>
+   <tr><td>3</td><td>7m1.Informatyka (EŚ) 7m2Wychowanie Fizyczne(MD)</td><td>Geografia (MG)</td><td>Język Polski (JK)</td><td>Biologia (MW)</td><td>7m1.Język Angielski (CW) 7m2Wychowanie Fizyczne(MD)</td></tr>
+   <tr><td>4</td><td>Historia (PG)</td><td>Zajęcia z Wychowawcą (EŚ)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Język Angielski (CW)</td><td>Matematyka (RS)</td><td>Fizyka (MW)</td></tr>
+   <tr><td>5</td><td>Chemia (TO)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Informatyka</td><td>Matematyka (RS)</td><td>Nauka o Muzyce (AP)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Język Angielski (CW)</td></tr>
+   <tr><td>6</td><td>Plastyka (BT)</td><td>Matematyka (RS)</td><td>7m1.Język Angielski (CW) 7m2Wychowanie Fizyczne(MD)</td><td>7m1Wychowanie Fizyczne(MD) 7m2.Język Angielski (CW)</td><td>Matematyka (RS)</td></tr>
+   <tr><td>7</td><td></td><td>Kształcenie Słuchu (AP)</td><td>Kształcenie Słuchu (AP)</td><td>Język Polski (JK)</td><td></td></tr>
+   <tr><td>8</td><td></td><td>Religia (EN)</td><td>Doradztwo Zawodowe (MK)</td><td>Język Niemiecki (MJ)</td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 8a (Wychowawca: Karol Dębowicz)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td>WDŻ (UZ)</td></tr>
-    <tr><td>1</td><td>Wiedza o Społeczeństwie (LP)</td><td>Ed. dla bezpieczeństwa (DD)</td><td>Język Polski (DM)</td><td>Wychowanie Fizyczne (SC)</td><td>Fizyka (MW)</td></tr>
-    <tr><td>2</td><td>Język Polski (DM)</td><td>Chemia (TO)</td><td>Język Polski (DM)</td><td>Język Angielski (KD)</td><td>Język Polski (DM)</td></tr>
-    <tr><td>3</td><td>Matematyka (MT)</td><td>Język Polski (DM)</td><td>Matematyka (MT)</td><td>Fizyka (MW)</td><td>Język Angielski (KD)</td></tr>
-    <tr><td>4</td><td>Chemia (TO)</td><td>Matematyka (MT)</td><td>Biologia (MW)</td><td>Język Polski (DM)</td><td>Język Angielski (KD)</td></tr>
-    <tr><td>5</td><td>Język Niemiecki (MJ)</td><td>Wychowanie Fizyczne (SC)</td><td>Wychowanie Fizyczne (SC)</td><td>Matematyka (MT)</td><td>Matematyka (MT)</td></tr>
-    <tr><td>6</td><td>Historia (KD)</td><td>Historia (KD)</td><td>Geografia (MG)</td><td>Język Niemiecki (MJ)</td><td>Wychowanie Fizyczne (SC)</td></tr>
-    <tr><td>7</td><td>Zajęcia z Wychowawcą (KD)</td><td>Język Angielski (KD)</td><td>Wiedza o Społeczeństwie (LP)</td><td>Informatyka (EŚ)</td><td>Doradztwo Zawodowe (MK)</td></tr>
-    <tr><td>8</td><td>Religia (IW)</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>	
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td>WDŻ (UZ)</td></tr>
+   <tr><td>1</td><td>Wiedza o Społeczeństwie (LP)</td><td>Ed. dla bezpieczeństwa (DD)</td><td>Język Polski (DM)</td><td>Wychowanie Fizyczne (SC)</td><td>Fizyka (MW)</td></tr>
+   <tr><td>2</td><td>Język Polski (DM)</td><td>Chemia (TO)</td><td>Język Polski (DM)</td><td>Język Angielski (KD)</td><td>Język Polski (DM)</td></tr>
+   <tr><td>3</td><td>Matematyka (MT)</td><td>Język Polski (DM)</td><td>Matematyka (MT)</td><td>Fizyka (MW)</td><td>Język Angielski (KD)</td></tr>
+   <tr><td>4</td><td>Chemia (TO)</td><td>Matematyka (MT)</td><td>Biologia (MW)</td><td>Język Polski (DM)</td><td>Język Angielski (KD)</td></tr>
+   <tr><td>5</td><td>Język Niemiecki (MJ)</td><td>Wychowanie Fizyczne (SC)</td><td>Wychowanie Fizyczne (SC)</td><td>Matematyka (MT)</td><td>Matematyka (MT)</td></tr>
+   <tr><td>6</td><td>Historia (KD)</td><td>Historia (KD)</td><td>Geografia (MG)</td><td>Język Niemiecki (MJ)</td><td>Wychowanie Fizyczne (SC)</td></tr>
+   <tr><td>7</td><td>Zajęcia z Wychowawcą (KD)</td><td>Język Angielski (KD)</td><td>Wiedza o Społeczeństwie (LP)</td><td>Informatyka (EŚ)</td><td>Doradztwo Zawodowe (MK)</td></tr>
+   <tr><td>8</td><td>Religia (IW)</td><td></td><td></td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>	
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 8b (Wychowawca: Michał Tarczyn)
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td>WDŻ (UZ)</td></tr>
-    <tr><td>1</td><td>Język Angielski (ZL)</td><td>Język Polski (OZ)</td><td>Matematyka (MT)</td><td>Język Polski (OZ)</td><td>Historia (KD)</td></tr>
-    <tr><td>2</td><td>Informatyka (EŚ)</td><td>Język Angielski (ZL)</td><td>Wychowanie Fizyczne (KM)</td><td>Fizyka (MW)</td><td>Matematyka (MT)</td></tr>
-    <tr><td>3</td><td>Chemia (TO)</td><td>Matematyka (MT)</td><td>Język Angielski (ZL)</td><td>Język Niemiecki (MJ)</td><td>Fizyka (MW)</td></tr>
-    <tr><td>4</td><td>Język Polski (OZ)</td><td>Wychowanie Fizyczne (KM)</td><td>Geografia (MG)</td><td>Historia (KD)</td><td>Zajęcia z Wychowawcą (MT)</td></tr>
-    <tr><td>5</td><td>Matematyka (MT)</td><td>Biologia (MW)</td><td>Język Polski (OZ)</td><td>Wychowanie Fizyczne (KM)</td><td>Wychowanie Fizyczne (KM)</td></tr>
-    <tr><td>6</td><td>Język Niemiecki (MJ)</td><td>Chemia (TO)</td><td>Język Polski (OZ)</td><td>Język Angielski (ZL)</td><td>Wiedza o Społeczeństwie (LP)</td></tr>
-    <tr><td>7</td><td>Wiedza o Społeczeństwie (LP)</td><td>Ed. dla bezpieczeństwa (DD)</td><td></td><td>Matematyka (MT)</td><td>Język Polski (OZ)</td></tr>
-    <tr><td>8</td><td>Religia (IW)</td><td></td><td></td><td></td><td>Doradztwo Zawodowe (MK)</td></tr>
-    <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)	</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td>WDŻ (UZ)</td></tr>
+   <tr><td>1</td><td>Język Angielski (ZL)</td><td>Język Polski (OZ)</td><td>Matematyka (MT)</td><td>Język Polski (OZ)</td><td>Historia (KD)</td></tr>
+   <tr><td>2</td><td>Informatyka (EŚ)</td><td>Język Angielski (ZL)</td><td>Wychowanie Fizyczne (KM)</td><td>Fizyka (MW)</td><td>Matematyka (MT)</td></tr>
+   <tr><td>3</td><td>Chemia (TO)</td><td>Matematyka (MT)</td><td>Język Angielski (ZL)</td><td>Język Niemiecki (MJ)</td><td>Fizyka (MW)</td></tr>
+   <tr><td>4</td><td>Język Polski (OZ)</td><td>Wychowanie Fizyczne (KM)</td><td>Geografia (MG)</td><td>Historia (KD)</td><td>Zajęcia z Wychowawcą (MT)</td></tr>
+   <tr><td>5</td><td>Matematyka (MT)</td><td>Biologia (MW)</td><td>Język Polski (OZ)</td><td>Wychowanie Fizyczne (KM)</td><td>Wychowanie Fizyczne (KM)</td></tr>
+   <tr><td>6</td><td>Język Niemiecki (MJ)</td><td>Chemia (TO)</td><td>Język Polski (OZ)</td><td>Język Angielski (ZL)</td><td>Wiedza o Społeczeństwie (LP)</td></tr>
+   <tr><td>7</td><td>Wiedza o Społeczeństwie (LP)</td><td>Ed. dla bezpieczeństwa (DD)</td><td></td><td>Matematyka (MT)</td><td>Język Polski (OZ)</td></tr>
+   <tr><td>8</td><td>Religia (IW)</td><td></td><td></td><td></td><td>Doradztwo Zawodowe (MK)</td></tr>
+   <tr><td>9</td><td></td><td></td><td></td><td>Etyka (RH)	</td><td></td></tr>
+ </tbody>
 </table>
 <div style="text-align: center; font-size: 48px; margin: 40px 0;">
 Klasa 8m (Wychowawca: Ludwik Parkowiak) klasa muzyczna
 </div>
 <table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-  <colgroup>
-    <col style="width: 5%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-    <col style="width: 18%;">
-  </colgroup>
-  <thead>
-    <tr>
-      <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>0</td><td></td><td></td><td></td><td></td><td>WDŻ (UZ)</td></tr>
-    <tr><td>1</td><td>Geografia (MG)</td><td>Język Polski (AB)</td><td>Język Niemiecki (MJ)</td><td>Nauka o Muzyce (AP)</td><td>Matematyka (JM)</td></tr>
-    <tr><td>2</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Matematyka (JM)</td><td>Matematyka (JM)</td><td>Język Angielski (CW)</td></tr>
-    <tr><td>3</td><td>Język Niemiecki (MJ)</td><td>Ed. dla bezpieczeństwa (DD)</td><td>Wychowanie Fizyczne (KM)</td><td>Historia (KD)</td><td>Historia (KD)</td></tr>
-    <tr><td>4</td><td>Wiedza o Społeczeństwie (LP)</td><td>Kształcenie Słuchu (AP)</td><td>Kształcenie Słuchu (AP)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td></tr>
-    <tr><td>5</td><td>Wychowanie Fizyczne (KM)</td><td>Matematyka (JM)</td><td>Zajęcia z Wychowawcą (LP)</td><td>Język Angielski (CW)</td><td>Fizyka (MW)</td></tr>
-    <tr><td>6</td><td>Matematyka (JM)</td><td>Informatyka (EŚ)</td><td>Język Polski (AB)</td><td>Wychowanie Fizyczne (KM)</td><td>Wychowanie Fizyczne (KM)</td></tr>
-    <tr><td>7</td><td>Język Angielski (CW)</td><td>Chemia (TO)</td><td>Język Angielski (CW)</td><td>Biologia (MW)</td><td>Wiedza o Społeczeństwie (LP)</td></tr>
-    <tr><td>8</td><td>Chemia (TO)</td><td></td><td>Fizyka (MW)</td><td></td><td></td></tr>
-    <tr><td>9</td><td></td><td></td><td>8m1.Religia (IW) / 8m2DoradztwoZawodowe(MK)</td><td>Etyka (RH)</td><td></td></tr>
-  </tbody>
+ <colgroup>
+   <col style="width: 5%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+   <col style="width: 18%;">
+ </colgroup>
+ <thead>
+   <tr>
+     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr><td>0</td><td></td><td></td><td></td><td></td><td>WDŻ (UZ)</td></tr>
+   <tr><td>1</td><td>Geografia (MG)</td><td>Język Polski (AB)</td><td>Język Niemiecki (MJ)</td><td>Nauka o Muzyce (AP)</td><td>Matematyka (JM)</td></tr>
+   <tr><td>2</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td><td>Matematyka (JM)</td><td>Matematyka (JM)</td><td>Język Angielski (CW)</td></tr>
+   <tr><td>3</td><td>Język Niemiecki (MJ)</td><td>Ed. dla bezpieczeństwa (DD)</td><td>Wychowanie Fizyczne (KM)</td><td>Historia (KD)</td><td>Historia (KD)</td></tr>
+   <tr><td>4</td><td>Wiedza o Społeczeństwie (LP)</td><td>Kształcenie Słuchu (AP)</td><td>Kształcenie Słuchu (AP)</td><td>Język Polski (AB)</td><td>Język Polski (AB)</td></tr>
+   <tr><td>5</td><td>Wychowanie Fizyczne (KM)</td><td>Matematyka (JM)</td><td>Zajęcia z Wychowawcą (LP)</td><td>Język Angielski (CW)</td><td>Fizyka (MW)</td></tr>
+   <tr><td>6</td><td>Matematyka (JM)</td><td>Informatyka (EŚ)</td><td>Język Polski (AB)</td><td>Wychowanie Fizyczne (KM)</td><td>Wychowanie Fizyczne (KM)</td></tr>
+   <tr><td>7</td><td>Język Angielski (CW)</td><td>Chemia (TO)</td><td>Język Angielski (CW)</td><td>Biologia (MW)</td><td>Wiedza o Społeczeństwie (LP)</td></tr>
+   <tr><td>8</td><td>Chemia (TO)</td><td></td><td>Fizyka (MW)</td><td></td><td></td></tr>
+   <tr><td>9</td><td></td><td></td><td>8m1.Religia (IW) / 8m2DoradztwoZawodowe(MK)</td><td>Etyka (RH)</td><td></td></tr>
+ </tbody>
 </table>
 
 
 `;
-                return;
-            }
-            if(currentCategory === 6) {
-                container.innerHTML = `
-                    <div class="su-info">
-                        <h3>Samorząd Uczniowski 1-3</h3>
-                        <p>Opiekun Samorządu 1-3: Anna Brzeska<br>
-                        Godzina Dostępności: Poniedziałek 13:45-14:30<br>
-                        <h3>Samorząd Uczniowski 4-8</h3>
-                        <p>Opiekun Samorządu i Wolontariatu: Michał Tarczyn<br>
-                        Przewodnicząca Szkoły: Olga Siwiec<br>
-                        Godzina Dostępności: Środa 11:35-13:35<br>
-                        Zebranie Samorządu Uczniowskiego: Środa 12:30-12:50</p>
-                        <p></p>
-                        <img src="https://raw.githubusercontent.com/fillxd/sz57/a1a7657b33999bc4c120299d3d9ef2f8001960ca/Samorz%C4%85d%20Uczniowski.png" alt="Samorząd" width="500">
+return;
+}
+if(currentCategory === 6) {
+container.innerHTML = `
+                   <div class="su-info">
+                       <h3>Samorząd Uczniowski 1-3</h3>
+                       <p>Opiekun Samorządu 1-3: Anna Brzeska<br>
+                       Godzina Dostępności: Poniedziałek 13:45-14:30<br>
+                       <h3>Samorząd Uczniowski 4-8</h3>
+                       <p>Opiekun Samorządu i Wolontariatu: Michał Tarczyn<br>
+                       Przewodnicząca Szkoły: Olga Siwiec<br>
+                       Godzina Dostępności: Środa 11:35-13:35<br>
+                       Zebranie Samorządu Uczniowskiego: Środa 12:30-12:50</p>
+                       <p></p>
+                       <img src="https://raw.githubusercontent.com/fillxd/sz57/a1a7657b33999bc4c120299d3d9ef2f8001960ca/Samorz%C4%85d%20Uczniowski.png" alt="Samorząd" width="500">
 						 <h3>Ogłoszenia Samorządu i Wolontariatu:</h3>
 						 <p>brak informacji<br>
 						 <p>brak<br>
-                    </div>`;
-                return;
-            }
+                   </div>`;
+return;
+}
 
-            if(currentCategory === 9) {
-                container.innerHTML = `
-                    <table class="teachers-table">
-                        <thead>
-                            <tr>
-                                <th>Przedmiot</th>
-                                <th>Nauczyciel</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Język Polski</td><td>Oliwia Żabkiewicz, Anna Burakowska, Dorota Maszkiewska, Jowita Kuter, Elżbieta Gawin</td></tr>
-                            <tr><td>Matematyka</td><td>Bożena Szpilkiewicz, Renata Skleszewska, Joanna Małek, Michał Tarczyn, Tadeusz Ostrowski, Grażyna Gruszka</td></tr>
-                            <tr><td>Język Angielski</td><td>Katarzyna Sieczko, Zofia Lisek, Celina Włodarczyk, Anna Gocał, Karolina Dominiak, Magdalena Wisłowicz, Marlena Wyszyńska</td></tr>
-                            <tr><td>Język Niemiecki</td><td>Magdalena Joelesh, Barbara Strzegomska</td></tr>
-                            <tr><td>Wychowanie Fizyczne</td><td>Małgorzata Domagała, Sylwia Cześniewicz, Mateusz Gig, Kinga Młodzik, Natalia Raczyńska, Marcin Krupnicki</td></tr>
-                            <tr><td>Historia</td><td>Paweł Grzegorzewski, Karol Dębowicz</td></tr>
-                            <tr><td>Biologia, Przyroda</td><td>Michalina Woźniak</td></tr>
-                            <tr><td>doradztwo zawodowe</td><td>Martyna Kołodziejczyk</td></tr>
-                            <tr><td>Plastyka</td><td>Barbara Trzaskowska</td></tr>
-                            <tr><td>Technika</td><td>Ludwik Parkowiak</td></tr>
-                            <tr><td>Chemia</td><td>Tadeusz Ostrowski</td></tr>
-                            <tr><td>Fizyka</td><td>Marian Woźniak</td></tr>
-                            <tr><td>Wiedza o społeczeństwie</td><td>Ludwik Parkowiak</td></tr>
-                            <tr><td>Edukacja dla bezpieczeństwa</td><td>Dariusz Drzemała</td></tr>
-                            <tr><td>Geografia</td><td>Mateusz Gig</td></tr>
-                            <tr><td>Informatyka</td><td>Ewelina Śmigalska</td></tr>
-                            <tr><td>Muzyka</td><td>Hanna Brzeska, Magdalena Joelesh, Antonina Pawelczyk</td></tr>
-                            <tr><td>Religia</td><td>ks. Ignacy Włoszek, Eugenia Nowodworska</td></tr>
-                            <tr><td>Kształcenie Słuchu, Nauka o Muzyce</td><td>Antonina Pawelczyk</td></tr>
-                            <tr><td>Edukacja Wczesnoszkolna</td><td>Rozalia Lipska, Faustyna Dobrzek, Daria Musherina, Anna Brzeska, Agnieszka Miłasz, Danuta Kapciuszko, Katarzyna Buzdro, Jolanta Bosak, Alicja Rajewicz-Drzemała, Weronika Rogalska</td></tr>
-                            <tr><td>Basen</td><td>Małgorzata Domagała, Kinga Młodzik</td></tr>
-                            <tr><td>Trening Zewnętrzny (TZ)</td><td>Małgorzata Domagała, Rozalia Lipska, Faustyna Dobrzek</td></tr>
-                            <tr><td>Świetlica</td><td>Alicja Struś-Michalska, Zuzanna Kośnicka, Katarzyna Borzędzin, Barbara Strzegomska, Anna Brzeska, Elżbieta Gawin, Daria Musherina, Ignacy Włoszek, Urszula Złocińska, Barbara Brzóska, Martyna Kołodziejczyk, Mateusz Gig, Anna Gocał</td></tr>
-                            <tr><td>Etyka</td><td>Renata Halczyk</td></tr>
-                            <tr><td>Nauczyciel Wspomagający</td><td>Aleksandra Malczyk, Dariusz Drzemała, Irynna Goshevniyk, Zuzanna Kośnicka, Marcin Krupnicki</td></tr>
-                            <tr><td>Pedagog</td><td>Aleksandra Wykaz, Anna Grześkowiak</td></tr>
-                            <tr><td>Biblioteka</td><td>Karolina Młotek</td></tr>
-                            <tr><td>Dyrekcja</td><td>Lena Skwierzyńska (1-3), Mateusz Gig (4-8)</td></tr>
-                            <tr><td>Kierownik</td><td>Katarzyna Borzędzin, Renata Halczyk</td></tr>
-                        </tbody>
-                    </table>`;
-                return;
-            }
+if(currentCategory === 9) {
+container.innerHTML = `
+                   <table class="teachers-table">
+                       <thead>
+                           <tr>
+                               <th>Przedmiot</th>
+                               <th>Nauczyciel</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr><td>Język Polski</td><td>Oliwia Żabkiewicz, Anna Burakowska, Dorota Maszkiewska, Jowita Kuter, Elżbieta Gawin</td></tr>
+                           <tr><td>Matematyka</td><td>Bożena Szpilkiewicz, Renata Skleszewska, Joanna Małek, Michał Tarczyn, Tadeusz Ostrowski, Grażyna Gruszka</td></tr>
+                           <tr><td>Język Angielski</td><td>Katarzyna Sieczko, Zofia Lisek, Celina Włodarczyk, Anna Gocał, Karolina Dominiak, Magdalena Wisłowicz, Marlena Wyszyńska</td></tr>
+                           <tr><td>Język Niemiecki</td><td>Magdalena Joelesh, Barbara Strzegomska</td></tr>
+                           <tr><td>Wychowanie Fizyczne</td><td>Małgorzata Domagała, Sylwia Cześniewicz, Mateusz Gig, Kinga Młodzik, Natalia Raczyńska, Marcin Krupnicki</td></tr>
+                           <tr><td>Historia</td><td>Paweł Grzegorzewski, Karol Dębowicz</td></tr>
+                           <tr><td>Biologia, Przyroda</td><td>Michalina Woźniak</td></tr>
+                           <tr><td>doradztwo zawodowe</td><td>Martyna Kołodziejczyk</td></tr>
+                           <tr><td>Plastyka</td><td>Barbara Trzaskowska</td></tr>
+                           <tr><td>Technika</td><td>Ludwik Parkowiak</td></tr>
+                           <tr><td>Chemia</td><td>Tadeusz Ostrowski</td></tr>
+                           <tr><td>Fizyka</td><td>Marian Woźniak</td></tr>
+                           <tr><td>Wiedza o społeczeństwie</td><td>Ludwik Parkowiak</td></tr>
+                           <tr><td>Edukacja dla bezpieczeństwa</td><td>Dariusz Drzemała</td></tr>
+                           <tr><td>Geografia</td><td>Mateusz Gig</td></tr>
+                           <tr><td>Informatyka</td><td>Ewelina Śmigalska</td></tr>
+                           <tr><td>Muzyka</td><td>Hanna Brzeska, Magdalena Joelesh, Antonina Pawelczyk</td></tr>
+                           <tr><td>Religia</td><td>ks. Ignacy Włoszek, Eugenia Nowodworska</td></tr>
+                           <tr><td>Kształcenie Słuchu, Nauka o Muzyce</td><td>Antonina Pawelczyk</td></tr>
+                           <tr><td>Edukacja Wczesnoszkolna</td><td>Rozalia Lipska, Faustyna Dobrzek, Daria Musherina, Anna Brzeska, Agnieszka Miłasz, Danuta Kapciuszko, Katarzyna Buzdro, Jolanta Bosak, Alicja Rajewicz-Drzemała, Weronika Rogalska</td></tr>
+                           <tr><td>Basen</td><td>Małgorzata Domagała, Kinga Młodzik</td></tr>
+                           <tr><td>Trening Zewnętrzny (TZ)</td><td>Małgorzata Domagała, Rozalia Lipska, Faustyna Dobrzek</td></tr>
+                           <tr><td>Świetlica</td><td>Alicja Struś-Michalska, Zuzanna Kośnicka, Katarzyna Borzędzin, Barbara Strzegomska, Anna Brzeska, Elżbieta Gawin, Daria Musherina, Ignacy Włoszek, Urszula Złocińska, Barbara Brzóska, Martyna Kołodziejczyk, Mateusz Gig, Anna Gocał</td></tr>
+                           <tr><td>Etyka</td><td>Renata Halczyk</td></tr>
+                           <tr><td>Nauczyciel Wspomagający</td><td>Aleksandra Malczyk, Dariusz Drzemała, Irynna Goshevniyk, Zuzanna Kośnicka, Marcin Krupnicki</td></tr>
+                           <tr><td>Pedagog</td><td>Aleksandra Wykaz, Anna Grześkowiak</td></tr>
+                           <tr><td>Biblioteka</td><td>Karolina Młotek</td></tr>
+                           <tr><td>Dyrekcja</td><td>Lena Skwierzyńska (1-3), Mateusz Gig (4-8)</td></tr>
+                           <tr><td>Kierownik</td><td>Katarzyna Borzędzin, Renata Halczyk</td></tr>
+                       </tbody>
+                   </table>`;
+return;
+}
 
-            if(currentCategory === 10) {
-                container.innerHTML = `
-                    <table class="tutors-table">
-                        <thead>
-                            <tr>
-                                <th>Klasa</th>
-                                <th>Wychowawca</th>
-                                <th>Nauczyciel Wspomagający</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>1a</td><td>Jolanta Bosak</td><td></td></tr>
-                            <tr><td>1b</td><td>Rozalia Lipska</td><td></td></tr>
-                            <tr><td>1c</td><td>Faustyna Dobrzek</td><td></td></tr>
-                            <tr><td>2a</td><td>Alicja Rajewicz-Drzemała</td><td></td></tr>
-                            <tr><td>2b</td><td>Agnieszka Miłasz</td><td></td></tr>
-                            <tr><td>2c</td><td>Daria Musherina</td><td>Irynna Goshevniyk</td></tr>
-                            <tr><td>3a</td><td>Katarzyna Buzdro</td><td></td></tr>
-                            <tr><td>3b</td><td>Anna Brzeska</td><td></td></tr>
-                            <tr><td>3c</td><td>Danuta Kapciuszko</td><td></td></tr>
-                            <tr><td>4a</td><td>Renata Skleszewska</td><td></td></tr>
-                            <tr><td>4b</td><td>Mateusz Gig</td><td></td></tr>
-                            <tr><td>4c</td><td>Natalia Raczyńska</td><td>Marcin Krupnicki</td></tr>
-                            <tr><td>5a</td><td>Katarzyna Sieczko</td><td></td></tr>
-                            <tr><td>5b</td><td>Dorota Maszkiewska</td><td></td></tr>
-                            <tr><td>5m</td><td>Antonina Pawelczyk</td><td></td></tr>
-                            <tr><td>6a</td><td>Bożena Szpilkiewicz</td><td></td></tr>
-                            <tr><td>6b</td><td>Kinga Młodzik</td><td></td></tr>
-                            <tr><td>6m</td><td>Małgorzata Domagała</td><td>Dariusz Drzemała</td></tr>
-                            <tr><td>7a</td><td>Celina Włodarczyk</td><td>Zuzanna Kośnicka</td></tr>
-                            <tr><td>7b</td><td>Magdalena Joelesh</td><td></td></tr>
-                            <tr><td>7m</td><td>Ewelina Śmigalska</td><td></td></tr>
-                            <tr><td>8a</td><td>Karol Dębowicz</td><td>Aleksandra Malczyk</td></tr>
-                            <tr><td>8b</td><td>Michał Tarczyn</td><td></td></tr>
-                            <tr><td>8m</td><td>Ludwik Parkowiak</td><td></td></tr>
-                        </tbody>
-                    </table>`;
-                return;
-            }
+if(currentCategory === 10) {
+container.innerHTML = `
+                   <table class="tutors-table">
+                       <thead>
+                           <tr>
+                               <th>Klasa</th>
+                               <th>Wychowawca</th>
+                               <th>Nauczyciel Wspomagający</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr><td>1a</td><td>Jolanta Bosak</td><td></td></tr>
+                           <tr><td>1b</td><td>Rozalia Lipska</td><td></td></tr>
+                           <tr><td>1c</td><td>Faustyna Dobrzek</td><td></td></tr>
+                           <tr><td>2a</td><td>Alicja Rajewicz-Drzemała</td><td></td></tr>
+                           <tr><td>2b</td><td>Agnieszka Miłasz</td><td></td></tr>
+                           <tr><td>2c</td><td>Daria Musherina</td><td>Irynna Goshevniyk</td></tr>
+                           <tr><td>3a</td><td>Katarzyna Buzdro</td><td></td></tr>
+                           <tr><td>3b</td><td>Anna Brzeska</td><td></td></tr>
+                           <tr><td>3c</td><td>Danuta Kapciuszko</td><td></td></tr>
+                           <tr><td>4a</td><td>Renata Skleszewska</td><td></td></tr>
+                           <tr><td>4b</td><td>Mateusz Gig</td><td></td></tr>
+                           <tr><td>4c</td><td>Natalia Raczyńska</td><td>Marcin Krupnicki</td></tr>
+                           <tr><td>5a</td><td>Katarzyna Sieczko</td><td></td></tr>
+                           <tr><td>5b</td><td>Dorota Maszkiewska</td><td></td></tr>
+                           <tr><td>5m</td><td>Antonina Pawelczyk</td><td></td></tr>
+                           <tr><td>6a</td><td>Bożena Szpilkiewicz</td><td></td></tr>
+                           <tr><td>6b</td><td>Kinga Młodzik</td><td></td></tr>
+                           <tr><td>6m</td><td>Małgorzata Domagała</td><td>Dariusz Drzemała</td></tr>
+                           <tr><td>7a</td><td>Celina Włodarczyk</td><td>Zuzanna Kośnicka</td></tr>
+                           <tr><td>7b</td><td>Magdalena Joelesh</td><td></td></tr>
+                           <tr><td>7m</td><td>Ewelina Śmigalska</td><td></td></tr>
+                           <tr><td>8a</td><td>Karol Dębowicz</td><td>Aleksandra Malczyk</td></tr>
+                           <tr><td>8b</td><td>Michał Tarczyn</td><td></td></tr>
+                           <tr><td>8m</td><td>Ludwik Parkowiak</td><td></td></tr>
+                       </tbody>
+                   </table>`;
+return;
+}
 
-            // PAGINACJA TYLKO DLA KATEGORII 5
-            if(currentCategory === 5) {
-                const allAnnouncements = announcements[currentCategory] || [];
-                const startIndex = (currentPage - 1) * itemsPerPage;
-                const endIndex = startIndex + itemsPerPage;
-                const pagedAnnouncements = allAnnouncements.slice(startIndex, endIndex);
+// PAGINACJA TYLKO DLA KATEGORII 5
+if(currentCategory === 5) {
+const allAnnouncements = announcements[currentCategory] || [];
+const startIndex = (currentPage - 1) * itemsPerPage;
+const endIndex = startIndex + itemsPerPage;
+const pagedAnnouncements = allAnnouncements.slice(startIndex, endIndex);
 
-                pagedAnnouncements.forEach((ann, index) => {
-                    container.appendChild(createAnnouncementCard(ann, startIndex + index));
-                });
+pagedAnnouncements.forEach((ann, index) => {
+container.appendChild(createAnnouncementCard(ann, startIndex + index));
+});
 
-                const totalPages = Math.ceil(allAnnouncements.length / itemsPerPage);
-                if(totalPages > 1) {
-                    const pagination = document.createElement('div');
-                    pagination.className = 'pagination';
-                    
-                    for(let i = 1; i <= totalPages; i++) {
-                        const pageBtn = document.createElement('button');
-                        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-                        pageBtn.textContent = i;
-                        pageBtn.onclick = () => {
-                            currentPage = i;
-                            showAnnouncements();
-                        };
-                        pagination.appendChild(pageBtn);
-                    }
-                    container.appendChild(pagination);
-                }
-            } else {
-                // DLA INNYCH KATEGORII BEZ PAGINACJI
-                const categoryAnnouncements = announcements[currentCategory] || [];
-                categoryAnnouncements.forEach((ann, index) => {
-                    container.appendChild(createAnnouncementCard(ann, index));
-                });
-            }
-        }
+const totalPages = Math.ceil(allAnnouncements.length / itemsPerPage);
+if(totalPages > 1) {
+const pagination = document.createElement('div');
+pagination.className = 'pagination';
 
-        function createAnnouncementCard(ann, index) {
-            const div = document.createElement('div');
-            div.className = 'announcement-card';
-            
-            const formatDate = (dateStr) => {
-                if (!dateStr) return '';
-                const [year, month, day] = dateStr.split('-');
-                return `${day.padStart(2, '0')}.${month.padStart(2, '0')}`;
-            };
+for(let i = 1; i <= totalPages; i++) {
+const pageBtn = document.createElement('button');
+pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+pageBtn.textContent = i;
+pageBtn.onclick = () => {
+currentPage = i;
+showAnnouncements();
+};
+pagination.appendChild(pageBtn);
+}
+container.appendChild(pagination);
+}
+} else {
+// DLA INNYCH KATEGORII BEZ PAGINACJI
+const categoryAnnouncements = announcements[currentCategory] || [];
+categoryAnnouncements.forEach((ann, index) => {
+container.appendChild(createAnnouncementCard(ann, index));
+});
+}
+}
 
-            let dateRange = '';
-            if(ann.dateFrom && ann.dateTo) {
-                const from = formatDate(ann.dateFrom);
-                const to = formatDate(ann.dateTo);
-                dateRange = from === to ? from : `${from} - ${to}`;
-            }
-            
-            div.innerHTML = `
-                <div class="actions">
-                    <span class="delete" onclick="deleteAnnouncement(${index})">🗑️</span>
-                    <span class="edit" onclick="editAnnouncement(${index})">✏️</span>
-                    <span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
-                    <span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
-                </div>
-                ${currentCategory === 4 ? `
-                    <h2>${dateRange}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-                    <p><strong>${ann.teacher || 'Brak danych'}</strong></p>
-                    <p>${ann.reason || 'Brak powodu'}</p>
-                ` : currentCategory === 2 ? `
-                    <h2>${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-                    <p><strong>${ann.name || 'Brak nazwy'}</strong></p>
-                    <p>Kategoria: ${ann.category || 'Brak kategorii'}</p>
-                ` : currentCategory === 3 ? `
-                    <h2>${ann.teacher || 'Brak nauczyciela'}: ${ann.title || 'Brak tytułu'} (${dateRange})</h2>
-                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-                    <span class="time">${timeAgo(ann.timestamp)}</span>
-                ` : currentCategory === 5 ? `
-                    <h2>${ann.title || 'Brak tytułu'}</h2>
-                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-                    <span class="time">${timeAgo(ann.timestamp)}</span>
-                ` : `
-                    <h2>${ann.title || 'Brak tytułu'}</h2>
-                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-                    <span class="time">${timeAgo(ann.timestamp)}</span>
-                `}
-            `;
-            return div;
-        }
+function createAnnouncementCard(ann, index) {
+const div = document.createElement('div');
+div.className = 'announcement-card';
 
-        function deleteAnnouncement(index) {
-            if(confirm('Czy na pewno chcesz przenieść ten wpis do archiwum?')) {
-                const deletedItem = announcements[currentCategory][index];
-                // Dodaj informacje o kategorii i czasie usunięcia
-                deletedItem.category = currentCategory;
-                deletedItem.deletedAt = Date.now();
-                
-                // Dodaj do archiwum
-                archive.unshift(deletedItem);
-                // Usuń z aktualnej kategorii
-                announcements[currentCategory].splice(index, 1);
-                
-                // Zapisz zmiany
-                saveAnnouncements()
-                    .then(() => {
-                        showAnnouncements();
-                    })
-                    .catch(error => {
-                        console.error("Błąd podczas zapisywania:", error);
-                        alert("Wystąpił błąd podczas przenoszenia do archiwum.");
-                    });
-            }
-        }
+const formatDate = (dateStr) => {
+if (!dateStr) return '';
+const [year, month, day] = dateStr.split('-');
+return `${day.padStart(2, '0')}.${month.padStart(2, '0')}`;
+};
 
-        function editAnnouncement(index) {
-            if (currentCategory === 4) {
-                const absence = announcements[currentCategory][index];
-                const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
-                if (!newDateFrom) return;
+let dateRange = '';
+if(ann.dateFrom && ann.dateTo) {
+const from = formatDate(ann.dateFrom);
+const to = formatDate(ann.dateTo);
+dateRange = from === to ? from : `${from} - ${to}`;
+}
 
-                const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
-                if (!newDateTo) return;
+div.innerHTML = `
+               <div class="actions">
+                   <span class="delete" onclick="deleteAnnouncement(${index})">🗑️</span>
+                   <span class="edit" onclick="editAnnouncement(${index})">✏️</span>
+                   <span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
+                   <span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
+               </div>
+               ${currentCategory === 4 ? `
+                   <h2>${dateRange}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
+                   <p><strong>${ann.teacher || 'Brak danych'}</strong></p>
+                   <p>${ann.reason || 'Brak powodu'}</p>
+               ` : currentCategory === 2 ? `
+                   <h2>${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
+                   <p><strong>${ann.name || 'Brak nazwy'}</strong></p>
+                   <p>Kategoria: ${ann.category || 'Brak kategorii'}</p>
+               ` : currentCategory === 3 ? `
+                   <h2>${ann.teacher || 'Brak nauczyciela'}: ${ann.title || 'Brak tytułu'} (${dateRange})</h2>
+                   <div class="announcement-content">${ann.content || 'Brak treści'}</div>
+                   <span class="time">${timeAgo(ann.timestamp)}</span>
+               ` : currentCategory === 5 ? `
+                   <h2>${ann.title || 'Brak tytułu'}</h2>
+                   <div class="announcement-content">${ann.content || 'Brak treści'}</div>
+                   <span class="time">${timeAgo(ann.timestamp)}</span>
+               ` : `
+                   <h2>${ann.title || 'Brak tytułu'}</h2>
+                   <div class="announcement-content">${ann.content || 'Brak treści'}</div>
+                   <span class="time">${timeAgo(ann.timestamp)}</span>
+               `}
+           `;
+return div;
+}
 
-                const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
-                if (!newHours) return;
+function deleteAnnouncement(index) {
+if(confirm('Czy na pewno chcesz przenieść ten wpis do archiwum?')) {
+const deletedItem = announcements[currentCategory][index];
+// Dodaj informacje o kategorii i czasie usunięcia
+deletedItem.category = currentCategory;
+deletedItem.deletedAt = Date.now();
 
-                const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
-                if (!newTeacher) return;
+// Dodaj do archiwum
+archive.unshift(deletedItem);
+// Usuń z aktualnej kategorii
+announcements[currentCategory].splice(index, 1);
 
-                const newReason = prompt('Edytuj powód:', absence.reason);
-                if (!newReason) return;
+// Zapisz zmiany
+saveAnnouncements()
+.then(() => {
+showAnnouncements();
+})
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas przenoszenia do archiwum.");
+});
+}
+}
 
-                absence.dateFrom = newDateFrom;
-                absence.dateTo = newDateTo;
-                absence.hours = newHours === 'cały dzień' ? null : newHours;
-                absence.teacher = newTeacher;
-                absence.reason = newReason;
-            } else if (currentCategory === 2) {
-                const event = announcements[currentCategory][index];
-                const newDate = prompt('Edytuj datę:', event.date);
-                if (!newDate) return;
+function editAnnouncement(index) {
+if (currentCategory === 4) {
+const absence = announcements[currentCategory][index];
+const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
+if (!newDateFrom) return;
 
-                const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
-                if (!newHours) return;
+const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
+if (!newDateTo) return;
 
-                const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
-                if (!newName) return;
+const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
+if (!newHours) return;
 
-                const newCategory = prompt('Edytuj kategorię:', event.category);
-                if (!newCategory) return;
+const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
+if (!newTeacher) return;
 
-                event.date = newDate;
-                event.hours = newHours === 'cały dzień' ? null : newHours;
-                event.name = newName;
-                event.category = newCategory;
-            } else if (currentCategory === 3) {
-                const announcement = announcements[currentCategory][index];
-                const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
-                if (!newTeacher) return;
+const newReason = prompt('Edytuj powód:', absence.reason);
+if (!newReason) return;
 
-                const newTitle = prompt('Edytuj tytuł:', announcement.title);
-                if (!newTitle) return;
+absence.dateFrom = newDateFrom;
+absence.dateTo = newDateTo;
+absence.hours = newHours === 'cały dzień' ? null : newHours;
+absence.teacher = newTeacher;
+absence.reason = newReason;
+} else if (currentCategory === 2) {
+const event = announcements[currentCategory][index];
+const newDate = prompt('Edytuj datę:', event.date);
+if (!newDate) return;
 
-                const newContent = prompt('Edytuj treść:', announcement.content);
-                if (!newContent) return;
+const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
+if (!newHours) return;
 
-                const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
-                if (!newDateFrom) return;
+const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
+if (!newName) return;
 
-                const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
-                if (!newDateTo) return;
+const newCategory = prompt('Edytuj kategorię:', event.category);
+if (!newCategory) return;
 
-                announcement.teacher = newTeacher;
-                announcement.title = newTitle;
-                announcement.content = newContent;
-                announcement.dateFrom = newDateFrom;
-                announcement.dateTo = newDateTo;
-            } else if (currentCategory === 5) {
-                const news = announcements[currentCategory][index];
-                const newTitle = prompt('Edytuj tytuł:', news.title);
-                if (!newTitle) return;
+event.date = newDate;
+event.hours = newHours === 'cały dzień' ? null : newHours;
+event.name = newName;
+event.category = newCategory;
+} else if (currentCategory === 3) {
+const announcement = announcements[currentCategory][index];
+const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
+if (!newTeacher) return;
 
-                const newContent = prompt('Edytuj treść:', news.content);
-                if (!newContent) return;
+const newTitle = prompt('Edytuj tytuł:', announcement.title);
+if (!newTitle) return;
 
-                news.title = newTitle;
-                news.content = newContent;
-            } else {
-                const newTitle = prompt('Edytuj tytuł:', announcements[currentCategory][index].title);
-                if (!newTitle) return;
+const newContent = prompt('Edytuj treść:', announcement.content);
+if (!newContent) return;
 
-                const newContent = prompt('Edytuj treść:', announcements[currentCategory][index].content);
-                if (!newContent) return;
+const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
+if (!newDateFrom) return;
 
-                announcements[currentCategory][index].title = newTitle;
-                announcements[currentCategory][index].content = newContent;
-            }
+const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
+if (!newDateTo) return;
 
-            saveAnnouncements()
-                .then(() => showAnnouncements())
-                .catch(error => {
-                    console.error("Błąd podczas zapisywania:", error);
-                    alert("Wystąpił błąd podczas zapisywania zmian.");
-                });
-        }
+announcement.teacher = newTeacher;
+announcement.title = newTitle;
+announcement.content = newContent;
+announcement.dateFrom = newDateFrom;
+announcement.dateTo = newDateTo;
+} else if (currentCategory === 5) {
+const news = announcements[currentCategory][index];
+const newTitle = prompt('Edytuj tytuł:', news.title);
+if (!newTitle) return;
 
-        function moveAnnouncement(index, direction) {
-            const arr = announcements[currentCategory];
-            if(direction === 'up' && index > 0) {
-                [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
-            } else if(direction === 'down' && index < arr.length - 1) {
-                [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
-            }
-            saveAnnouncements()
-                .then(() => showAnnouncements())
-                .catch(error => {
-                    console.error("Błąd podczas zapisywania:", error);
-                    alert("Wystąpił błąd podczas przesuwania ogłoszenia.");
-                });
-        }
+const newContent = prompt('Edytuj treść:', news.content);
+if (!newContent) return;
 
-        function timeAgo(timestamp) {
-            if (!timestamp) return 'brak daty';
-            const now = Date.now();
-            const diff = now - timestamp;
-            
-            const seconds = Math.floor(diff / 1000);
-            const minutes = Math.floor(seconds / 60);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
+news.title = newTitle;
+news.content = newContent;
+} else {
+const newTitle = prompt('Edytuj tytuł:', announcements[currentCategory][index].title);
+if (!newTitle) return;
 
-            if (days > 0) return `${days} dni temu`;
-            if (hours > 0) return `${hours} godz. temu`;
-            if (minutes > 0) return `${minutes} min. temu`;
-            return `${seconds} sek. temu`;
-        }
+const newContent = prompt('Edytuj treść:', announcements[currentCategory][index].content);
+if (!newContent) return;
 
-        function toggleAddButton() {
-            const btn = document.getElementById('addButton');
-            btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
-            btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
-                             currentCategory === 2 ? 'Dodaj Wydarzenie' : 
-                             currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
-                             currentCategory === 5 ? 'Dodaj Aktualność' :
-                             'Dodaj Ogłoszenie';
-        }
+announcements[currentCategory][index].title = newTitle;
+announcements[currentCategory][index].content = newContent;
+}
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAnnouncements(() => {
-                showAnnouncements();
-                toggleAddButton();
-            });
-        });
+saveAnnouncements()
+.then(() => showAnnouncements())
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas zapisywania zmian.");
+});
+}
 
-        // Obsługa formularzy
-        document.getElementById('absenceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newAbsence = {
-                dateFrom: document.getElementById('absenceDateFrom').value,
-                dateTo: document.getElementById('absenceDateTo').value,
-                hours: document.getElementById('absenceHours').value,
-                teacher: document.getElementById('absenceTeacher').value,
-                reason: document.getElementById('absenceReason').value,
-                timestamp: Date.now()
-            };
+function moveAnnouncement(index, direction) {
+const arr = announcements[currentCategory];
+if(direction === 'up' && index > 0) {
+[arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
+} else if(direction === 'down' && index < arr.length - 1) {
+[arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+}
+saveAnnouncements()
+.then(() => showAnnouncements())
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas przesuwania ogłoszenia.");
+});
+}
 
-            if (!newAbsence.dateFrom || !newAbsence.dateTo || !newAbsence.hours || !newAbsence.teacher || !newAbsence.reason) {
-                alert('Proszę wypełnić wszystkie pola!');
-                return;
-            }
+function timeAgo(timestamp) {
+if (!timestamp) return 'brak daty';
+const now = Date.now();
+const diff = now - timestamp;
 
-            announcements[currentCategory].unshift(newAbsence);
-            saveAnnouncements()
-                .then(() => {
-                    showAnnouncements();
-                    document.getElementById('absenceModal').style.display = 'none';
-                    this.reset();
-                })
-                .catch(error => {
-                    console.error("Błąd podczas zapisywania:", error);
-                    alert("Wystąpił błąd podczas dodawania nieobecności.");
-                });
-        });
+const seconds = Math.floor(diff / 1000);
+const minutes = Math.floor(seconds / 60);
+const hours = Math.floor(minutes / 60);
+const days = Math.floor(hours / 24);
 
-        document.getElementById('eventForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newEvent = {
-                date: document.getElementById('eventDate').value,
-                hours: document.getElementById('eventHours').value,
-                name: document.getElementById('eventName').value,
-                category: document.getElementById('eventCategory').value,
-                timestamp: Date.now()
-            };
+if (days > 0) return `${days} dni temu`;
+if (hours > 0) return `${hours} godz. temu`;
+if (minutes > 0) return `${minutes} min. temu`;
+return `${seconds} sek. temu`;
+}
 
-            if (!newEvent.date || !newEvent.hours || !newEvent.name || !newEvent.category) {
-                alert('Proszę wypełnić wszystkie pola!');
-                return;
-            }
+function toggleAddButton() {
+const btn = document.getElementById('addButton');
+btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
+btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
+currentCategory === 2 ? 'Dodaj Wydarzenie' : 
+currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
+currentCategory === 5 ? 'Dodaj Aktualność' :
+'Dodaj Ogłoszenie';
+}
 
-            announcements[currentCategory].unshift(newEvent);
-            saveAnnouncements()
-                .then(() => {
-                    showAnnouncements();
-                    document.getElementById('eventModal').style.display = 'none';
-                    this.reset();
-                })
-                .catch(error => {
-                    console.error("Błąd podczas zapisywania:", error);
-                    alert("Wystąpił błąd podczas dodawania wydarzenia.");
-                });
-        });
+document.addEventListener('DOMContentLoaded', () => {
+loadAnnouncements(() => {
+showAnnouncements();
+toggleAddButton();
+});
+});
 
-        document.getElementById('announcementForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newAnnouncement = {
-                teacher: document.getElementById('announcementTeacher').value,
-                title: document.getElementById('announcementTitle').value,
-                content: document.getElementById('announcementContent').value,
-                dateFrom: document.getElementById('announcementDateFrom').value,
-                dateTo: document.getElementById('announcementDateTo').value,
-                timestamp: Date.now()
-            };
+// Obsługa formularzy
+document.getElementById('absenceForm').addEventListener('submit', function(e) {
+e.preventDefault();
 
-            if (!newAnnouncement.teacher || !newAnnouncement.title || !newAnnouncement.content || !newAnnouncement.dateFrom || !newAnnouncement.dateTo) {
-                alert('Proszę wypełnić wszystkie pola!');
-                return;
-            }
+const newAbsence = {
+dateFrom: document.getElementById('absenceDateFrom').value,
+dateTo: document.getElementById('absenceDateTo').value,
+hours: document.getElementById('absenceHours').value,
+teacher: document.getElementById('absenceTeacher').value,
+reason: document.getElementById('absenceReason').value,
+timestamp: Date.now()
+};
 
-            announcements[3].unshift(newAnnouncement);
-            saveAnnouncements()
-                .then(() => {
-                    showAnnouncements();
-                    document.getElementById('announcementModal').style.display = 'none';
-                    this.reset();
-                })
-                .catch(error => {
-                    console.error("Błąd podczas zapisywania:", error);
-                    alert("Wystąpił błąd podczas dodawania ogłoszenia.");
-                });
-        });
+if (!newAbsence.dateFrom || !newAbsence.dateTo || !newAbsence.hours || !newAbsence.teacher || !newAbsence.reason) {
+alert('Proszę wypełnić wszystkie pola!');
+return;
+}
 
-        document.getElementById('newsForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newNews = {
-                title: document.getElementById('newsTitle').value,
-                content: document.getElementById('newsContent').value,
-                timestamp: Date.now()
-            };
+announcements[currentCategory].unshift(newAbsence);
+saveAnnouncements()
+.then(() => {
+showAnnouncements();
+document.getElementById('absenceModal').style.display = 'none';
+this.reset();
+})
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas dodawania nieobecności.");
+});
+});
 
-            if (!newNews.title || !newNews.content) {
-                alert('Proszę wypełnić wszystkie pola!');
-                return;
-            }
+document.getElementById('eventForm').addEventListener('submit', function(e) {
+e.preventDefault();
 
-            announcements[5].unshift(newNews);
-            saveAnnouncements()
-                .then(() => {
-                    showAnnouncements();
-                    document.getElementById('newsModal').style.display = 'none';
-                    this.reset();
-                })
-                .catch(error => {
-                    console.error("Błąd podczas zapisywania:", error);
-                    alert("Wystąpił błąd podczas dodawania aktualności.");
-                });
-        });
+const newEvent = {
+date: document.getElementById('eventDate').value,
+hours: document.getElementById('eventHours').value,
+name: document.getElementById('eventName').value,
+category: document.getElementById('eventCategory').value,
+timestamp: Date.now()
+};
 
-        function handleAddButton() {
-            if (currentCategory === 4) {
-                addAbsence();
-            } else if (currentCategory === 2) {
-                addEvent();
-            } else if (currentCategory === 3) {
-                addAnnouncement();
-            } else if (currentCategory === 5) {
-                addNews();
-            } else {
-                const title = prompt('Podaj tytuł ogłoszenia:');
-                if (!title) return;
-                
-                const content = prompt('Podaj treść ogłoszenia:');
-                if (!content) return;
+if (!newEvent.date || !newEvent.hours || !newEvent.name || !newEvent.category) {
+alert('Proszę wypełnić wszystkie pola!');
+return;
+}
 
-                const newAnn = {
-                    title,
-                    content,
-                    timestamp: Date.now()
-                };
+announcements[currentCategory].unshift(newEvent);
+saveAnnouncements()
+.then(() => {
+showAnnouncements();
+document.getElementById('eventModal').style.display = 'none';
+this.reset();
+})
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas dodawania wydarzenia.");
+});
+});
 
-                announcements[currentCategory].unshift(newAnn);
-                saveAnnouncements()
-                    .then(() => showAnnouncements())
-                    .catch(error => {
-                        console.error("Błąd podczas zapisywania:", error);
-                        alert("Wystąpił błąd podczas dodawania ogłoszenia.");
-                    });
-            }
-        }
+document.getElementById('announcementForm').addEventListener('submit', function(e) {
+e.preventDefault();
 
-        function addAbsence() {
-            document.getElementById('absenceModal').style.display = 'flex';
-        }
+const newAnnouncement = {
+teacher: document.getElementById('announcementTeacher').value,
+title: document.getElementById('announcementTitle').value,
+content: document.getElementById('announcementContent').value,
+dateFrom: document.getElementById('announcementDateFrom').value,
+dateTo: document.getElementById('announcementDateTo').value,
+timestamp: Date.now()
+};
 
-        function addEvent() {
-            document.getElementById('eventModal').style.display = 'flex';
-        }
+if (!newAnnouncement.teacher || !newAnnouncement.title || !newAnnouncement.content || !newAnnouncement.dateFrom || !newAnnouncement.dateTo) {
+alert('Proszę wypełnić wszystkie pola!');
+return;
+}
 
-        function addAnnouncement() {
-            document.getElementById('announcementModal').style.display = 'flex';
-        }
+announcements[3].unshift(newAnnouncement);
+saveAnnouncements()
+.then(() => {
+showAnnouncements();
+document.getElementById('announcementModal').style.display = 'none';
+this.reset();
+})
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas dodawania ogłoszenia.");
+});
+});
 
-        function addNews() {
-            document.getElementById('newsModal').style.display = 'flex';
-        }
-    </script>
+document.getElementById('newsForm').addEventListener('submit', function(e) {
+e.preventDefault();
+
+const newNews = {
+title: document.getElementById('newsTitle').value,
+content: document.getElementById('newsContent').value,
+timestamp: Date.now()
+};
+
+if (!newNews.title || !newNews.content) {
+alert('Proszę wypełnić wszystkie pola!');
+return;
+}
+
+announcements[5].unshift(newNews);
+saveAnnouncements()
+.then(() => {
+showAnnouncements();
+document.getElementById('newsModal').style.display = 'none';
+this.reset();
+})
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas dodawania aktualności.");
+});
+});
+
+function handleAddButton() {
+if (currentCategory === 4) {
+addAbsence();
+} else if (currentCategory === 2) {
+addEvent();
+} else if (currentCategory === 3) {
+addAnnouncement();
+} else if (currentCategory === 5) {
+addNews();
+} else {
+const title = prompt('Podaj tytuł ogłoszenia:');
+if (!title) return;
+
+const content = prompt('Podaj treść ogłoszenia:');
+if (!content) return;
+
+const newAnn = {
+title,
+content,
+timestamp: Date.now()
+};
+
+announcements[currentCategory].unshift(newAnn);
+saveAnnouncements()
+.then(() => showAnnouncements())
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas dodawania ogłoszenia.");
+});
+}
+}
+
+function addAbsence() {
+document.getElementById('absenceModal').style.display = 'flex';
+}
+
+function addEvent() {
+document.getElementById('eventModal').style.display = 'flex';
+}
+
+function addAnnouncement() {
+document.getElementById('announcementModal').style.display = 'flex';
+}
+
+function addNews() {
+document.getElementById('newsModal').style.display = 'flex';
+}
+</script>
 </body>
 </html>
-	
