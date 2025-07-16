@@ -366,7 +366,7 @@ color: white;
 
 <nav>
 <div class="menu">
-<a href="#" class="active" data-category="1">Strona Główna</a>
+<a href="#" class="active" data-category="1">Strona Główna</a>`
 <a href="#" data-category="5">Aktualności</a>
 <a href="#" data-category="11">Dokumenty</a>
 <a href="#" data-category="2">Wydarzenia</a>
@@ -374,6 +374,7 @@ color: white;
 <a href="#" data-category="10">Wychowawcy</a>
 <a href="#" data-category="7">Klasy 1-3 i Świetlica</a>
 <a href="#" data-category="6">Samorząd Uczniowski i Wolontariat</a>
+<a href="#" data-category="12">Szkoła Artystyczna</a>
 <a href="#" data-category="8">Dla Nauczycieli</a>
 <a href="#" data-category="3">Ogłoszenia</a>
 <a href="#" data-category="4">Nieobecności</a>
@@ -465,10 +466,11 @@ color: white;
 <div class="form-group">
 <label for="eventCategory">Działanie:</label>
 <select id="eventCategory" required>
-<option value="">brak</option>
+<option value="">wybierz</option>
 <option value="zajęcia odwołane - uczniowie zwolnieni do domu.">zajęcia odwołane - uczniowie zwolnieni do domu.</option>
 <option value="Zajęcia związane z tematem wydarzenia.">zajęcia związane z tematem wydarzenia.</option>
 <option value="Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)">Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)</option>
+<option value="brak">Brak</option>
 </select>
 </div>
 
@@ -492,17 +494,17 @@ color: white;
 </div>
 
 <div class="form-group">
-<label for="announcementTitle">Tytuł ogłoszenia:</label>
+<label for="announcementTitle">Tytuł:</label>
 <input type="text" id="announcementTitle" required>
 </div>
 
 <div class="form-group">
-<label for="announcementContent">Treść ogłoszenia:</label>
+<label for="announcementContent">Treść:</label>
 <textarea id="announcementContent" rows="4" required></textarea>
 </div>
 
 <div class="form-group">
-<label>Okres ważności:</label>
+<label>Czas:</label>
 <div class="date-range-container">
 <div class="date-range-item">
 <label for="announcementDateFrom">Od:</label>
@@ -528,12 +530,12 @@ color: white;
 <div class="modal-content">
 <form id="newsForm">
 <div class="form-group">
-<label for="newsTitle">Tytuł aktualności:</label>
+<label for="newsTitle">Tytuł wpisu:</label>
 <input type="text" id="newsTitle" required>
 </div>
 
 <div class="form-group">
-<label for="newsContent">Treść aktualności:</label>
+<label for="newsContent">Treść wpisu:</label>
 <textarea id="newsContent" rows="4" required></textarea>
 </div>
 
@@ -578,7 +580,7 @@ let archive = [];
 let currentPage = 1;
 const itemsPerPage = 8;
 
-const requiredCategories = [2, 3, 4, 5, 6, 7, 8];
+const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
 
 function saveAnnouncements() {
 // Zapisz zarówno ogłoszenia jak i archiwum w jednej transakcji
@@ -777,7 +779,8 @@ const categories = {
 8: 'Dla Nauczycieli',
 9: 'Grono Pedagogiczne',
 10: 'Wychowawcy',
-11: 'Dokumenty'
+11: 'Dokumenty' ,
+12: 'Szkoła Artystyczna'
 };
 return categories[categoryId] || 'Nieznana kategoria';
 }
@@ -789,27 +792,70 @@ container.innerHTML = '';
 if(currentCategory === 1) {
 container.innerHTML = `
                    <div class="homepage-content">
-                       <h2>Witamy na stronie Szkoły Podstawowej nr 57 we Wrocławiu!</h2>
-                       <p>Witamy na stronie najlepszej szkoły we Wrocławiu!<br>
+                       <h2>Witamy na stronie Szkoły Podstawowej nr 57 i Szkoły Artystycznej nr 2 we Wrocławiu!</h2>
+                       <h2>NOWA SZKOŁA ARTYSTYCZNA NR 2 WE WROCŁAWIU W NASZYM BUDYNKU!</h2>
                        Zapraszamy do naszej krainy edukacji! <br>
-                       Email: fillzster@gmail.com</p>
+                    </p>
                        
-                       <h3>O naszej szkole</h3>
-                       <p>Jesteśmy szkołą której niczego nie brakuje! Klasy ogólne, sportowe, muzyczne, a nawet językowe! Posiadamy wykwalifikowaną kadrę i cudowną dyrekcję!</p>
-                       <h3>O Patronie</h3>
-			<p>Stanisław Moniuszko urodził się 5 maja 1819 roku w Ubielu (dzisiejsza Białoruś). Był jednym z najwybitniejszych polskich kompozytorów XIX wieku, często nazywany "ojcem polskiej opery narodowej". Od najmłodszych lat miał kontakt z muzyką – pierwsze lekcje gry na fortepianie otrzymał od matki.
+                       <h3>O Naszej Szkole Podstawowej</h3>
+                       <p>Nasza szkoła to nowoczesna, przyjazna i otwarta placówka edukacyjna, która oferuje szeroki wachlarz możliwości rozwoju dla każdego ucznia. Prowadzimy 
+klasy ogólne, sportowe, muzyczne oraz językowe – tak, aby każde dziecko mogło rozwijać swoje pasje, zdolności i zainteresowania w odpowiednim dla siebie kierunku. Dysponujemy 
+wykwalifikowaną i doświadczoną kadrą pedagogiczną, która z zaangażowaniem wspiera uczniów w codziennej nauce i wychowaniu. Naszym priorytetem jest tworzenie bezpiecznego, 
+inspirującego środowiska, w którym dzieci mogą uczyć się, rozwijać i budować trwałe relacje. Nad całością czuwa kompetentna i oddana dyrekcja, dbająca zarówno o wysoki poziom
+ kształcenia, jak i o dobrą atmosferę w szkole. Dzięki wspólnej pracy całej społeczności szkolnej, nasza szkoła to miejsce, które nie tylko kształci, ale również wychowuje i 
+ wspiera młodych ludzi na każdym etapie ich rozwoju.</p>
+                       <h3>O Patronie Szkoły Podstawowej</h3>
+			<p>Stanisław Moniuszko urodził się 5 maja 1819 roku w Ubielu (dzisiejsza Białoruś). Był jednym z najwybitniejszych polskich kompozytorów XIX wieku, często nazywany 
+"ojcem polskiej opery narodowej". Od najmłodszych lat miał kontakt z muzyką – pierwsze lekcje gry na fortepianie otrzymał od matki. W wieku 18 lat wyjechał do Berlina, gdzie 
+studiował kompozycję i teorię muzyki u Carla Rungenhagena. Po powrocie do kraju objął posadę organisty w Wilnie i rozpoczął działalność kompozytorską oraz organizował koncerty. 
+W tym czasie tworzył pieśni, muzykę kościelną, a także utwory sceniczne. Jego największą sławę przyniosła opera „Halka”, która miała premierę w 1848 roku w Wilnie w wersji 
+koncertowej, a pełne wykonanie sceniczne odbyło się w 1858 roku w Warszawie. Moniuszko doskonale oddał w niej ducha polskiego społeczeństwa – pokazał problemy chłopów i szlachty, 
+wykorzystując elementy muzyki ludowej. W 1858 roku został dyrektorem Teatru Wielkiego w Warszawie, gdzie napisał kolejne ważne opery, m.in. „Straszny dwór”, „Hrabina” i „Paria”.
+ Oprócz oper tworzył też liczne pieśni, zebrane w zbiorach takich jak „Śpiewnik domowy”, który do dziś stanowi skarb polskiej kultury muzycznej. Moniuszko zmarł nagle 4 czerwca 
+ 1872 roku w Warszawie. Został pochowany na Cmentarzu Powązkowskim. Jego twórczość, mocno zakorzeniona w polskim folklorze i tradycji narodowej, do dziś jest symbolem muzycznego 
+patriotyzmu.</p>
+			<h3> O Naszej Szkole Artystycznej </h3>
+			<p> Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki 
+			i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. 
+			Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania 
+			swoich talentów szerszej publiczności. </p>
 
-W wieku 18 lat wyjechał do Berlina, gdzie studiował kompozycję i teorię muzyki u Carla Rungenhagena. Po powrocie do kraju objął posadę organisty w Wilnie i rozpoczął działalność kompozytorską oraz organizował koncerty. W tym czasie tworzył pieśni, muzykę kościelną, a także utwory sceniczne.
+                       <h3>Godziny otwarcia (w wakacje 27.06-31.08):</h3>
+<p> Sekretariat: 7:30-15:30 </p>
+<p> Szkoła: ( w wakacje nieczynna) </p>
+                   </div>`;
+return;
+}
 
-Jego największą sławę przyniosła opera „Halka”, która miała premierę w 1848 roku w Wilnie w wersji koncertowej, a pełne wykonanie sceniczne odbyło się w 1858 roku w Warszawie. Moniuszko doskonale oddał w niej ducha polskiego społeczeństwa – pokazał problemy chłopów i szlachty, wykorzystując elementy muzyki ludowej.
+if(currentCategory === 12) {
+container.innerHTML = `
+                   <div class="homepage-content">
+                       <h1>Szkoła Artystyczna nr 2 we Wrocławiu</h1>
+                       <p>Informacje na temat szkoły artystycznej.<br>
+                       <p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki 
+			i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. 
+			Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania 
+			swoich talentów szerszej publiczności.</p>
+                       
+                       <h3>ZAPISY:</h3>
+                       <p>Drodzy Uczniowie. Wraz z dniem 21 lipca 2025 r. rusza Rekrutacja do Szkoły Artystycznej nr 2 we Wrocławiu, czyli do nas. Od tego momentu, podając swoje imię, nazwisko, datę urodzenia oraz doświadczenie artystyczne, będziecie w systemie rekrutacji.
+		       Do dnia 1 sierpnia 2025 r. będzie możliwy zapis do szkoły artystycznej na dane kierunki. Szkoła odbywa się w godzinach popołudniowych nie kolidując ze szkołą nauczania ogólnego. </p>
+<h2> TERMINY REKRUTACJI: </h2>
+<h3> 21.07 - 1.08</h3> <p> Zapisy do Rekrutacji w systemie - podanie swoich danych; imię , nazwisko, data urodzenia, dane rodziców, dane kontaktowe, doświadczenie. </p>
+<h3> 4.08 - 10.08 </h3> <p> Przyjmowanie zgłoszeń przez szkołę - weryfikacja danych.</p>
+<h3> 11.08 od 8.30 </h3> <p> Wyniki Rekrutacji - osoby przyjęte i nieprzyjęte wywieszone na liście w szkole.</p>
+<h3> 12.08 - 15.08 </h3> <p> Rozmowy kwalifikacyjne z opiekunem prawnym i dyrektorem szkoły artystycznej</p>
+<h3> 18.08 </h3> <p> Oficjalna lista uczniów należących do Szkoły Artystycznej nr 2 we Wrocławiu. </p>
 
-W 1858 roku został dyrektorem Teatru Wielkiego w Warszawie, gdzie napisał kolejne ważne opery, m.in. „Straszny dwór”, „Hrabina” i „Paria”. Oprócz oper tworzył też liczne pieśni, zebrane w zbiorach takich jak „Śpiewnik domowy”, który do dziś stanowi skarb polskiej kultury muzycznej.
 
-Moniuszko zmarł nagle 4 czerwca 1872 roku w Warszawie. Został pochowany na Cmentarzu Powązkowskim. Jego twórczość, mocno zakorzeniona w polskim folklorze i tradycji narodowej, do dziś jest symbolem muzycznego patriotyzmu.</p>
-
-                       <h3>Godziny otwarcia</h3>
-                       <p>Szkoła: Pon-Pt: 7:00-17:00<br>
-                       <p>Sekretariat: Pon-Pt: 7:30-15:30<br>
+                       <h1>Ważne Informacje</h1>
+		       <h2> KLASA TANECZNA (14 os.) 7-10 lat </h2>
+	 		<h2> KLASA TANECZNA (12 os.) 11-14 lat </h2>
+    <h2> KLASA PLASTYCZNA (20 os.) 7-14 lat </h2>
+    <h2> KLASA TEATRALNA (15 os.) 7-14 lat </h2>
+    <h2> KLASA FOTOGRAFICZNA (10 os.) 11-14 lat </h2>
+                       <p>br<br>
+                       <p>Wszelkie pytania dotyczące szkoły artystycznej oraz rekrutacji do niej dostępne u dyrektora SA nr 2. - Ewa Malinowska (ewa.malinowska@edu.wroclaw.pl)<br>
                    </div>`;
 return;
 }
@@ -877,15 +923,20 @@ container.innerHTML = `
                        <p></p>
                        <img src=".png" alt="Samorząd Uczniowski" width="500">
 						 <h3>Ogłoszenia Samorządu i Wolontariatu:</h3>
+						 <p>SAMORZĄD UCZNIOWSKI RUSZA WE WRZEŚNIU.<br>
 						 <p>.<br>
-						 <p>.<br>
-                   </div>`;
-return;
+       </div>`;
+    
+    const categoryAnnouncements = announcements[currentCategory] || [];
+    categoryAnnouncements.forEach((ann, index) => {
+        container.appendChild(createAnnouncementCard(ann, index));
+    });
+    return;
 }
 
 if(currentCategory === 9) {
 container.innerHTML = `
-<p> Poniższa lista przedstawia Grono Pedagogiczne na rok szkolny 2024/2025. </p>
+<p> Poniższa lista przedstawia Grono Pedagogiczne na rok szkolny 2025/2026. </p>
                    <table class="teachers-table">
                        <thead>
                            <tr>
@@ -894,77 +945,101 @@ container.innerHTML = `
                            </tr>
                        </thead>
                        <tbody>
-                           <tr><td>Język Polski</td><td>Oliwia Żabkiewicz, Anna Burakowska, Dorota Maszkiewska, Jowita Kuter, Elżbieta Gawin</td></tr>
-                           <tr><td>Matematyka</td><td>Bożena Szpilkiewicz, Renata Skleszewska, Joanna Małek, Michał Tarczyn, Tadeusz Ostrowski, Grażyna Gruszka</td></tr>
-                           <tr><td>Język Angielski</td><td>Katarzyna Sieczko, Zofia Lisek, Celina Włodarczyk, Anna Gocał, Karolina Dominiak, Magdalena Wisłowicz, Marlena Wyszyńska</td></tr>
-                           <tr><td>Język Niemiecki</td><td>Magdalena Joelesh, Barbara Strzegomska</td></tr>
-                           <tr><td>Wychowanie Fizyczne</td><td>Małgorzata Domagała, Sylwia Cześniewicz, Mateusz Gig, Kinga Młodzik, Natalia Raczyńska, Marcin Krupnicki</td></tr>
-                           <tr><td>Historia</td><td>Paweł Grzegorzewski, Karol Dębowicz</td></tr>
-                           <tr><td>Biologia, Przyroda</td><td>Michalina Woźniak</td></tr>
-                           <tr><td>doradztwo zawodowe</td><td>Martyna Kołodziejczyk</td></tr>
-                           <tr><td>Plastyka</td><td>Barbara Trzaskowska</td></tr>
-                           <tr><td>Technika</td><td>Ludwik Parkowiak</td></tr>
-                           <tr><td>Chemia</td><td>Tadeusz Ostrowski</td></tr>
-                           <tr><td>Fizyka</td><td>Marian Woźniak</td></tr>
-                           <tr><td>Wiedza o społeczeństwie</td><td>Ludwik Parkowiak</td></tr>
-                           <tr><td>Edukacja dla bezpieczeństwa</td><td>Dariusz Drzemała</td></tr>
-                           <tr><td>Geografia</td><td>Mateusz Gig</td></tr>
-                           <tr><td>Informatyka</td><td>Ewelina Śmigalska</td></tr>
-                           <tr><td>Muzyka</td><td>Hanna Brzeska, Magdalena Joelesh, Antonina Pawelczyk</td></tr>
-                           <tr><td>Religia</td><td>ks. Ignacy Włoszek, Eugenia Nowodworska</td></tr>
-                           <tr><td>Kształcenie Słuchu, Nauka o Muzyce</td><td>Antonina Pawelczyk</td></tr>
-                           <tr><td>Edukacja Wczesnoszkolna</td><td>Rozalia Lipska, Faustyna Dobrzek, Daria Musherina, Anna Brzeska, Agnieszka Miłasz, Danuta Kapciuszko, Katarzyna Buzdro, Jolanta Bosak, Alicja Rajewicz-Drzemała, Weronika Rogalska</td></tr>
-                           <tr><td>Basen</td><td>Małgorzata Domagała, Kinga Młodzik</td></tr>
-                           <tr><td>Trening Zewnętrzny (TZ)</td><td>Małgorzata Domagała, Rozalia Lipska, Faustyna Dobrzek</td></tr>
-                           <tr><td>Świetlica</td><td>Alicja Struś-Michalska, Zuzanna Kośnicka, Katarzyna Borzędzin, Barbara Strzegomska, Anna Brzeska, Elżbieta Gawin, Daria Musherina, Ignacy Włoszek, Urszula Złocińska, Barbara Brzóska, Martyna Kołodziejczyk, Mateusz Gig, Anna Gocał</td></tr>
-                           <tr><td>Etyka</td><td>Renata Halczyk</td></tr>
-                           <tr><td>Nauczyciel Wspomagający</td><td>Aleksandra Malczyk, Dariusz Drzemała, Irynna Goshevniyk, Zuzanna Kośnicka, Marcin Krupnicki</td></tr>
-                           <tr><td>Pedagog</td><td>Aleksandra Wykaz, Anna Grześkowiak</td></tr>
-                           <tr><td>Biblioteka</td><td>Karolina Młotek</td></tr>
-                           <tr><td>Dyrekcja</td><td>Lena Skwierzyńska (1-3), Mateusz Gig (4-8)</td></tr>
-                           <tr><td>Kierownik</td><td>Katarzyna Borzędzin, Renata Halczyk</td></tr>
+                           <tr><td>Język Polski</td><td>.</td></tr>
+                           <tr><td>Matematyka</td><td>.</td></tr>
+                           <tr><td>Język Angielski</td><td>.</td></tr>
+                           <tr><td>Język Niemiecki</td><td>.</td></tr>
+                           <tr><td>Wychowanie Fizyczne</td><td>.</td></tr>
+                           <tr><td>Historia</td><td>.</td></tr>
+                           <tr><td>Biologia, Przyroda</td><td>.</td></tr>
+                           <tr><td>Doradztwo Zawodowe</td><td>.</td></tr>
+                           <tr><td>Plastyka</td><td>.</td></tr>
+                           <tr><td>Technika</td><td>.</td></tr>
+                           <tr><td>Chemia</td><td>.</td></tr>
+                           <tr><td>Fizyka</td><td>.</td></tr>
+                           <tr><td>Wiedza o społeczeństwie</td><td>.</td></tr>
+                           <tr><td>Edukacja dla bezpieczeństwa</td><td>.</td></tr>
+                           <tr><td>Geografia</td><td>.</td></tr>
+                           <tr><td>Informatyka</td><td>.</td></tr>
+                           <tr><td>Muzyka</td><td>.</td></tr>
+                           <tr><td>Religia</td><td>.</td></tr>
+                           <tr><td>Kształcenie Słuchu</td><td>.</td></tr>
+			   <tr><td>Nauka o Muzyce </td><td>.</td></tr>
+                           <tr><td>Edukacja Wczesnoszkolna</td><td>.</td></tr>
+                           <tr><td>Basen</td><td>.</td></tr>
+			   <tr><td>Edukacja Zdrowotna</td><td>.</td></tr>
+                           <tr><td>Zajęcia Terenowe</td><td>.</td></tr>
+                           <tr><td>Świetlica</td><td>.</td></tr>
+                           <tr><td>Etyka</td><td>.</td></tr>
+                           <tr><td>Nauczyciel Wspomagający</td><td>.</td></tr>
+
+                       </tbody>
+                   </table>;
+		   <h3> Pozostali Pracownicy </h3>
+	  <table class="teacher-table">
+                       <thead>
+                           <tr>
+                               <th>Zawód</th>
+                               <th>Imię i Nazwisko</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+
+                    
+			          <tr><td>Pedagog</td><td>.</td></tr>
+	            <tr><td>Psycholog</td><td>.</td></tr>
+                           <tr><td>Biblioteka</td><td>.</td></tr>
+                           <tr><td>Dyrekcja</td><td>Lena Skwierzyńska - wicedyrektor klas młodszych, Mateusz Gig - wicyderektor klas starszych, Aleksander Białko - dyrektor SP 57.</td></tr>
+                           <tr><td>Kierownik</td><td>.</td></tr>
+	
                        </tbody>
                    </table>`;
+
+	
 return;
 }
 
 if(currentCategory === 10) {
 container.innerHTML = `
-<p> poniższa lista przedstawia klasy, wychowawców i nauczycieli wspomagających na rok szkolny 2024/2025. </p>
+<p> LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026 </p>
                    <table class="tutors-table">
                        <thead>
                            <tr>
                                <th>Klasa</th>
+			       <th>Nazwa klasy</th>
                                <th>Wychowawca</th>
                                <th>Nauczyciel Wspomagający</th>
                            </tr>
                        </thead>
                        <tbody>
-                           <tr><td>1a</td><td>Jolanta Bosak</td><td></td></tr>
-                           <tr><td>1b</td><td>Rozalia Lipska</td><td></td></tr>
-                           <tr><td>1c</td><td>Faustyna Dobrzek</td><td></td></tr>
-                           <tr><td>2a</td><td>Alicja Rajewicz-Drzemała</td><td></td></tr>
-                           <tr><td>2b</td><td>Agnieszka Miłasz</td><td></td></tr>
-                           <tr><td>2c</td><td>Daria Musherina</td><td>Irynna Goshevniyk</td></tr>
-                           <tr><td>3a</td><td>Katarzyna Buzdro</td><td></td></tr>
-                           <tr><td>3b</td><td>Anna Brzeska</td><td></td></tr>
-                           <tr><td>3c</td><td>Danuta Kapciuszko</td><td></td></tr>
-                           <tr><td>4a</td><td>Renata Skleszewska</td><td></td></tr>
-                           <tr><td>4b</td><td>Mateusz Gig</td><td></td></tr>
-                           <tr><td>4c</td><td>Natalia Raczyńska</td><td>Marcin Krupnicki</td></tr>
-                           <tr><td>5a</td><td>Katarzyna Sieczko</td><td></td></tr>
-                           <tr><td>5b</td><td>Dorota Maszkiewska</td><td></td></tr>
-                           <tr><td>5m</td><td>Antonina Pawelczyk</td><td></td></tr>
-                           <tr><td>6a</td><td>Bożena Szpilkiewicz</td><td></td></tr>
-                           <tr><td>6b</td><td>Kinga Młodzik</td><td></td></tr>
-                           <tr><td>6m</td><td>Małgorzata Domagała</td><td>Dariusz Drzemała</td></tr>
-                           <tr><td>7a</td><td>Celina Włodarczyk</td><td>Zuzanna Kośnicka</td></tr>
-                           <tr><td>7b</td><td>Magdalena Joelesh</td><td></td></tr>
-                           <tr><td>7m</td><td>Ewelina Śmigalska</td><td></td></tr>
-                           <tr><td>8a</td><td>Karol Dębowicz</td><td>Aleksandra Malczyk</td></tr>
-                           <tr><td>8b</td><td>Michał Tarczyn</td><td></td></tr>
-                           <tr><td>8m</td><td>Ludwik Parkowiak</td><td></td></tr>
-                       </tbody>
+                           <tr><td>1A</td><td>Ogólna</td><td></td><td></td></tr>
+			    <tr><td>1B</td><td>Językowa</td><td></td><td></td></tr>
+      			  <tr><td>1M</td><td>Muzyczna</td><td></td><td></td></tr>
+			 <tr><td>2A</td><td>Ogólna</td><td></td><td></td></tr>
+ 			  <tr><td>2B</td><td>Ogólna</td><td></td><td></td></tr>
+   			 <tr><td>2C</td><td>Ogólna</td><td></td><td></td></tr>
+    			 <tr><td>3A</td><td>Ogólna</td><td></td><td></td></tr>
+   			   <tr><td>3B</td><td>Ogólna</td><td></td><td></td></tr>
+    			   <tr><td>3C</td><td>Językowa</td><td></td><td></td></tr>
+    		 	   <tr><td>4A</td><td>Sportowa</td><td></td><td></td></tr>
+	  		   <tr><td>4B</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>4C</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>5A</td><td>Sportowa</td><td></td><td></td></tr>
+    <tr><td>5B</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>5C</td><td>Artystyczna</td><td></td><td></td></tr>
+    <tr><td>6A</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>6B</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>6M</td><td>Muzyczna</td><td></td><td></td></tr>
+    <tr><td>7A</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>7B</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>7M</td><td>Muzyczna</td><td></td><td></td></tr>
+    <tr><td>8A</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>8B</td><td>Ogólna</td><td></td><td></td></tr>
+    <tr><td>8M</td><td>Muzyczna</td><td></td><td></td></tr>
+	
+			   
+			   
+
                    </table>`;
 return;
 }
@@ -1209,6 +1284,8 @@ btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' :
 currentCategory === 2 ? 'Dodaj Wydarzenie' : 
 currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
 currentCategory === 5 ? 'Dodaj Aktualność' :
+currentCategory === 6 ? 'Dodaj Ogłoszenie SU' :
+currentCategory === 12 ? 'Dodaj ogłoszenie' :
 'Dodaj Ogłoszenie';
 }
 
@@ -1345,26 +1422,33 @@ addEvent();
 addAnnouncement();
 } else if (currentCategory === 5) {
 addNews();
-} else {
-const title = prompt('Podaj tytuł ogłoszenia:');
-if (!title) return;
+} else if (currentCategory === 6) {
+    const title = prompt('Podaj tytuł ogłoszenia SU:');
+    if (!title) return;
 
-const content = prompt('Podaj treść ogłoszenia:');
-if (!content) return;
+    const content = prompt('Podaj treść ogłoszenia SU:');
+    if (!content) return;
 
-const newAnn = {
-title,
-content,
-timestamp: Date.now()
-};
+    const newAnn = {
+        title,
+        content,
+        timestamp: Date.now()
+    };
 
-announcements[currentCategory].unshift(newAnn);
-saveAnnouncements()
-.then(() => showAnnouncements())
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas dodawania ogłoszenia.");
-});
+    if (!announcements[currentCategory]) {
+        announcements[currentCategory] = [];
+    }
+    
+    announcements[currentCategory].unshift(newAnn);
+    
+    saveAnnouncements()
+    .then(() => {
+        showAnnouncements();
+    })
+    .catch(error => {
+        console.error("Błąd zapisu:", error);
+        alert("Błąd podczas zapisywania ogłoszenia!");
+    });
 }
 }
 
