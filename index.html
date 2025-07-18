@@ -1414,42 +1414,71 @@ alert("Wystąpił błąd podczas dodawania aktualności.");
 });
 
 function handleAddButton() {
-if (currentCategory === 4) {
-addAbsence();
-} else if (currentCategory === 2) {
-addEvent();
-} else if (currentCategory === 3) {
-addAnnouncement();
-} else if (currentCategory === 5) {
-addNews();
-} else if (currentCategory === 6) {
-    const title = prompt('Podaj tytuł ogłoszenia SU:');
-    if (!title) return;
+    if (currentCategory === 4) {
+        addAbsence();
+    } else if (currentCategory === 2) {
+        addEvent();
+    } else if (currentCategory === 3) {
+        addAnnouncement();
+    } else if (currentCategory === 5) {
+        addNews();
+    } else if (currentCategory === 6) {
+        // Obecna obsługa SU
+        const title = prompt('Podaj tytuł ogłoszenia SU:');
+        if (!title) return;
 
-    const content = prompt('Podaj treść ogłoszenia SU:');
-    if (!content) return;
+        const content = prompt('Podaj treść ogłoszenia SU:');
+        if (!content) return;
 
-    const newAnn = {
-        title,
-        content,
-        timestamp: Date.now()
-    };
+        const newAnn = {
+            title,
+            content,
+            timestamp: Date.now()
+        };
 
-    if (!announcements[currentCategory]) {
-        announcements[currentCategory] = [];
+        if (!announcements[currentCategory]) {
+            announcements[currentCategory] = [];
+        }
+        
+        announcements[currentCategory].unshift(newAnn);
+        
+        saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+        })
+        .catch(error => {
+            console.error("Błąd zapisu:", error);
+            alert("Błąd podczas zapisywania ogłoszenia!");
+        });
+    } else {
+        // Obsługa pozostałych kategorii (7,8,12 itp.)
+        const title = prompt('Podaj tytuł ogłoszenia:');
+        if (!title) return;
+
+        const content = prompt('Podaj treść ogłoszenia:');
+        if (!content) return;
+
+        const newAnn = {
+            title,
+            content,
+            timestamp: Date.now()
+        };
+
+        if (!announcements[currentCategory]) {
+            announcements[currentCategory] = [];
+        }
+        
+        announcements[currentCategory].unshift(newAnn);
+        
+        saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+        })
+        .catch(error => {
+            console.error("Błąd zapisu:", error);
+            alert("Błąd podczas zapisywania ogłoszenia!");
+        });
     }
-    
-    announcements[currentCategory].unshift(newAnn);
-    
-    saveAnnouncements()
-    .then(() => {
-        showAnnouncements();
-    })
-    .catch(error => {
-        console.error("Błąd zapisu:", error);
-        alert("Błąd podczas zapisywania ogłoszenia!");
-    });
-}
 }
 
 function addAbsence() {
