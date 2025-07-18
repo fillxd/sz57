@@ -857,7 +857,17 @@ container.innerHTML = `
                        <p>br<br>
                        <p>Wszelkie pytania dotyczące szkoły artystycznej oraz rekrutacji do niej dostępne u dyrektora SA nr 2. - Ewa Malinowska (ewa.malinowska@edu.wroclaw.pl)<br>
                    </div>`;
-return;
+const artContainer = document.getElementById('school-art-announcements') || container;
+    const categoryAnnouncements = announcements[currentCategory] || [];
+    
+    if(categoryAnnouncements.length === 0) {
+        artContainer.innerHTML = '<p>Brak ogłoszeń.</p>';
+    } else {
+        categoryAnnouncements.forEach((ann, index) => {
+            artContainer.appendChild(createAnnouncementCard(ann, index));
+        });
+    }
+    return;
 }
 
 if(currentCategory === 11) {
@@ -1422,36 +1432,7 @@ function handleAddButton() {
         addAnnouncement();
     } else if (currentCategory === 5) {
         addNews();
-    } else if (currentCategory === 6) {
-        // Obecna obsługa SU
-        const title = prompt('Podaj tytuł ogłoszenia SU:');
-        if (!title) return;
-
-        const content = prompt('Podaj treść ogłoszenia SU:');
-        if (!content) return;
-
-        const newAnn = {
-            title,
-            content,
-            timestamp: Date.now()
-        };
-
-        if (!announcements[currentCategory]) {
-            announcements[currentCategory] = [];
-        }
-        
-        announcements[currentCategory].unshift(newAnn);
-        
-        saveAnnouncements()
-        .then(() => {
-            showAnnouncements();
-        })
-        .catch(error => {
-            console.error("Błąd zapisu:", error);
-            alert("Błąd podczas zapisywania ogłoszenia!");
-        });
-    } else {
-        // Obsługa pozostałych kategorii (7,8,12 itp.)
+    } else if (currentCategory === 6 || currentCategory === 12) { // Dodano obsługę kategorii 12
         const title = prompt('Podaj tytuł ogłoszenia:');
         if (!title) return;
 
@@ -1480,7 +1461,6 @@ function handleAddButton() {
         });
     }
 }
-
 function addAbsence() {
 document.getElementById('absenceModal').style.display = 'flex';
 }
