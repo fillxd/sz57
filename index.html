@@ -362,7 +362,18 @@ color: white;
 </style>
 </head>
 <body>
-
+ <!-- Modal logowania - PIERWSZA RZECZ NA STRONIE -->
+  <div id="loginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; justify-content:center; align-items:center;">
+    <div style="text-align:center;">
+	<h1> WITAJ NA STRONIE </h1>
+      <h2>Zaloguj się do systemu podając login.</h2>
+      <input type="password" id="passwordInput" placeholder="Wpisz twój login" style="padding:10px; font-size:16px; margin:10px;">
+      <button onclick="checkPassword()" style="padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:5px; cursor:pointer;">
+        Zaloguj
+      </button>
+      <p id="loginError" style="color:red; margin-top:10px;"></p>
+    </div>
+  </div>
 																													<!-- INFORMACJA O WERSJI STRONY --!>
 <div style="position:fixed; top:0; left:0; padding:5px; background:white; z-index:9999;">2.0a</div>
 <div class="header">
@@ -570,6 +581,30 @@ color: white;
 </div>
 
 <script>
+// Stałe hasło
+const APP_PASSWORD = "57";
+
+// Sprawdź hasło
+function checkPassword() {
+  const password = document.getElementById("passwordInput").value;
+  if (password === APP_PASSWORD) {
+    // Zalogowano poprawnie
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    localStorage.setItem("isLoggedIn", "true");
+  } else {
+    // Błędne hasło
+    document.getElementById("loginError").textContent = "Błędny kod!";
+  }
+}
+
+// Sprawdź przy ładowaniu strony
+window.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("isLoggedIn") === "true") {
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  }
+});
 // KONFIGURACJA FIREBASE
 const firebaseConfig = {
 apiKey: "AIzaSyCFOF0WtZfOSzXFO6gr6kTXwtHlymwGjNU",
@@ -1196,96 +1231,69 @@ alert("Wystąpił błąd podczas przenoszenia do archiwum.");
 }
 
 function editAnnouncement(index) {
-    if (currentCategory === 4) {
-        const absence = announcements[currentCategory][index];
-        const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
-        if (!newDateFrom) return;
+if (currentCategory === 4) {
+const absence = announcements[currentCategory][index];
+const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
+if (!newDateFrom) return;
 
-        const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
-        if (!newDateTo) return;
+const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
+if (!newDateTo) return;
 
-        const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
-        if (!newHours) return;
+const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
+if (!newHours) return;
 
-        const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
-        if (!newTeacher) return;
+const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
+if (!newTeacher) return;
 
-        const newReason = prompt('Edytuj powód:', absence.reason);
-        if (!newReason) return;
+const newReason = prompt('Edytuj powód:', absence.reason);
+if (!newReason) return;
 
-        absence.dateFrom = newDateFrom;
-        absence.dateTo = newDateTo;
-        absence.hours = newHours === 'cały dzień' ? null : newHours;
-        absence.teacher = newTeacher;
-        absence.reason = newReason;
+absence.dateFrom = newDateFrom;
+absence.dateTo = newDateTo;
+absence.hours = newHours === 'cały dzień' ? null : newHours;
+absence.teacher = newTeacher;
+absence.reason = newReason;
+} else if (currentCategory === 2) {
+const event = announcements[currentCategory][index];
+const newDate = prompt('Edytuj datę:', event.date);
+if (!newDate) return;
 
-        // DODANE: Zapisanie zmian i odświeżenie widoku
-        saveAnnouncements()
-            .then(() => showAnnouncements())
-            .catch(error => {
-                console.error("Błąd podczas zapisywania:", error);
-                alert("Wystąpił błąd podczas zapisywania zmian.");
-            });
+const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
+if (!newHours) return;
 
-    } else if (currentCategory === 2) {
-        const event = announcements[currentCategory][index];
-        const newDate = prompt('Edytuj datę:', event.date);
-        if (!newDate) return;
+const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
+if (!newName) return;
 
-        const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
-        if (!newHours) return;
+const newCategory = prompt('Edytuj kategorię:', event.category);
+if (!newCategory) return;
 
-        const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
-        if (!newName) return;
+event.date = newDate;
+event.hours = newHours === 'cały dzień' ? null : newHours;
+event.name = newName;
+event.category = newCategory;
+} else if (currentCategory === 3) {
+const announcement = announcements[currentCategory][index];
+const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
+if (!newTeacher) return;
 
-        const newCategory = prompt('Edytuj kategorię:', event.category);
-        if (!newCategory) return;
+const newTitle = prompt('Edytuj tytuł:', announcement.title);
+if (!newTitle) return;
 
-        event.date = newDate;
-        event.hours = newHours === 'cały dzień' ? null : newHours;
-        event.name = newName;
-        event.category = newCategory;
+const newContent = prompt('Edytuj treść:', announcement.content);
+if (!newContent) return;
 
-        // DODANE: Zapisanie zmian i odświeżenie widoku
-        saveAnnouncements()
-            .then(() => showAnnouncements())
-            .catch(error => {
-                console.error("Błąd podczas zapisywania:", error);
-                alert("Wystąpił błąd podczas zapisywania zmian.");
-            });
+const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
+if (!newDateFrom) return;
 
-    } else if (currentCategory === 3) {
-        const announcement = announcements[currentCategory][index];
-        const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
-        if (!newTeacher) return;
+const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
+if (!newDateTo) return;
 
-        const newTitle = prompt('Edytuj tytuł:', announcement.title);
-        if (!newTitle) return;
-
-        const newContent = prompt('Edytuj treść:', announcement.content);
-        if (!newContent) return;
-
-        const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
-        if (!newDateFrom) return;
-
-        const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
-        if (!newDateTo) return;
-
-        announcement.teacher = newTeacher;
-        announcement.title = newTitle;
-        announcement.content = newContent;
-        announcement.dateFrom = newDateFrom;
-        announcement.dateTo = newDateTo;
-
-        // DODANE: Zapisanie zmian i odświeżenie widoku
-        saveAnnouncements()
-            .then(() => showAnnouncements())
-            .catch(error => {
-                console.error("Błąd podczas zapisywania:", error);
-                alert("Wystąpił błąd podczas zapisywania zmian.");
-            });
-
-    } else if ([5,6,7,8,12].includes(currentCategory)) {
+announcement.teacher = newTeacher;
+announcement.title = newTitle;
+announcement.content = newContent;
+announcement.dateFrom = newDateFrom;
+announcement.dateTo = newDateTo;
+ } else if ([5,6,7,8,12].includes(currentCategory)) {
         const item = announcements[currentCategory][index];
         const newTitle = prompt('Edytuj tytuł:', item.title);
         if (!newTitle) return;
@@ -1297,11 +1305,11 @@ function editAnnouncement(index) {
         item.content = newContent;
 
         saveAnnouncements()
-            .then(() => showAnnouncements())
-            .catch(error => {
-                console.error("Błąd podczas zapisywania:", error);
-                alert("Wystąpił błąd podczas zapisywania zmian.");
-            });
+        .then(() => showAnnouncements())
+        .catch(error => {
+            console.error("Błąd podczas zapisywania:", error);
+            alert("Wystąpił błąd podczas zapisywania zmian.");
+        });
     }
 }
 function moveAnnouncement(index, direction) {
