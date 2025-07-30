@@ -1432,7 +1432,7 @@ function handleAddButton() {
         addAnnouncement();
     } else if (currentCategory === 5) {
         addNews();
-    } else if (currentCategory === 6 || currentCategory === 12) { // Dodano obsługę kategorii 12
+    } else if ([6, 7, 8, 12].includes(currentCategory)) { // Dodano 7 i 8!
         const title = prompt('Podaj tytuł ogłoszenia:');
         if (!title) return;
 
@@ -1446,7 +1446,7 @@ function handleAddButton() {
         };
 
         if (!announcements[currentCategory]) {
-            announcements[currentCategory] = [];
+            announcements[currentCategory] = []; // Zabezpieczenie, jeśli kategoria nie istnieje
         }
         
         announcements[currentCategory].unshift(newAnn);
