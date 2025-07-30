@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SP 57</title>
-<link rel="icon" type="image/x-icon" href="favicon.png">
+
+																					<!-- TYTUŁ STRONY INTERNETOWEJ - wyświetlany w przeglądarce --!>
+<title>SP 57</title> 
+
+																										<!-- IKONA STRONY INTERNETOWEJ --!>
+<link rel="icon" type="image/x-icon" href="favicon.png"> 
+
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
@@ -357,13 +362,19 @@ color: white;
 </style>
 </head>
 <body>
+
+																													<!-- INFORMACJA O WERSJI STRONY --!>
+<div style="position:fixed; top:0; left:0; padding:5px; background:white; z-index:9999;">2.0a</div>
 <div class="header">
-<h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1>
+<h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1> 
+
+																													<!-- TYTUŁ NA GÓRZE W MENU GŁÓWNYM --!>
+
 <div class="search-container">
 <a href="#" id="archiveButton">Kosz</a>
 </div>
 </div>
-
+																														<!-- NAZWY KATEGORII NA STRONIE --!>
 <nav>
 <div class="menu">
 <a href="#" class="active" data-category="1">Strona Główna</a>`
@@ -415,7 +426,7 @@ color: white;
 <option value="">Wybierz nauczyciela</option>
 </select>
 </div>
-
+																									<!-- POWODY NIEOBECNOŚCI DLA NAUCZYCIELI --!>
 <div class="form-group">
 <label for="absenceReason">Powód:</label>
 <select id="absenceReason" required>
@@ -625,7 +636,7 @@ archive = [];
 callback();
 });
 }
-
+																																	/* LISTA NAUCZYCIELI */
 const nauczyciele = [
 "Jolanta Bosak", "Katarzyna Borzędzin", "Hanna Brzeska", "Anna Brzeska", "Barbara Brzóska",
 "Anna Burakowska", "Buzdro Katarzyna", "Sylwia Cześniewicz", "Karol Dębowicz", "Faustyna Dobrzek", "Karolina Dominiak",
@@ -789,6 +800,8 @@ function showAnnouncements() {
 const container = document.getElementById('announcements');
 container.innerHTML = '';
 
+																															<!-- STRONA GŁÓWNA - INFORMACJE DO EDYCJI --!>
+
 if(currentCategory === 1) {
 container.innerHTML = `
                    <div class="homepage-content">
@@ -829,6 +842,9 @@ return;
 
 if(currentCategory === 12) {
 container.innerHTML = `
+
+																															<!-- INFORMACJE O SZKOLE ARTYSTYCZNEJ DO EDYCJI --!>
+
                    <div class="homepage-content">
                        <h1>Szkoła Artystyczna nr 2 we Wrocławiu</h1>
                        <p>Informacje na temat szkoły artystycznej.<br>
@@ -872,6 +888,9 @@ const artContainer = document.getElementById('school-art-announcements') || cont
 
 if(currentCategory === 11) {
 container.innerHTML = `
+
+																															<!-- DOKUMENTY DO DODANIA I INFORMACJE --!>
+
                    <div class="homepage-content">
                        <h1>DOKUMENTY</h1>
 	<img src="https://raw.githubusercontent.com/fillxd/sz57/refs/heads/main/Półkolonie%20Letnie%202025.jpg" alt="półkolonie" style="width: 600px;">
@@ -882,6 +901,9 @@ container.innerHTML = `
                        <div class="tekst">
             półkolonie letnie 2025
                        </div> </div>
+					   
+																																<!-- PLAN LEKCJI SZKOŁY DO EDYCJI --!>
+					   
 <div style="text-align: center; font-size: 70px; margin: 60px 0;">
 PLAN LEKCJI
 </div>
@@ -921,6 +943,9 @@ return;
 }
 if(currentCategory === 6) {
 container.innerHTML = `
+
+																											<!-- INFORMACJE O SAMORZADZIE I WOLONTARIACIE DO EDYCJI --!>
+
                    <div class="su-info">
                        <h3>Samorząd Uczniowski 1-3</h3>
                        <p>Opiekun Samorządu 1-3: Anna Brzeska<br>
@@ -948,6 +973,9 @@ if(currentCategory === 9) {
 container.innerHTML = `
 <p> Poniższa lista przedstawia Grono Pedagogiczne na rok szkolny 2025/2026. </p>
                    <table class="teachers-table">
+				   
+																										<!-- LISTA NAUCZYCIELI I ICH PRZEDMIOTÓW - DO UZUPEŁNIENIA --!>
+				   
                        <thead>
                            <tr>
                                <th>Przedmiot</th>
@@ -1011,7 +1039,10 @@ return;
 
 if(currentCategory === 10) {
 container.innerHTML = `
-<p> LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026 </p>
+<p> LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026 </p>		
+
+																							<!-- LISTA WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH - DO UZUPEŁNIENIA --!>
+
                    <table class="tutors-table">
                        <thead>
                            <tr>
@@ -1127,17 +1158,17 @@ div.innerHTML = `
                    <h2>${ann.teacher || 'Brak nauczyciela'}: ${ann.title || 'Brak tytułu'} (${dateRange})</h2>
                    <div class="announcement-content">${ann.content || 'Brak treści'}</div>
                    <span class="time">${timeAgo(ann.timestamp)}</span>
-               ` : currentCategory === 5 ? `
-                   <h2>${ann.title || 'Brak tytułu'}</h2>
-                   <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-                   <span class="time">${timeAgo(ann.timestamp)}</span>
-               ` : `
-                   <h2>${ann.title || 'Brak tytułu'}</h2>
-                   <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-                   <span class="time">${timeAgo(ann.timestamp)}</span>
-               `}
-           `;
-return div;
+        ` : [5,6,7,8,12].includes(currentCategory) ? `
+            <h2>${ann.title || 'Brak tytułu'}</h2>
+            <div class="announcement-content">${ann.content || 'Brak treści'}</div>
+            <span class="time">${timeAgo(ann.timestamp)}</span>
+        ` : `
+            <h2>${ann.title || 'Brak tytułu'}</h2>
+            <div class="announcement-content">${ann.content || 'Brak treści'}</div>
+            <span class="time">${timeAgo(ann.timestamp)}</span>
+        `}
+    `;
+    return div;
 }
 
 function deleteAnnouncement(index) {
@@ -1165,110 +1196,139 @@ alert("Wystąpił błąd podczas przenoszenia do archiwum.");
 }
 
 function editAnnouncement(index) {
-if (currentCategory === 4) {
-const absence = announcements[currentCategory][index];
-const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
-if (!newDateFrom) return;
+    if (currentCategory === 4) {
+        const absence = announcements[currentCategory][index];
+        const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
+        if (!newDateFrom) return;
 
-const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
-if (!newDateTo) return;
+        const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
+        if (!newDateTo) return;
 
-const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
-if (!newHours) return;
+        const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
+        if (!newHours) return;
 
-const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
-if (!newTeacher) return;
+        const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
+        if (!newTeacher) return;
 
-const newReason = prompt('Edytuj powód:', absence.reason);
-if (!newReason) return;
+        const newReason = prompt('Edytuj powód:', absence.reason);
+        if (!newReason) return;
 
-absence.dateFrom = newDateFrom;
-absence.dateTo = newDateTo;
-absence.hours = newHours === 'cały dzień' ? null : newHours;
-absence.teacher = newTeacher;
-absence.reason = newReason;
-} else if (currentCategory === 2) {
-const event = announcements[currentCategory][index];
-const newDate = prompt('Edytuj datę:', event.date);
-if (!newDate) return;
+        absence.dateFrom = newDateFrom;
+        absence.dateTo = newDateTo;
+        absence.hours = newHours === 'cały dzień' ? null : newHours;
+        absence.teacher = newTeacher;
+        absence.reason = newReason;
 
-const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
-if (!newHours) return;
+        // DODANE: Zapisanie zmian i odświeżenie widoku
+        saveAnnouncements()
+            .then(() => showAnnouncements())
+            .catch(error => {
+                console.error("Błąd podczas zapisywania:", error);
+                alert("Wystąpił błąd podczas zapisywania zmian.");
+            });
 
-const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
-if (!newName) return;
+    } else if (currentCategory === 2) {
+        const event = announcements[currentCategory][index];
+        const newDate = prompt('Edytuj datę:', event.date);
+        if (!newDate) return;
 
-const newCategory = prompt('Edytuj kategorię:', event.category);
-if (!newCategory) return;
+        const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
+        if (!newHours) return;
 
-event.date = newDate;
-event.hours = newHours === 'cały dzień' ? null : newHours;
-event.name = newName;
-event.category = newCategory;
-} else if (currentCategory === 3) {
-const announcement = announcements[currentCategory][index];
-const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
-if (!newTeacher) return;
+        const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
+        if (!newName) return;
 
-const newTitle = prompt('Edytuj tytuł:', announcement.title);
-if (!newTitle) return;
+        const newCategory = prompt('Edytuj kategorię:', event.category);
+        if (!newCategory) return;
 
-const newContent = prompt('Edytuj treść:', announcement.content);
-if (!newContent) return;
+        event.date = newDate;
+        event.hours = newHours === 'cały dzień' ? null : newHours;
+        event.name = newName;
+        event.category = newCategory;
 
-const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
-if (!newDateFrom) return;
+        // DODANE: Zapisanie zmian i odświeżenie widoku
+        saveAnnouncements()
+            .then(() => showAnnouncements())
+            .catch(error => {
+                console.error("Błąd podczas zapisywania:", error);
+                alert("Wystąpił błąd podczas zapisywania zmian.");
+            });
 
-const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
-if (!newDateTo) return;
+    } else if (currentCategory === 3) {
+        const announcement = announcements[currentCategory][index];
+        const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
+        if (!newTeacher) return;
 
-announcement.teacher = newTeacher;
-announcement.title = newTitle;
-announcement.content = newContent;
-announcement.dateFrom = newDateFrom;
-announcement.dateTo = newDateTo;
-} else if (currentCategory === 5) {
-const news = announcements[currentCategory][index];
-const newTitle = prompt('Edytuj tytuł:', news.title);
-if (!newTitle) return;
+        const newTitle = prompt('Edytuj tytuł:', announcement.title);
+        if (!newTitle) return;
 
-const newContent = prompt('Edytuj treść:', news.content);
-if (!newContent) return;
+        const newContent = prompt('Edytuj treść:', announcement.content);
+        if (!newContent) return;
 
-news.title = newTitle;
-news.content = newContent;
-} else {
-const newTitle = prompt('Edytuj tytuł:', announcements[currentCategory][index].title);
-if (!newTitle) return;
+        const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
+        if (!newDateFrom) return;
 
-const newContent = prompt('Edytuj treść:', announcements[currentCategory][index].content);
-if (!newContent) return;
+        const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
+        if (!newDateTo) return;
 
-announcements[currentCategory][index].title = newTitle;
-announcements[currentCategory][index].content = newContent;
+        announcement.teacher = newTeacher;
+        announcement.title = newTitle;
+        announcement.content = newContent;
+        announcement.dateFrom = newDateFrom;
+        announcement.dateTo = newDateTo;
+
+        // DODANE: Zapisanie zmian i odświeżenie widoku
+        saveAnnouncements()
+            .then(() => showAnnouncements())
+            .catch(error => {
+                console.error("Błąd podczas zapisywania:", error);
+                alert("Wystąpił błąd podczas zapisywania zmian.");
+            });
+
+    } else if ([5,6,7,8,12].includes(currentCategory)) {
+        const item = announcements[currentCategory][index];
+        const newTitle = prompt('Edytuj tytuł:', item.title);
+        if (!newTitle) return;
+
+        const newContent = prompt('Edytuj treść:', item.content);
+        if (!newContent) return;
+
+        item.title = newTitle;
+        item.content = newContent;
+
+        saveAnnouncements()
+            .then(() => showAnnouncements())
+            .catch(error => {
+                console.error("Błąd podczas zapisywania:", error);
+                alert("Wystąpił błąd podczas zapisywania zmian.");
+            });
+    }
 }
-
-saveAnnouncements()
-.then(() => showAnnouncements())
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas zapisywania zmian.");
-});
-}
-
 function moveAnnouncement(index, direction) {
-const arr = announcements[currentCategory];
-if(direction === 'up' && index > 0) {
-[arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
-} else if(direction === 'down' && index < arr.length - 1) {
-[arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
-}
-saveAnnouncements()
-.then(() => showAnnouncements())
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas przesuwania ogłoszenia.");
-});
+    if (!announcements[currentCategory]) {
+        console.error("Brak ogłoszeń dla tej kategorii");
+        return;
+    }
+
+    const arr = announcements[currentCategory];
+    
+    if (direction === 'up' && index > 0) {
+        // Zamiana z poprzednim elementem
+        [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
+    } else if (direction === 'down' && index < arr.length - 1) {
+        // Zamiana z następnym elementem
+        [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+    } else {
+        return; // Nie można już przesunąć
+    }
+
+    // Zapisz zmiany i odśwież widok
+    saveAnnouncements()
+        .then(() => showAnnouncements())
+        .catch(error => {
+            console.error("Błąd zapisu:", error);
+            alert("Błąd podczas przesuwania ogłoszenia");
+        });
 }
 
 function timeAgo(timestamp) {
@@ -1288,15 +1348,17 @@ return `${seconds} sek. temu`;
 }
 
 function toggleAddButton() {
-const btn = document.getElementById('addButton');
-btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
-btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
-currentCategory === 2 ? 'Dodaj Wydarzenie' : 
-currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
-currentCategory === 5 ? 'Dodaj Aktualność' :
-currentCategory === 6 ? 'Dodaj Ogłoszenie SU' :
-currentCategory === 12 ? 'Dodaj ogłoszenie' :
-'Dodaj Ogłoszenie';
+    const btn = document.getElementById('addButton');
+    btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
+    btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
+                      currentCategory === 2 ? 'Dodaj Wydarzenie' : 
+                      currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
+                      currentCategory === 5 ? 'Dodaj Aktualność' :
+                      currentCategory === 6 ? 'Dodaj Ogłoszenie SU' :
+                      currentCategory === 7 ? 'Dodaj Ogłoszenie' :
+                      currentCategory === 8 ? 'Dodaj Ogłoszenie' :
+                      currentCategory === 12 ? 'Dodaj Ogłoszenie' :
+                      'Dodaj Ogłoszenie';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1383,7 +1445,7 @@ alert('Proszę wypełnić wszystkie pola!');
 return;
 }
 
-announcements[3].unshift(newAnnouncement);
+ announcements[currentCategory].unshift(newAnnouncement);
 saveAnnouncements()
 .then(() => {
 showAnnouncements();
@@ -1397,30 +1459,32 @@ alert("Wystąpił błąd podczas dodawania ogłoszenia.");
 });
 
 document.getElementById('newsForm').addEventListener('submit', function(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const newNews = {
-title: document.getElementById('newsTitle').value,
-content: document.getElementById('newsContent').value,
-timestamp: Date.now()
-};
+    const newNews = {
+        title: document.getElementById('newsTitle').value,
+        content: document.getElementById('newsContent').value,
+        timestamp: Date.now()
+    };
 
-if (!newNews.title || !newNews.content) {
-alert('Proszę wypełnić wszystkie pola!');
-return;
-}
+    if (!newNews.title || !newNews.content) {
+        alert('Proszę wypełnić wszystkie pola!');
+        return;
+    }
 
-announcements[5].unshift(newNews);
-saveAnnouncements()
-.then(() => {
-showAnnouncements();
-document.getElementById('newsModal').style.display = 'none';
-this.reset();
-})
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas dodawania aktualności.");
-});
+    // Zmiana: zapis do aktualnej kategorii
+    announcements[currentCategory].unshift(newNews);
+    
+    saveAnnouncements()
+    .then(() => {
+        showAnnouncements();
+        document.getElementById('newsModal').style.display = 'none';
+        this.reset();
+    })
+    .catch(error => {
+        console.error("Błąd podczas zapisywania:", error);
+        alert("Wystąpił błąd podczas dodawania.");
+    });
 });
 
 function handleAddButton() {
@@ -1430,35 +1494,8 @@ function handleAddButton() {
         addEvent();
     } else if (currentCategory === 3) {
         addAnnouncement();
-    } else if (currentCategory === 5) {
+    } else if (currentCategory === 5 || [6,7,8,12].includes(currentCategory)) {
         addNews();
-    } else if ([6, 7, 8, 12].includes(currentCategory)) { // Dodano 7 i 8!
-        const title = prompt('Podaj tytuł ogłoszenia:');
-        if (!title) return;
-
-        const content = prompt('Podaj treść ogłoszenia:');
-        if (!content) return;
-
-        const newAnn = {
-            title,
-            content,
-            timestamp: Date.now()
-        };
-
-        if (!announcements[currentCategory]) {
-            announcements[currentCategory] = []; // Zabezpieczenie, jeśli kategoria nie istnieje
-        }
-        
-        announcements[currentCategory].unshift(newAnn);
-        
-        saveAnnouncements()
-        .then(() => {
-            showAnnouncements();
-        })
-        .catch(error => {
-            console.error("Błąd zapisu:", error);
-            alert("Błąd podczas zapisywania ogłoszenia!");
-        });
     }
 }
 function addAbsence() {
