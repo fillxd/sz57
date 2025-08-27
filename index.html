@@ -401,7 +401,7 @@ color: white;
 <a href="#" data-category="3">Ogłoszenia</a>
 <a href="#" data-category="4">Nieobecności</a>
 </div>
-</nav>
+</nav>	
 
 <div class="container">
 <button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
@@ -673,17 +673,14 @@ callback();
 }
 																																	/* LISTA NAUCZYCIELI */
 const nauczyciele = [
-"Jolanta Bosak", "Katarzyna Borzędzin", "Hanna Brzeska", "Anna Brzeska", "Barbara Brzóska",
-"Anna Burakowska", "Buzdro Katarzyna", "Sylwia Cześniewicz", "Karol Dębowicz", "Faustyna Dobrzek", "Karolina Dominiak",
-"Małgorzata Domagała", "Dariusz Drzemała", "Alicja Rajewicz-Drzemała", "Elżbieta Gawin", "Mateusz Gig",
-"Anna Gocał", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak", "Renata Halczyk", "Danuta Kapciuszko", "Zuzanna Kośnicka", "Marcin Krupnicki", "Jowita Kuter", "Martyna Kołodziejczyk",
-"Rozalia Lipska", "Zofia Lisek", "Kinga Młodzik", "Karolina Młotek", "Agnieszka Miłasz", "Daria Musherina",
-"Joanna Małek", "Malczyk Aleksandra", "Dorota Maszkiewska", "Magdalena Joelesh", "Eugenia Nowodworska", "Tadeusz Ostrowski",
-"Antonina Pawelczyk", "Ludwik Parkowiak", "Natalia Raczyńska", "Weronika Rogalska", "Renata Skleszewska",
-"Lena Skwierzyńska", "Katarzyna Sieczko", "Bożena Szpilkiewicz", "Barbara Strzegomska", "Alicja Struś-Michalska",
-"Michał Tarczyn", "Barbara Trzaskowska", "Ewelina Śmigalska", "ks. Ignacy Włoszek", "Celina Włodarczyk",
-"Aleksandra Wykaz", "Michalina Woźniak", "Marian Woźniak", "Magdalena Wisłowicz", "Marlena Wyszyńska", "Urszula Złocińska",
-"Oliwia Żabkiewicz"
+"Aleksander Białko", "Katarzyna Borzędzin", "Anna Brzeska", "Hanna Brzeska", "Anna Burakowska", "Agnieszka Burkiewicz", "Katarzyna Buzdro", "Sylwia Cześniewicz", "Faustyna Dobrzek",
+"Małgorzata Domagała", "Karolina Dominiak", "Dariusz Drzemała", "Elżbieta Gawin", "Mateusz Gig", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak",
+"Ignacy Jasiński", "Magdalena Joelesh", "Martyna Kołodziejczyk", "Zuzanna Kośnicka", "Sylwia Kozakowska", "Marcin Krupnicki", "Małgorzata Lesińska", "Rozalia Lipska", "Zofia Lisek",
+"Aleksandra Malczyk", "Ewa Malinowska", "Joanna Małek", "Dorota Maszkiewska", "Agnieszka Miłasz", "Kinga Młodzik", "Karolina Młotek", "Daria Musherina", "Tadeusz Ostrowski",
+"Ludwik Parkowiak", "Antonina Pawelczyk", "Michał Pietruszewski", "Natalia Raczyńska", "Alicja Rajewicz-Drzemała", "Weronika Rogalska", "Katarzyna Sieczko", "Renata Skleszewska",
+"Lena Skwierzyńska", "Alicja Struś-Michalska", "Barbara Strzegomska", "Karolina Sznurowska", "Bożena Szpilkiewicz", "Ewelina Śmigalska", "Zuzanna Świerczek", "Michał Tarczyn", 
+" Barbara Trzaskowska", "WAKAT Fizyka", "Celina Włodarczyk", "Ignacy Włoszek", "Aleksandra Wykaz", "Marlena Wyszyńska", "Urszula Złocińska", "Oliwia Żabkiewicz", "Karolina Żukowska",
+"Administrator"
 ];
 
 // Inicjalizacja list nauczycieli
@@ -840,7 +837,7 @@ container.innerHTML = '';
 if(currentCategory === 1) {
 container.innerHTML = `
                    <div class="homepage-content">
-                       <h2>Witamy na stronie Szkoły Podstawowej nr 57 i Szkoły Artystycznej nr 2 we Wrocławiu!</h2>
+                       <h1>Witamy na stronie Szkoły Podstawowej nr 57 i Szkoły Artystycznej nr 2 we Wrocławiu!</h1>
                        <h2>NOWA SZKOŁA ARTYSTYCZNA NR 2 WE WROCŁAWIU W NASZYM BUDYNKU!</h2>
                        Zapraszamy do naszej krainy edukacji! <br>
                     </p>
@@ -868,9 +865,9 @@ patriotyzmu.</p>
 			Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania 
 			swoich talentów szerszej publiczności. </p>
 
-                       <h3>Godziny otwarcia (w wakacje 27.06-31.08):</h3>
+                       <h3>Godziny otwarcia:</h3>
 <p> Sekretariat: PN-PT 7:30-15:30 </p>
-<p> Szkoła: ( w wakacje nieczynna) </p>
+<p> Szkoła: PN-PT 6:30-18:30 </p>
                    </div>`;
 return;
 }
@@ -881,21 +878,23 @@ container.innerHTML = `
 																															<!-- INFORMACJE O SZKOLE ARTYSTYCZNEJ DO EDYCJI --!>
 
                    <div class="homepage-content">
-                       <h1>Szkoła Artystyczna nr 2 we Wrocławiu</h1>
+                       <h1 style="text-align: center;">Szkoła Artystyczna nr 2 we Wrocławiu</h1>
                        <p>Informacje na temat szkoły artystycznej.<br>
                        <p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z tańca, plastyki, teatru i fotografii, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. 
 			Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania 
 			swoich talentów szerszej publiczności.</p>
 
 
-                       <h1>KLASY</h1>
+                       <h1 style="text-align: center;">KLASY</h1>
 		       <h3>TANECZNA - TA1 (14 os.) 7-10 lat </h3>
 	 		<h3>TANECZNA - TA2 (13 os.) 11-14 lat </h3>
     <h3>PLASTYCZNA - P (20 os.) 7-14 lat </h3>
     <h3>TEATRALNA - TE (14 os.) 7-14 lat </h3>
     <h3>FOTOGRAFICZNA - F (10 os.) 11-14 lat </h3>
-                       <p>br<br>
-                       <p>Wszelkie pytania dotyczące szkoły artystycznej oraz rekrutacji do niej dostępne u dyrektora SA nr 2. - Ewa Malinowska (ewa.malinowska@edu.wroclaw.pl)<br>
+			<h1 style="text-align: center;"> Nauczyciele </h1>
+			<h3> Ewa Malinowska (dyrektor) </h3>
+			<h3> Karolina Sznurowska </h3>
+			<h3> Agnieszka Burkiewicz </h3>	
                    </div>`;
 const artContainer = document.getElementById('school-art-announcements') || container;
     const categoryAnnouncements = announcements[currentCategory] || [];
@@ -916,9 +915,9 @@ container.innerHTML = `
 																															<!-- DOKUMENTY DO DODANIA I INFORMACJE --!>
 
                    <div class="homepage-content">
-                       <h1>DOKUMENTY</h1>
+                       <h1>DOKUMENTY:</h1>
 	<img src="" alt="" style="width: 600px;">
-<a href="kalendarz.pdf" target="_blank">KALENDARZ ROKU SZKOLNEGO</a>
+<a href="kalendarz.pdf" target="_blank">📅 KALENDARZ ROKU SZKOLNEGO</a>
 
 
 
@@ -928,41 +927,7 @@ container.innerHTML = `
                        </div> </div>
 					   
 																																<!-- PLAN LEKCJI SZKOŁY DO EDYCJI --!>
-					   
-<div style="text-align: center; font-size: 70px; margin: 60px 0;">
-PLAN LEKCJI
-</div>
-<div style="text-align: center; font-size: 48px; margin: 40px 0;">
-Plan lekcji na rok 2025/2026 zostanie opublikowany pod koniec sierpnia 2025 r. Przepraszamy za utrudnienia.
-</div>
-<table border="1" style="border-collapse: collapse; width: 100%; table-layout: fixed; text-align: center; vertical-align: middle;">
-
- <colgroup>
-   <col style="width: 5%;">
-   <col style="width: 18%;">
-   <col style="width: 18%;">
-   <col style="width: 18%;">
-   <col style="width: 18%;">
-   <col style="width: 18%;">
- </colgroup>
- <thead>
-   <tr>
-     <th>l</th><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th>
-   </tr>
- </thead>
- <tbody>
-   <tr><td>0</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>1</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>2</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>3</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>4</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>5</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>6</td><td> </td><td> </td><td></td><td></td><td></td></tr>
-   <tr><td>7</td><td></td><td></td><td></td><td></td><td></td></tr>
-   <tr><td>8</td><td></td><td></td><td></td><td></td><td></td></tr>
-   <tr><td>9</td><td> </td><td> </td><td></td><td></td><td></td></tr>
- </tbody>
-</table>
+						
 `;
 return;
 }
@@ -971,20 +936,18 @@ container.innerHTML = `
 
 																											<!-- INFORMACJE O SAMORZADZIE I WOLONTARIACIE DO EDYCJI --!>
 
-                   <div class="su-info">
-                       <h3>Samorząd Uczniowski 1-3</h3>
-                       <p>Opiekun Samorządu 1-3: Anna Brzeska<br>
-                       Godzina Dostępności: <br>
-                       <h3>Samorząd Uczniowski 4-8</h3>
-                       <p>Opiekun Samorządu i Wolontariatu: Michał Tarczyn<br>
-                       Przewodniczący Szkoły: <br>
-                       Godzina Dostępności: <br>
-                       Zebranie Samorządu Uczniowskiego: </p>
+                    <div class="homepage-content">
+                       <h2>Samorząd Uczniowski w Szkole Podstawowej nr 57!</h2>
+                       <h4>• Opiekun Samorządu 1-3:    Anna Brzeska</h4>
+                       <h4>• Opiekun Samorządu 4-8:    Michał Tarczyn</h4>
+					   <h4>• Opiekun Koła Wolontariatu:      Michał Tarczyn, Zofia Lisek</h4>
+					   <h4>• Przewodniczący Szkoły:   </h4>
+					   <h4>• Przewodniczący klas 1-3:   </h4>
+					   <h4>• Przewodniczący klas 4-8:   </h4>
+                       <h3>Zebranie Samorządu Uczniowskiego: </h3>
                        <p></p>
-                       <img src=".png" alt="Samorząd Uczniowski" width="500">
+                       <img src=".png" alt="" width="500">
 						 <h3>Ogłoszenia Samorządu i Wolontariatu:</h3>
-						 <p>SAMORZĄD UCZNIOWSKI RUSZA WE WRZEŚNIU.<br>
-						 <p>.<br>
        </div>`;
     
     const categoryAnnouncements = announcements[currentCategory] || [];
@@ -996,7 +959,10 @@ container.innerHTML = `
 
 if(currentCategory === 9) {
 container.innerHTML = `
-<p> Poniższa lista przedstawia Grono Pedagogiczne na rok szkolny 2025/2026. </p>
+<h2 style="text-align: center;">
+  GRONO PEDAGOGICZNE NA ROK SZKOLNY 2025/2026.
+</h2>
+
                    <table class="teachers-table">
 				   
 																										<!-- LISTA NAUCZYCIELI I ICH PRZEDMIOTÓW - DO UZUPEŁNIENIA --!>
@@ -1008,38 +974,41 @@ container.innerHTML = `
                            </tr>
                        </thead>
                        <tbody>
-                           <tr><td>Język Polski</td><td>.</td></tr>
-                           <tr><td>Matematyka</td><td>.</td></tr>
-                           <tr><td>Język Angielski</td><td>.</td></tr>
-                           <tr><td>Język Niemiecki</td><td>.</td></tr>
-                           <tr><td>Wychowanie Fizyczne</td><td>.</td></tr>
-                           <tr><td>Historia</td><td>.</td></tr>
-                           <tr><td>Biologia, Przyroda</td><td>.</td></tr>
-                           <tr><td>Doradztwo Zawodowe</td><td>.</td></tr>
-                           <tr><td>Plastyka</td><td>.</td></tr>
-                           <tr><td>Technika</td><td>.</td></tr>
-                           <tr><td>Chemia</td><td>.</td></tr>
-                           <tr><td>Fizyka</td><td>.</td></tr>
-                           <tr><td>Wiedza o społeczeństwie</td><td>.</td></tr>
-                           <tr><td>Edukacja dla bezpieczeństwa</td><td>.</td></tr>
-                           <tr><td>Geografia</td><td>.</td></tr>
-                           <tr><td>Informatyka</td><td>.</td></tr>
-                           <tr><td>Muzyka</td><td>.</td></tr>
-                           <tr><td>Religia</td><td>.</td></tr>
-                           <tr><td>Kształcenie Słuchu</td><td>.</td></tr>
-			   <tr><td>Nauka o Muzyce </td><td>.</td></tr>
-                           <tr><td>Edukacja Wczesnoszkolna</td><td>.</td></tr>
-                           <tr><td>Basen</td><td>.</td></tr>
-			   <tr><td>Edukacja Zdrowotna</td><td>.</td></tr>
-                           <tr><td>Zajęcia Terenowe</td><td>.</td></tr>
-                           <tr><td>Świetlica</td><td>.</td></tr>
-                           <tr><td>Etyka</td><td>.</td></tr>
-                           <tr><td>Nauczyciel Wspomagający</td><td>.</td></tr>
+                           <tr><td>Język Polski</td><td>Małgorzata Lesińska, Anna Burakowska, Oliwia Żabkiewicz, Elżbieta Gawin, Dorota Maszkiewska</td></tr>
+                           <tr><td>Matematyka</td><td>Michał Tarczyn, Renata Skleszewska, Joanna Małek, Bożena Szpilkiewicz, Grażyna Gruszka</td></tr>
+                           <tr><td>Język Angielski</td><td>Karolina Dominiak, Zofia Lisek, Marlena Wyszyńska, Katarzyna Sieczko, Celina Włodarczyk</td></tr>
+                           <tr><td>Język Niemiecki</td><td>Magdalena Joelesh</td></tr>
+                           <tr><td>Wychowanie Fizyczne</td><td>Natalia Raczyńska, Sylwia Cześniewicz, Małgorzata Domagała, Marcin Krupnicki, Michał Pietruszewski</td></tr>
+                           <tr><td>Historia</td><td>Paweł Grzegorzewski, Karolina Żukowska</td></tr>
+                           <tr><td>Biologia, Przyroda</td><td>Zuzanna Świerczek</td></tr>
+                           <tr><td>Doradztwo Zawodowe</td><td></td></tr>
+                           <tr><td>Plastyka</td><td>Barbara Trzaskowska</td></tr>
+                           <tr><td>Technika</td><td>Ludwik Parkowiak</td></tr>
+                           <tr><td>Chemia</td><td>Tadeusz Ostrowski</td></tr>
+                           <tr><td>Fizyka</td><td></td></tr>
+                           <tr><td>Wiedza o społeczeństwie</td><td>Ludwik Parkowiak</td></tr>
+                           <tr><td>Edukacja dla bezpieczeństwa</td><td>Dariusz Drzemała</td></tr>
+                           <tr><td>Geografia</td><td>Mateusz Gig</td></tr>
+                           <tr><td>Informatyka</td><td>Ewelina Śmigalska, Mateusz Gig</td></tr>
+                           <tr><td>Muzyka</td><td>Hanna Brzeska</td></tr>
+                           <tr><td>Religia</td><td>Ignacy Włoszek</td></tr>
+                           <tr><td>Kształcenie Słuchu</td><td>Antonina Pawelczyk</td></tr>
+							<tr><td>Nauka o Muzyce </td><td>Antonina Pawelczyk</td></tr>
+                           <tr><td>Edukacja Wczesnoszkolna</td><td>Weronika Rogalska, Martyna Kołodziejczyk, Rozalia Lipska, Faustyna Dobrzek, Katarzyna Buzdro, Anna Brzeska, Alicja Rajewicz-Drzemała, Agnieszka Miłasz, Daria Musherina</td></tr>
+                           <tr><td>Basen</td><td>Marcin Krupnicki</td></tr>
+							<tr><td>Edukacja Zdrowotna</td><td>Urszula Złocińska</td></tr>
+                           <tr><td>Zajęcia Terenowe</td><td>Sylwia Cześniewicz, Małgorzata Domagała, Michał Pietruszewski</td></tr>
+                           <tr><td>Świetlica</td><td></td></tr>
+                           <tr><td>Etyka</td><td></td></tr>
+                           <tr><td>Nauczyciel Wspomagający</td><td>Sylwia Kozakowska, Aleksandra Malczyk, Dariusz Drzemała, Irynna Goshevniyk, Zuzanna Kośnicka</td></tr>
 
                        </tbody>
-                   </table>;
-		   <h3> Pozostali Pracownicy </h3>
-	  <table class="teacher-table">
+                   </table>
+				   
+<h2 style="text-align: center;">
+ADMINISTRACJA
+</h2>
+	  <table class="teachers-table">
                        <thead>
                            <tr>
                                <th>Zawód</th>
@@ -1049,14 +1018,13 @@ container.innerHTML = `
                        <tbody>
 
                     
-			          <tr><td>Pedagog</td><td>.</td></tr>
-	            <tr><td>Psycholog</td><td>.</td></tr>
-                           <tr><td>Biblioteka</td><td>.</td></tr>
+			          <tr><td>Pedagog</td><td>Anna Grześkowiak</td></tr>
+	            <tr><td>Psycholog</td><td>Aleksandra Wykaz</td></tr>
+                           <tr><td>Biblioteka</td><td>Karolina Młotek</td></tr>
                            <tr><td>Dyrekcja</td><td>Lena Skwierzyńska - wicedyrektor klas młodszych, Mateusz Gig - wicyderektor klas starszych, Aleksander Białko - dyrektor SP 57.</td></tr>
-                           <tr><td>Kierownik</td><td>.</td></tr>
 	
                        </tbody>
-                   </table>`;
+                   </table>`
 
 	
 return;
@@ -1064,7 +1032,9 @@ return;
 
 if(currentCategory === 10) {
 container.innerHTML = `
-<p> LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026 </p>		
+<h2 style="text-align: center;">
+LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026
+</h2>	
 
 																							<!-- LISTA WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH - DO UZUPEŁNIENIA --!>
 
@@ -1078,30 +1048,30 @@ container.innerHTML = `
                            </tr>
                        </thead>
                        <tbody>
-                           <tr><td>1A</td><td>Ogólna</td><td></td><td></td></tr>
-			    <tr><td>1B</td><td>Językowa</td><td></td><td></td></tr>
-      			  <tr><td>1M</td><td>Muzyczna</td><td></td><td></td></tr>
-			 <tr><td>2A</td><td>Ogólna</td><td></td><td></td></tr>
- 			  <tr><td>2B</td><td>Ogólna</td><td></td><td></td></tr>
-   			 <tr><td>2C</td><td>Ogólna</td><td></td><td></td></tr>
-    			 <tr><td>3A</td><td>Ogólna</td><td></td><td></td></tr>
-   			   <tr><td>3B</td><td>Ogólna</td><td></td><td></td></tr>
-    			   <tr><td>3C</td><td>Językowa</td><td></td><td></td></tr>
-    		 	   <tr><td>4A</td><td>Sportowa</td><td></td><td></td></tr>
-	  		   <tr><td>4B</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>4C</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>5A</td><td>Sportowa</td><td></td><td></td></tr>
-    <tr><td>5B</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>5C</td><td>Artystyczna</td><td></td><td></td></tr>
-    <tr><td>6A</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>6B</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>6M</td><td>Muzyczna</td><td></td><td></td></tr>
-    <tr><td>7A</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>7B</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>7M</td><td>Muzyczna</td><td></td><td></td></tr>
-    <tr><td>8A</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>8B</td><td>Ogólna</td><td></td><td></td></tr>
-    <tr><td>8M</td><td>Muzyczna</td><td></td><td></td></tr>
+                           <tr><td>1A</td><td>Ogólna</td><td>Weronika Rogalska</td><td>Sylwia Kozakowska</td></tr>
+			    <tr><td>1B</td><td>Językowa</td><td>Katarzyna Buzdro</td><td></td></tr>
+      			  <tr><td>1M</td><td>Muzyczna</td><td>Anna Brzeska</td><td></td></tr>
+			 <tr><td>2A</td><td>Ogólna</td><td>Martyna Kołodziejczyk</td><td></td></tr>
+ 			  <tr><td>2B</td><td>Ogólna</td><td>Rozalia Lipska</td><td></td></tr>
+   			 <tr><td>2C</td><td>Ogólna</td><td>Faustyna Dobrzek</td><td></td></tr>
+    			 <tr><td>3A</td><td>Ogólna</td><td>Alicja Rajewicz-Drzemała</td><td></td></tr>
+   			   <tr><td>3B</td><td>Ogólna</td><td>Agnieszka Miłasz</td><td></td></tr>
+    			   <tr><td>3C</td><td>Językowa</td><td>Daria Musherina</td><td>Irynna Goshevniyk</td></tr>
+    		 	   <tr><td>4A</td><td>Sportowa</td><td>Marcin Krupnicki</td><td></td></tr>
+	  		   <tr><td>4B</td><td>Ogólna</td><td>Małgorzata Lesińska</td><td></td></tr>
+    <tr><td>4C</td><td>Ogólna</td><td>Karolina Dominiak</td><td></td></tr>
+    <tr><td>5A</td><td>Sportowa</td><td>Renata Skleszewska</td><td></td></tr>
+    <tr><td>5B</td><td>Ogólna</td><td>Mateusz Gig</td><td></td></tr>
+    <tr><td>5C</td><td>Artystyczna</td><td>Natalia Raczyńska</td><td>Aleksandra Malczyk</td></tr>
+    <tr><td>6A</td><td>Ogólna</td><td>Katarzyna Sieczko</td><td></td></tr>
+    <tr><td>6B</td><td>Ogólna</td><td>Dorota Maszkiewska</td><td></td></tr>
+    <tr><td>6M</td><td>Muzyczna</td><td>Antonina Pawelczyk</td><td></td></tr>
+    <tr><td>7A</td><td>Ogólna</td><td>Anna Burakowska</td><td></td></tr>
+    <tr><td>7B</td><td>Ogólna</td><td>Kinga Młodzik</td><td></td></tr>
+    <tr><td>7M</td><td>Muzyczna</td><td>Małgorzata Domagała</td><td>Dariusz Drzemała</td></tr>
+    <tr><td>8A</td><td>Ogólna</td><td>Celina Włodarczyk</td><td>Zuzanna Kośnicka</td></tr>
+    <tr><td>8B</td><td>Ogólna</td><td>Magdalena Joelesh</td><td></td></tr>
+    <tr><td>8M</td><td>Muzyczna</td><td>Ewelina Śmigalska</td><td></td></tr>
 	
 			   
 			   
@@ -1514,7 +1484,6 @@ document.getElementById('newsModal').style.display = 'flex';
 </script>
 </body>
 </html>
-
 
 
 
