@@ -359,9 +359,35 @@ color: white;
 background: #e74c3c;
 color: white;
 }
-</style>
+.menu {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: #222;
+  padding: 10px 15px;
+  border-radius: 8px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column; /* kluczowe – ustawia linki jeden pod drugim */
+}
+.menu a {
+  color: white;
+  text-decoration: none;
+  margin-bottom: 8px; /* odstęp między linkami */
+  font-family: Arial, sans-serif;
+}
+.menu a:hover {
+  text-decoration: underline;
+}
+    </style>
 </head>
 <body>
+<div class="menu">
+  <a href="https://fillxd.github.io/sz57">Syst</a>
+  <a href="https://fillxd.github.io/pl57">Plan</a>
+  <a href="https://fillxd.github.io/kl57">5b</a>
+  <a href="https://fillxd.github.io/na57">MG</a>
+</div>
  <!-- Modal logowania - PIERWSZA RZECZ NA STRONIE -->
 																													<!-- INFORMACJA O WERSJI STRONY --!>
 <div style="position:fixed; top:0; left:0; padding:5px; background:white; z-index:9999;">2.0a</div>
@@ -1481,6 +1507,7 @@ document.getElementById('newsModal').style.display = 'flex';
 </script>
 </body>
 </html>
+
 
 
 
