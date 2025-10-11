@@ -1,4 +1,4 @@
-	<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -359,27 +359,7 @@ color: white;
 background: #e74c3c;
 color: white;
 }
-.menu {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background: #222;
-  padding: 10px 15px;
-  border-radius: 8px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column; /* kluczowe – ustawia linki jeden pod drugim */
-}
-.menu a {
-  color: white;
-  text-decoration: none;
-  margin-bottom: 8px; /* odstęp między linkami */
-  font-family: Arial, sans-serif;
-}
-.menu a:hover {
-  text-decoration: underline;
-}
-    </style>
+</style>
 </head>
 <body>
  <!-- Modal logowania - PIERWSZA RZECZ NA STRONIE -->
@@ -411,12 +391,7 @@ color: white;
 <a href="#" data-category="4">Nieobecności</a>
 </div>
 </nav>	
-<div class="menu">
-  <a href="https://fillxd.github.io/sz57">Syst</a>
-  <a href="https://fillxd.github.io/pl57">Plan</a>
-  <a href="https://fillxd.github.io/kl57">5b</a>
-  <a href="https://fillxd.github.io/na57">MG</a>
-</div>
+
 <div class="container">
 <button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
 <div id="announcements"></div>
@@ -900,7 +875,7 @@ container.innerHTML = `
                    </div>`;
 const artContainer = document.getElementById('school-art-announcements') || container;
     const categoryAnnouncements = announcements[currentCategory] || [];
-    
+
     if(categoryAnnouncements.length === 0) {
         artContainer.innerHTML = '<p>Brak ogłoszeń.</p>';
     } else {
@@ -924,6 +899,8 @@ container.innerHTML = `
 <a href="SP57_ZajDod.pdf" target="_blank">📅KALENDARZ ZAJĘĆ DODATKOWYCH W ROKU SZKOLNYM (NOWY!)</a>
 <h3></h3>
 <a href="SP57_Kon.pdf" target="_blank">👨‍💼TERMINY KONSULTACJI Z NAUCZYCIELAMI 2025/2026 (NOWE!)</a>
+<h2>PLANY LEKCJI</h2>
+<a href="PLANES.pdf" target="_blank"> stary PLAN SP57// ważny do 26.09.2025r.</a>
 <h3></h3>
 <a href="Sale-57.pdf" target="_blank"> PODZIAŁ SAL NA NAUCZYCIELI, KLASY I PRZEDMIOTY </a>
 <h2>PLANY LEKCJI</h2>
@@ -955,6 +932,9 @@ container.innerHTML = `
                        <h4>• Opiekun Samorządu Ucz. kl.1-3:    Anna Brzeska</h4>
                        <h4>• Opiekun Samorządu Ucz. kl.4-8:    Michał Tarczyn</h4>
 					   <h4>• Opiekun Szkolnego Koła Wolontariatu:      Michał Tarczyn, Zofia Lisek </h4>
+					   <h4>• Przewodniczący Szkoły:   </h4>
+					   <h4>• Przewodniczący klas 1-3:   </h4>
+					   <h4>• Przewodniczący klas 4-8:   </h4>
 					   <h4>• Przewodnicząca Szkoły: Pola Rucińska (7m)  </h4>
 					   <h4>• Przewodnicząca klas 1-3: Zuzanna Kamińska (3a)  </h4>
 					   <h4>• Przewodniczący klas 4-8: Szymon Zaucha (6b)  </h4>
@@ -964,7 +944,7 @@ container.innerHTML = `
                        <img src=".png" alt="" width="500">
 						 <h2>Ogłoszenia Samorządu i Wolontariatu:</h2>
        </div>`;
-    
+
     const categoryAnnouncements = announcements[currentCategory] || [];
     categoryAnnouncements.forEach((ann, index) => {
         container.appendChild(createAnnouncementCard(ann, index));
@@ -1048,7 +1028,7 @@ ADMINISTRACJA i SZKOŁA ARTYSTYCZNA
                        </tbody>
                    </table>`
 
-	
+
 return;
 }
 
@@ -1301,7 +1281,7 @@ function moveAnnouncement(index, direction) {
     }
 
     const arr = announcements[currentCategory];
-    
+
     if (direction === 'up' && index > 0) {
         // Zamiana z poprzednim elementem
         [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
@@ -1464,7 +1444,7 @@ document.getElementById('newsForm').addEventListener('submit', function(e) {
 
     // Zmiana: zapis do aktualnej kategorii
     announcements[currentCategory].unshift(newNews);
-    
+
     saveAnnouncements()
     .then(() => {
         showAnnouncements();
@@ -1506,24 +1486,3 @@ document.getElementById('newsModal').style.display = 'flex';
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
