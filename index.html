@@ -3,618 +3,1182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-																					<!-- TYTUŁ STRONY INTERNETOWEJ - wyświetlany w przeglądarce --!>
 <title>SP 57</title> 
-
-																										<!-- IKONA STRONY INTERNETOWEJ --!>
 <link rel="icon" type="image/x-icon" href="favicon.png"> 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <style>
 * {
 margin: 0;
 padding: 0;
 box-sizing: border-box;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+font-family: 'Poppins', sans-serif;
 }
+
+:root {
+--primary: #6366f1;
+--primary-dark: #4f46e5;
+--secondary: #ec4899;
+--success: #10b981;
+--danger: #ef4444;
+--warning: #f59e0b;
+--dark: #1f2937;
+--light: #f9fafb;
+--gray: #6b7280;
+--border-radius: 16px;
+--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+--transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+background-attachment: fixed;
+min-height: 100vh;
+}
+
+body::before {
+content: '';
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x bottom;
+pointer-events: none;
+}
+
 .tekst {
 white-space: pre-line;
-font-size: 18px;
+font-size: 16px;
+line-height: 1.8;
+color: var(--dark);
 }
-body {
-background-color: #f0f2f5;
-}
+
+/* HEADER */
 .header {
 text-align: center;
-padding: 3rem 1rem;
-background: linear-gradient(135deg, #4a90e2, #34495e);
+padding: 4rem 2rem;
+background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(139, 92, 246, 0.95));
 color: white;
 position: relative;
 overflow: hidden;
+backdrop-filter: blur(10px);
+box-shadow: var(--shadow-lg);
 }
-.header h1 {
-font-size: 2.5rem;
-margin-bottom: 0.5rem;
-animation: titleSlide 1s ease-out;
-text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-@keyframes titleSlide {
-from { transform: translateY(-100px); opacity: 0; }
-to { transform: translateY(0); opacity: 1; }
-}
-.header::after {
+
+.header::before {
 content: '';
 position: absolute;
-bottom: -50px;
-left: -50px;
-width: 100px;
-height: 100px;
-background: rgba(255, 255, 255, 0.1);
-transform: rotate(45deg);
-animation: shine 4s infinite;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+background-size: 50px 50px;
+animation: moveBackground 20s linear infinite;
 }
-@keyframes shine {
-0% { left: -50px; }
-100% { left: 110%; }
+
+@keyframes moveBackground {
+0% { transform: translate(0, 0); }
+100% { transform: translate(50px, 50px); }
 }
+
+.header h1 {
+font-size: 3rem;
+font-weight: 700;
+margin-bottom: 0.5rem;
+animation: fadeInDown 0.8s ease-out;
+text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+position: relative;
+z-index: 1;
+}
+
+@keyframes fadeInDown {
+from { transform: translateY(-30px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+
 .search-container {
 position: absolute;
-top: 20px;
-right: 20px;
+top: 25px;
+right: 25px;
 display: flex;
-gap: 10px;
+gap: 12px;
+z-index: 10;
 }
+
 .search-container a {
 color: white;
 text-decoration: none;
-padding: 0.8rem 1.5rem;
-border-radius: 25px;
-transition: all 0.3s ease;
-background-color: rgba(255, 255, 255, 0.1);
+padding: 12px 24px;
+border-radius: 50px;
+transition: var(--transition);
+background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.2);
 display: flex;
 align-items: center;
-white-space: nowrap;
+font-weight: 500;
+font-size: 14px;
 }
+
 .search-container a:hover {
-background-color: rgba(255, 255, 255, 0.2);
+background: rgba(255, 255, 255, 0.25);
 transform: translateY(-2px);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
+
+/* NAVIGATION */
 nav {
-background: linear-gradient(135deg, #4a90e2, #34495e);
-padding: 1rem;
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(20px);
+padding: 1.5rem;
 position: sticky;
 top: 0;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+box-shadow: var(--shadow-md);
 z-index: 100;
+border-bottom: 3px solid var(--primary);
 }
+
 .menu {
 display: flex;
 flex-wrap: wrap;
-gap: 0.5rem;
+gap: 12px;
+max-width: 1400px;
+margin: 0 auto;
+justify-content: center;
 }
+
 .menu a {
-color: white;
+color: var(--dark);
 text-decoration: none;
-padding: 0.8rem 1rem;
-border-radius: 25px;
-transition: all 0.3s ease;
-background-color: rgba(255, 255, 255, 0.1);
+padding: 12px 24px;
+border-radius: 50px;
+transition: var(--transition);
+background: white;
+border: 2px solid transparent;
 display: flex;
 align-items: center;
 white-space: nowrap;
-flex: 1 1 20%;
-text-align: center;
-justify-content: center;
+font-weight: 500;
+font-size: 14px;
+position: relative;
+overflow: hidden;
 }
+
+.menu a::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+transition: left 0.5s;
+}
+
+.menu a:hover::before {
+left: 100%;
+}
+
 .menu a:hover {
-background-color: rgba(255, 255, 255, 0.2);
+border-color: var(--primary);
 transform: translateY(-2px);
+box-shadow: var(--shadow-sm);
+color: var(--primary);
 }
+
 .menu a.active {
-background-color: #e74c3c;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: white;
+box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
+
+/* CONTAINER */
 .container {
-max-width: 1200px;
+max-width: 1400px;
 margin: 2rem auto;
-padding: 0 1rem;
+padding: 0 1.5rem;
+position: relative;
+z-index: 1;
 }
+
+/* ANNOUNCEMENT CARDS */
 .announcement-card {
 background: white;
-border-radius: 10px;
-padding: 1.5rem;
+border-radius: var(--border-radius);
+padding: 2rem;
 margin-bottom: 1.5rem;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-animation: fadeIn 0.5s ease;
+box-shadow: var(--shadow-md);
+animation: fadeInUp 0.5s ease;
 position: relative;
+border-left: 5px solid var(--primary);
+transition: var(--transition);
 }
+
+.announcement-card:hover {
+transform: translateY(-4px);
+box-shadow: var(--shadow-lg);
+}
+
 .announcement-card h2 {
-color: #2c3e50;
-margin-bottom: 0.5rem;
+color: var(--dark);
+margin-bottom: 1rem;
+font-size: 1.5rem;
+font-weight: 600;
 }
+
 .announcement-card .time {
-color: #7f8c8d;
-font-size: 0.9rem;
+color: var(--gray);
+font-size: 0.875rem;
 margin-top: 1rem;
-display: block;
+display: flex;
+align-items: center;
+gap: 6px;
 }
+
+.announcement-card .time::before {
+content: '🕐';
+}
+
 .announcement-card .actions {
 position: absolute;
-top: 1rem;
-right: 1rem;
+top: 1.5rem;
+right: 1.5rem;
 display: flex;
-gap: 0.5rem;
+gap: 8px;
 }
+
 .announcement-card .actions span {
 cursor: pointer;
-font-size: 1.2rem;
-transition: all 0.2s ease;
+font-size: 1.5rem;
+transition: var(--transition);
+width: 36px;
+height: 36px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
 }
+
 .announcement-card .actions span:hover {
-transform: scale(1.1);
+transform: scale(1.2);
+background: rgba(0, 0, 0, 0.05);
 }
-.announcement-card .actions .delete {
-color: #e74c3c;
-}
-.announcement-card .actions .edit {
-color: #3498db;
-}
-.announcement-card .actions .move {
-color: #2ecc71;
-}
+
+.announcement-card .actions .delete:hover { background: rgba(239, 68, 68, 0.1); }
+.announcement-card .actions .edit:hover { background: rgba(99, 102, 241, 0.1); }
+.announcement-card .actions .move:hover { background: rgba(16, 185, 129, 0.1); }
+
+/* HOMEPAGE CONTENT */
 .homepage-content {
 background: white;
-border-radius: 10px;
-padding: 2rem;
+border-radius: var(--border-radius);
+padding: 3rem;
 line-height: 1.8;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+box-shadow: var(--shadow-lg);
 }
-.su-info {
-background: white;
-border-radius: 10px;
-padding: 1.5rem;
+
+.homepage-content h1 {
+color: var(--primary);
+font-size: 2.5rem;
 margin-bottom: 1.5rem;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-font-size: 0.95rem;
-color: #34495e;
+font-weight: 700;
 }
-.su-info h3 {
-color: #2c3e50;
+
+.homepage-content h2 {
+color: var(--secondary);
+font-size: 2rem;
+margin: 2rem 0 1rem;
+font-weight: 600;
+}
+
+.homepage-content h3 {
+color: var(--primary);
+font-size: 1.5rem;
+margin: 1.5rem 0 1rem;
+font-weight: 600;
+}
+
+.homepage-content p {
 margin-bottom: 1rem;
+color: var(--dark);
 }
+
+.homepage-content a {
+color: var(--primary);
+text-decoration: none;
+font-weight: 500;
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 12px 24px;
+background: rgba(99, 102, 241, 0.1);
+border-radius: 50px;
+margin: 8px 8px 8px 0;
+transition: var(--transition);
+}
+
+.homepage-content a:hover {
+background: var(--primary);
+color: white;
+transform: translateX(4px);
+}
+
+/* TABLES */
 .teachers-table, .tutors-table {
 width: 100%;
-border-collapse: collapse;
-margin-top: 1rem;
+border-collapse: separate;
+border-spacing: 0;
+margin-top: 1.5rem;
 background: white;
-border-radius: 10px;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+border-radius: var(--border-radius);
+overflow: hidden;
+box-shadow: var(--shadow-md);
 }
+
 .teachers-table th, .teachers-table td,
 .tutors-table th, .tutors-table td {
-padding: 1rem;
+padding: 1.25rem;
 text-align: left;
-border-bottom: 1px solid #f0f2f5;
+border-bottom: 1px solid #f0f0f0;
 }
+
 .teachers-table th, .tutors-table th {
-background-color: #4a90e2;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
 color: white;
+font-weight: 600;
+text-transform: uppercase;
+font-size: 0.875rem;
+letter-spacing: 0.5px;
 }
+
+.teachers-table tbody tr, .tutors-table tbody tr {
+transition: var(--transition);
+}
+
 .teachers-table tr:hover, .tutors-table tr:hover {
-background-color: #f9f9f9;
+background: rgba(99, 102, 241, 0.05);
+transform: scale(1.01);
 }
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(10px); }
-to { opacity: 1; transform: translateY(0); }
+
+.teachers-table td, .tutors-table td {
+color: var(--dark);
 }
+
+/* MODERN TEACHERS SECTION */
+.teachers-modern-container {
+max-width: 1400px;
+margin: 0 auto;
+padding: 2rem;
+}
+
+.teachers-modern-title {
+text-align: center;
+font-size: 3rem;
+color: white;
+margin-bottom: 3rem;
+position: relative;
+padding-bottom: 1.5rem;
+font-weight: 700;
+text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.teachers-modern-title::after {
+content: '';
+position: absolute;
+bottom: 0;
+left: 50%;
+transform: translateX(-50%);
+width: 120px;
+height: 5px;
+background: linear-gradient(90deg, var(--secondary), var(--warning));
+border-radius: 10px;
+}
+
+.teachers-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+gap: 1.5rem;
+margin-bottom: 3rem;
+}
+
+.teacher-card {
+background: white;
+border-radius: var(--border-radius);
+padding: 1.75rem;
+box-shadow: var(--shadow-md);
+transition: var(--transition);
+border-top: 4px solid var(--primary);
+position: relative;
+overflow: hidden;
+}
+
+.teacher-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(236, 72, 153, 0.05));
+opacity: 0;
+transition: var(--transition);
+z-index: 0;
+}
+
+.teacher-card:hover::before {
+opacity: 1;
+}
+
+.teacher-card:hover {
+transform: translateY(-8px);
+box-shadow: var(--shadow-lg);
+}
+
+.teacher-card-header {
+display: flex;
+align-items: center;
+margin-bottom: 1rem;
+position: relative;
+z-index: 1;
+}
+
+.subject-icon {
+width: 56px;
+height: 56px;
+border-radius: 14px;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.75rem;
+margin-right: 1rem;
+flex-shrink: 0;
+box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.subject-name {
+font-size: 1.4rem;
+font-weight: 600;
+color: var(--dark);
+line-height: 1.2;
+}
+
+.teachers-list {
+position: relative;
+z-index: 1;
+color: var(--gray);
+line-height: 1.8;
+font-size: 0.95rem;
+}
+
+/* ADMIN SECTION */
+.admin-section {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+border-radius: 24px;
+padding: 3rem;
+margin-top: 3rem;
+color: white;
+box-shadow: var(--shadow-lg);
+position: relative;
+overflow: hidden;
+}
+
+.admin-section::before {
+content: '';
+position: absolute;
+top: -50%;
+right: -50%;
+width: 100%;
+height: 100%;
+background: radial-gradient(circle, rgba(255,255,255,0.1) 2px, transparent 2px);
+background-size: 40px 40px;
+}
+
+.admin-section h2 {
+text-align: center;
+font-size: 2.5rem;
+margin-bottom: 2.5rem;
+color: white;
+font-weight: 700;
+position: relative;
+z-index: 1;
+}
+
+.admin-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+gap: 1.5rem;
+position: relative;
+z-index: 1;
+}
+
+.admin-card {
+background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(20px);
+border-radius: 16px;
+padding: 1.75rem;
+border: 2px solid rgba(255, 255, 255, 0.2);
+transition: var(--transition);
+}
+
+.admin-card:hover {
+background: rgba(255, 255, 255, 0.25);
+transform: translateY(-4px);
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.admin-position {
+font-weight: 600;
+font-size: 1.1rem;
+margin-bottom: 0.5rem;
+color: #fff;
+}
+
+.admin-name {
+color: rgba(255, 255, 255, 0.9);
+font-size: 0.95rem;
+}
+
+/* BUTTONS */
 .add-button {
-background: #27ae60;
+background: linear-gradient(135deg, var(--success), #059669);
 color: white;
 border: none;
-padding: 1rem 2rem;
-border-radius: 30px;
+padding: 1rem 2.5rem;
+border-radius: 50px;
 cursor: pointer;
 font-size: 1.1rem;
-transition: all 0.3s ease;
+font-weight: 600;
+transition: var(--transition);
 margin-bottom: 2rem;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+display: inline-flex;
+align-items: center;
+gap: 8px;
 }
+
+.add-button::before {
+content: '➕';
+}
+
 .add-button:hover {
-background: #219a52;
-transform: scale(1.05);
+transform: translateY(-2px);
+box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
 }
+
+.add-button:active {
+transform: translateY(0);
+}
+
+/* MODAL */
 .modal-overlay {
 position: fixed;
 top: 0;
 left: 0;
 right: 0;
 bottom: 0;
-background: rgba(0,0,0,0.5);
+background: rgba(0, 0, 0, 0.6);
+backdrop-filter: blur(8px);
 display: none;
 justify-content: center;
 align-items: center;
 z-index: 1000;
+animation: fadeIn 0.3s ease;
 }
+
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+
 .modal-content {
 background: white;
-padding: 2rem;
-border-radius: 10px;
+padding: 2.5rem;
+border-radius: var(--border-radius);
 width: 90%;
-max-width: 500px;
+max-width: 550px;
+box-shadow: var(--shadow-lg);
+animation: slideUp 0.3s ease;
+max-height: 90vh;
+overflow-y: auto;
 }
+
+@keyframes slideUp {
+from { transform: translateY(30px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+color: var(--dark);
+margin-bottom: 1.5rem;
+font-size: 1.75rem;
+font-weight: 600;
+}
+
 .form-group {
-margin-bottom: 1rem;
+margin-bottom: 1.5rem;
 }
+
 .form-group label {
 display: block;
 margin-bottom: 0.5rem;
-color: #2c3e50;
+color: var(--dark);
+font-weight: 500;
+font-size: 0.95rem;
 }
+
 .form-group input,
 .form-group select,
 .form-group textarea {
 width: 100%;
-padding: 0.8rem;
-border: 1px solid #ddd;
-border-radius: 4px;
+padding: 12px 16px;
+border: 2px solid #e5e7eb;
+border-radius: 12px;
 font-size: 1rem;
+transition: var(--transition);
+font-family: 'Poppins', sans-serif;
 }
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+outline: none;
+border-color: var(--primary);
+box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
 .form-group textarea {
 resize: vertical;
-min-height: 100px;
+min-height: 120px;
 white-space: pre-wrap;
 }
+
 .date-range-container {
 display: flex;
 gap: 1rem;
 }
+
 .date-range-item {
 flex: 1;
 }
+
 .form-buttons {
-margin-top: 1.5rem;
+margin-top: 2rem;
 display: flex;
 gap: 1rem;
 justify-content: flex-end;
 }
+
 .form-buttons button {
-padding: 0.8rem 1.5rem;
+padding: 12px 28px;
 border: none;
-border-radius: 4px;
+border-radius: 50px;
 cursor: pointer;
-transition: all 0.3s ease;
+transition: var(--transition);
+font-weight: 600;
+font-size: 0.95rem;
 }
+
 .form-buttons button[type="submit"] {
-background: #27ae60;
+background: linear-gradient(135deg, var(--success), #059669);
 color: white;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
+
+.form-buttons button[type="submit"]:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
 .form-buttons button[type="button"] {
-background: #e74c3c;
+background: white;
+color: var(--danger);
+border: 2px solid var(--danger);
+}
+
+.form-buttons button[type="button"]:hover {
+background: var(--danger);
 color: white;
 }
+
+/* PAGINATION */
 .pagination {
 display: flex;
 justify-content: center;
-gap: 0.5rem;
+gap: 8px;
 margin: 2rem 0;
+flex-wrap: wrap;
 }
+
 .page-btn {
-padding: 0.5rem 1rem;
-border: 1px solid #4a90e2;
-border-radius: 4px;
+padding: 10px 18px;
+border: 2px solid var(--primary);
+border-radius: 10px;
 background: white;
 cursor: pointer;
-transition: all 0.3s ease;
+transition: var(--transition);
+font-weight: 500;
+color: var(--primary);
 }
+
 .page-btn.active {
-background: #4a90e2;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
 color: white;
-border-color: #4a90e2;
+box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
+
 .page-btn:hover:not(.active) {
-background: #f0f2f5;
+background: rgba(99, 102, 241, 0.1);
+transform: translateY(-2px);
 }
+
 .announcement-content {
 white-space: pre-line;
-line-height: 1.6;
+line-height: 1.7;
 margin: 1rem 0;
+color: var(--dark);
 }
-/* Archiwum modal */
+
+/* ARCHIVE */
 .archive-modal {
 max-height: 80vh;
 overflow-y: auto;
 }
+
 .archive-item {
-background: #f9f9f9;
-padding: 1rem;
-margin-bottom: 0.5rem;
-border-radius: 5px;
-border-left: 4px solid #4a90e2;
+background: linear-gradient(135deg, #f9fafb, #ffffff);
+padding: 1.5rem;
+margin-bottom: 1rem;
+border-radius: var(--border-radius);
+border-left: 5px solid var(--primary);
+box-shadow: var(--shadow-sm);
+transition: var(--transition);
 }
+
+.archive-item:hover {
+transform: translateX(4px);
+box-shadow: var(--shadow-md);
+}
+
 .archive-item h3 {
-margin-bottom: 0.5rem;
-color: #2c3e50;
+margin-bottom: 0.75rem;
+color: var(--dark);
+font-weight: 600;
 }
+
 .archive-item p {
-color: #7f8c8d;
+color: var(--gray);
 font-size: 0.9rem;
+margin-bottom: 0.5rem;
 }
+
 .archive-item .actions {
-margin-top: 0.5rem;
+margin-top: 1rem;
 display: flex;
-gap: 0.5rem;
+gap: 8px;
 }
+
 .archive-item .actions button {
-padding: 0.3rem 0.6rem;
+padding: 8px 16px;
 border: none;
-border-radius: 3px;
+border-radius: 8px;
 cursor: pointer;
-font-size: 0.8rem;
+font-size: 0.875rem;
+font-weight: 500;
+transition: var(--transition);
 }
+
 .archive-item .actions .restore {
-background: #2ecc71;
+background: var(--success);
 color: white;
 }
+
+.archive-item .actions .restore:hover {
+background: #059669;
+transform: scale(1.05);
+}
+
 .archive-item .actions .delete-permanent {
-background: #e74c3c;
+background: var(--danger);
 color: white;
 }
-	.przelacznik {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background: #222;
-  padding: 10px 15px;
-  border-radius: 8px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
+
+.archive-item .actions .delete-permanent:hover {
+background: #dc2626;
+transform: scale(1.05);
+}
+
+/* SWITCHER */
+.przelacznik {
+position: fixed;
+top: 15px;
+left: 15px;
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(20px);
+padding: 15px;
+border-radius: 16px;
+z-index: 1000;
+display: flex;
+flex-direction: column;
+box-shadow: var(--shadow-lg);
+border: 2px solid rgba(99, 102, 241, 0.1);
 }
 
 .przelacznik a {
-  color: white;
-  text-decoration: none;
-  margin-bottom: 8px;
-  font-family: Arial, sans-serif;
-  background: #333;
-  padding: 6px 10px;
-  border-radius: 5px;
-  transition: background 0.2s;
+color: var(--dark);
+text-decoration: none;
+margin-bottom: 8px;
+font-family: 'Poppins', sans-serif;
+background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+padding: 10px 16px;
+border-radius: 10px;
+transition: var(--transition);
+font-weight: 500;
+font-size: 14px;
+}
+
+.przelacznik a:last-child {
+margin-bottom: 0;
 }
 
 .przelacznik a:hover {
-  background: #555;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: white;
+transform: translateX(4px);
+}
+
+/* ANIMATIONS */
+@keyframes fadeInUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* VERSION INFO */
+.version-info {
+position: fixed;
+top: 0;
+left: 0;
+padding: 8px 16px;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: white;
+z-index: 9999;
+border-bottom-right-radius: 12px;
+font-weight: 600;
+font-size: 0.875rem;
+box-shadow: var(--shadow-md);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+.header h1 {
+font-size: 2rem;
+}
+
+.search-container {
+position: static;
+justify-content: center;
+margin-top: 1rem;
+}
+
+.menu {
+flex-direction: column;
+}
+
+.menu a {
+justify-content: center;
+}
+
+.teachers-grid,
+.admin-grid {
+grid-template-columns: 1fr;
+}
+
+.teachers-modern-title {
+font-size: 2rem;
+}
+
+.homepage-content {
+padding: 1.5rem;
+}
+
+.homepage-content h1 {
+font-size: 1.75rem;
+}
+
+.modal-content {
+width: 95%;
+padding: 1.5rem;
+}
+
+.date-range-container {
+flex-direction: column;
+}
+
+.przelacznik {
+top: 10px;
+left: 10px;
+padding: 10px;
+}
+
+.przelacznik a {
+padding: 8px 12px;
+font-size: 12px;
+}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+width: 10px;
+}
+
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: var(--primary-dark);
 }
 </style>
 </head>
 <body>
-		<div class="przelacznik">
+
+<div class="przelacznik">
     <a href="https://fillxd.github.io/sz57">Syst</a>
     <a href="https://fillxd.github.io/tm57">TM</a>
     <a href="https://fillxd.github.io/pl57">Plan</a>
-        <a href="https://fillxd.github.io/na57">MG</a>
+    <a href="https://fillxd.github.io/na57">MG</a>
     <a href="https://fillxd.github.io/tk57">D5b</a>
     <a href="https://fillxd.github.io/kl57">T5b</a>
- <a href="https://docs.google.com/spreadsheets/d/18OV9Sar_ENFseGPn8wppwrIeJXm6j4dsa890OTg6Ioo/edit?gid=1302175797#gid=1302175797">ARK</a>
+    <a href="https://docs.google.com/spreadsheets/d/18OV9Sar_ENFseGPn8wppwrIeJXm6j4dsa890OTg6Ioo/edit?gid=1302175797#gid=1302175797">ARK</a>
 </div>
- <!-- Modal logowania - PIERWSZA RZECZ NA STRONIE -->
-																													<!-- INFORMACJA O WERSJI STRONY --!>
-<div style="position:fixed; top:0; left:0; padding:5px; background:white; z-index:9999;">2.0a</div>
+
+<div class="version-info">2.0a</div>
+
 <div class="header">
-<h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1> 
-
-																													<!-- TYTUŁ NA GÓRZE W MENU GŁÓWNYM --!>
-
-<div class="search-container">
-<a href="#" id="archiveButton">Kosz</a>
+    <h1>Szkoła Podstawowa nr 57 we Wrocławiu</h1>
+    <div class="search-container">
+        <a href="#" id="archiveButton">🗑️ Kosz</a>
+    </div>
 </div>
-</div>
-																														<!-- NAZWY KATEGORII NA STRONIE --!>
+
 <nav>
-<div class="menu">
-<a href="#" class="active" data-category="1">Strona Główna</a>`
-<a href="#" data-category="5">Aktualności</a>
-<a href="#" data-category="11">Dokumenty</a>
-<a href="#" data-category="2">Wydarzenia</a>
-<a href="#" data-category="9">Nauczyciele</a>
-<a href="#" data-category="10">Wychowawcy</a>
-<a href="#" data-category="7">Klasy 1-3 i Świetlica</a>
-<a href="#" data-category="6">Samorząd Uczniowski i Wolontariat</a>
-<a href="#" data-category="12">Szkoła Artystyczna</a>
-<a href="#" data-category="8">Dla Nauczycieli</a>
-<a href="#" data-category="3">Ogłoszenia</a>
-<a href="#" data-category="4">Nieobecności</a>
-</div>
-</nav>	
+    <div class="menu">
+        <a href="#" class="active" data-category="1">🏠 Strona Główna</a>
+        <a href="#" data-category="5">📰 Aktualności</a>
+        <a href="#" data-category="11">📄 Dokumenty</a>
+        <a href="#" data-category="2">📅 Wydarzenia</a>
+        <a href="#" data-category="9">👨‍🏫 Nauczyciele</a>
+        <a href="#" data-category="10">👥 Wychowawcy</a>
+        <a href="#" data-category="7">🎈 Klasy 1-3 i Świetlica</a>
+        <a href="#" data-category="6">🎯 Samorząd i Wolontariat</a>
+        <a href="#" data-category="12">🎨 Szkoła Artystyczna</a>
+        <a href="#" data-category="8">📚 Dla Nauczycieli</a>
+        <a href="#" data-category="3">📢 Ogłoszenia</a>
+        <a href="#" data-category="4">🏥 Nieobecności</a>
+    </div>
+</nav>
 
 <div class="container">
-<button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
-<div id="announcements"></div>
+    <button class="add-button" id="addButton" onclick="handleAddButton()">Dodaj Ogłoszenie</button>
+    <div id="announcements"></div>
 </div>
 
 <!-- Modal dla nieobecności -->
 <div class="modal-overlay" id="absenceModal">
-<div class="modal-content">
-<form id="absenceForm">
-<div class="form-group">
-<label>Okres nieobecności:</label>
-<div class="date-range-container">
-<div class="date-range-item">
-<label for="absenceDateFrom">Od:</label>
-<input type="date" id="absenceDateFrom" required>
-</div>
-<div class="date-range-item">
-<label for="absenceDateTo">Do:</label>
-<input type="date" id="absenceDateTo" required>
-</div>
-</div>
-</div>
+    <div class="modal-content">
+        <h2>➕ Dodaj Nieobecność</h2>
+        <form id="absenceForm">
+            <div class="form-group">
+                <label>Okres nieobecności:</label>
+                <div class="date-range-container">
+                    <div class="date-range-item">
+                        <label for="absenceDateFrom">Od:</label>
+                        <input type="date" id="absenceDateFrom" required>
+                    </div>
+                    <div class="date-range-item">
+                        <label for="absenceDateTo">Do:</label>
+                        <input type="date" id="absenceDateTo" required>
+                    </div>
+                </div>
+            </div>
 
-<div class="form-group">
-<label for="absenceHours">Godziny (lub "cały dzień"):</label>
-<input type="text" id="absenceHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
-</div>
+            <div class="form-group">
+                <label for="absenceHours">Godziny (lub "cały dzień"):</label>
+                <input type="text" id="absenceHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
+            </div>
 
-<div class="form-group">
-<label for="absenceTeacher">Nauczyciel:</label>
-<select id="absenceTeacher" required>
-<option value="">Wybierz nauczyciela</option>
-</select>
-</div>
+            <div class="form-group">
+                <label for="absenceTeacher">Nauczyciel:</label>
+                <select id="absenceTeacher" required>
+                    <option value="">Wybierz nauczyciela</option>
+                </select>
+            </div>
 
-																									<!-- POWODY NIEOBECNOŚCI DLA NAUCZYCIELI --!>
-<div class="form-group">
-<label for="absenceReason">Powód:</label>
-<select id="absenceReason" required>
-<option value="">brak</option>
-<option value="Zwolnienie Lekarskie">Zwolnienie Lekarskie</option>
-<option value="Choroba">Choroba</option>
-<option value="Długotrwała Choroba">Długotrwała Choroba</option>
-<option value="Sprawy szkolne">Sprawy szkolne</option>
-<option value="Sprawy prywatne">Sprawy prywatne</option>
-<option value="Urlop Płatny">Urlop Płatny</option>
-<option value="Urlop Bezpłatny">Urlop Bezpłatny</option>
-<option value="Urlop Rodzinny">Urlop Rodzinny</option>
-<option value="Szkolenie">Szkolenie</option>
-<option value="Rada/Konsultacje">Rada/Konsultacje</option>
-<option value="Odpracowanie">Odpracowanie</option>
-<option value="Wycieczka">Wycieczka</option>
-<option value="Inne">Inne</option>
-</select>
-</div>
+            <div class="form-group">
+                <label for="absenceReason">Powód:</label>
+                <select id="absenceReason" required>
+                    <option value="">brak</option>
+                    <option value="Zwolnienie Lekarskie">Zwolnienie Lekarskie</option>
+                    <option value="Choroba">Choroba</option>
+                    <option value="Długotrwała Choroba">Długotrwała Choroba</option>
+                    <option value="Sprawy szkolne">Sprawy szkolne</option>
+                    <option value="Sprawy prywatne">Sprawy prywatne</option>
+                    <option value="Urlop Płatny">Urlop Płatny</option>
+                    <option value="Urlop Bezpłatny">Urlop Bezpłatny</option>
+                    <option value="Urlop Rodzinny">Urlop Rodzinny</option>
+                    <option value="Szkolenie">Szkolenie</option>
+                    <option value="Rada/Konsultacje">Rada/Konsultacje</option>
+                    <option value="Odpracowanie">Odpracowanie</option>
+                    <option value="Wycieczka">Wycieczka</option>
+                    <option value="Inne">Inne</option>
+                </select>
+            </div>
 
-<div class="form-buttons">
-<button type="button" onclick="document.getElementById('absenceModal').style.display = 'none'">Anuluj</button>
-<button type="submit">Zapisz</button>
-</div>
-</form>
-</div>
+            <div class="form-buttons">
+                <button type="button" onclick="document.getElementById('absenceModal').style.display = 'none'">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Modal dla wydarzeń -->
 <div class="modal-overlay" id="eventModal">
-<div class="modal-content">
-<form id="eventForm">
-<div class="form-group">
-<label for="eventDate">Data:</label>
-<input type="date" id="eventDate" required>
-</div>
+    <div class="modal-content">
+        <h2>➕ Dodaj Wydarzenie</h2>
+        <form id="eventForm">
+            <div class="form-group">
+                <label for="eventDate">Data:</label>
+                <input type="date" id="eventDate" required>
+            </div>
 
-<div class="form-group">
-<label for="eventHours">Godziny (lub "cały dzień"):</label>
-<input type="text" id="eventHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
-</div>
+            <div class="form-group">
+                <label for="eventHours">Godziny (lub "cały dzień"):</label>
+                <input type="text" id="eventHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
+            </div>
 
-<div class="form-group">
-<label for="eventName">Nazwa wydarzenia:</label>
-<input type="text" id="eventName" required>
-</div>
+            <div class="form-group">
+                <label for="eventName">Nazwa wydarzenia:</label>
+                <input type="text" id="eventName" required>
+            </div>
 
-<div class="form-group">
-<label for="eventCategory">Działanie:</label>
-<select id="eventCategory" required>
-<option value="">wybierz</option>
-<option value="zajęcia odwołane - uczniowie zwolnieni do domu.">zajęcia odwołane - uczniowie zwolnieni do domu.</option>
-<option value="Zajęcia związane z tematem wydarzenia.">zajęcia związane z tematem wydarzenia.</option>
-<option value="Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)">Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)</option>
-<option value="brak">Brak</option>
-</select>
-</div>
+            <div class="form-group">
+                <label for="eventCategory">Działanie:</label>
+                <select id="eventCategory" required>
+                    <option value="">wybierz</option>
+                    <option value="zajęcia odwołane - uczniowie zwolnieni do domu.">zajęcia odwołane - uczniowie zwolnieni do domu.</option>
+                    <option value="Zajęcia związane z tematem wydarzenia.">zajęcia związane z tematem wydarzenia.</option>
+                    <option value="Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)">Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)</option>
+                    <option value="brak">Brak</option>
+                </select>
+            </div>
 
-<div class="form-buttons">
-<button type="button" onclick="document.getElementById('eventModal').style.display = 'none'">Anuluj</button>
-<button type="submit">Zapisz</button>
-</div>
-</form>
-</div>
+            <div class="form-buttons">
+                <button type="button" onclick="document.getElementById('eventModal').style.display = 'none'">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Modal dla ogłoszeń -->
 <div class="modal-overlay" id="announcementModal">
-<div class="modal-content">
-<form id="announcementForm">
-<div class="form-group">
-<label for="announcementTeacher">Nauczyciel:</label>
-<select id="announcementTeacher" required>
-<option value="">Wybierz nauczyciela</option>
-</select>
-</div>
+    <div class="modal-content">
+        <h2>➕ Dodaj Ogłoszenie</h2>
+        <form id="announcementForm">
+            <div class="form-group">
+                <label for="announcementTeacher">Nauczyciel:</label>
+                <select id="announcementTeacher" required>
+                    <option value="">Wybierz nauczyciela</option>
+                </select>
+            </div>
 
-<div class="form-group">
-<label for="announcementTitle">Tytuł:</label>
-<input type="text" id="announcementTitle" required>
-</div>
+            <div class="form-group">
+                <label for="announcementTitle">Tytuł:</label>
+                <input type="text" id="announcementTitle" required>
+            </div>
 
-<div class="form-group">
-<label for="announcementContent">Treść:</label>
-<textarea id="announcementContent" rows="4" required></textarea>
-</div>
+            <div class="form-group">
+                <label for="announcementContent">Treść:</label>
+                <textarea id="announcementContent" rows="4" required></textarea>
+            </div>
 
-<div class="form-group">
-<label>Czas:</label>
-<div class="date-range-container">
-<div class="date-range-item">
-<label for="announcementDateFrom">Od:</label>
-<input type="date" id="announcementDateFrom" required>
-</div>
-<div class="date-range-item">
-<label for="announcementDateTo">Do:</label>
-<input type="date" id="announcementDateTo" required>
-</div>
-</div>
-</div>
+            <div class="form-group">
+                <label>Czas:</label>
+                <div class="date-range-container">
+                    <div class="date-range-item">
+                        <label for="announcementDateFrom">Od:</label>
+                        <input type="date" id="announcementDateFrom" required>
+                    </div>
+                    <div class="date-range-item">
+                        <label for="announcementDateTo">Do:</label>
+                        <input type="date" id="announcementDateTo" required>
+                    </div>
+                </div>
+            </div>
 
-<div class="form-buttons">
-<button type="button" onclick="document.getElementById('announcementModal').style.display = 'none'">Anuluj</button>
-<button type="submit">Zapisz</button>
-</div>
-</form>
-</div>
+            <div class="form-buttons">
+                <button type="button" onclick="document.getElementById('announcementModal').style.display = 'none'">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Modal dla aktualności -->
 <div class="modal-overlay" id="newsModal">
-<div class="modal-content">
-<form id="newsForm">
-<div class="form-group">
-<label for="newsTitle">Tytuł wpisu:</label>
-<input type="text" id="newsTitle" required>
-</div>
+    <div class="modal-content">
+        <h2>➕ Dodaj Wpis</h2>
+        <form id="newsForm">
+            <div class="form-group">
+                <label for="newsTitle">Tytuł wpisu:</label>
+                <input type="text" id="newsTitle" required>
+            </div>
 
-<div class="form-group">
-<label for="newsContent">Treść wpisu:</label>
-<textarea id="newsContent" rows="4" required></textarea>
-</div>
+            <div class="form-group">
+                <label for="newsContent">Treść wpisu:</label>
+                <textarea id="newsContent" rows="4" required></textarea>
+            </div>
 
-<div class="form-buttons">
-<button type="button" onclick="document.getElementById('newsModal').style.display = 'none'">Anuluj</button>
-<button type="submit">Zapisz</button>
-</div>
-</form>
-</div>
+            <div class="form-buttons">
+                <button type="button" onclick="document.getElementById('newsModal').style.display = 'none'">Anuluj</button>
+                <button type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Modal dla archiwum -->
 <div class="modal-overlay" id="archiveModal">
-<div class="modal-content archive-modal">
-<h2>Archiwum</h2>
-<div id="archiveContent"></div>
-<div class="form-buttons">
-<button type="button" onclick="document.getElementById('archiveModal').style.display = 'none'">Zamknij</button>
-</div>
-</div>
+    <div class="modal-content archive-modal">
+        <h2>🗑️ Archiwum</h2>
+        <div id="archiveContent"></div>
+        <div class="form-buttons">
+            <button type="button" onclick="document.getElementById('archiveModal').style.display = 'none'">Zamknij</button>
+        </div>
+    </div>
 </div>
 
 <script>
-
-// Sprawdź przy ładowaniu strony
 window.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("isLoggedIn") === "true") {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("content").style.display = "block";
   }
 });
-// KONFIGURACJA FIREBASE
+
 const firebaseConfig = {
 apiKey: "AIzaSyCFOF0WtZfOSzXFO6gr6kTXwtHlymwGjNU",
 authDomain: "szkola57-ccc80.firebaseapp.com",
@@ -625,7 +1189,6 @@ messagingSenderId: "422165475378",
 appId: "1:422165475378:web:dc7cd50c37451dd7ec4c2b"
 };
 
-// Inicjalizacja Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
@@ -638,7 +1201,6 @@ const itemsPerPage = 8;
 const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
 
 function saveAnnouncements() {
-// Zapisz zarówno ogłoszenia jak i archiwum w jednej transakcji
 const updates = {
 '/announcements': announcements,
 '/archive': archive
@@ -647,11 +1209,9 @@ return database.ref().update(updates);
 }
 
 function loadAnnouncements(callback) {
-// Ładuj obie kolekcje równocześnie
 const announcementsPromise = new Promise(resolve => {
 database.ref('announcements').on('value', snapshot => {
 const data = snapshot.val() || {};
-// Upewnij się, że wszystkie wymagane kategorie istnieją
 requiredCategories.forEach(cat => {
 if (!data[cat]) data[cat] = [];
 });
@@ -671,7 +1231,6 @@ Promise.all([announcementsPromise, archivePromise])
 .then(callback)
 .catch(error => {
 console.error("Błąd ładowania danych:", error);
-// Ustaw domyślne wartości w przypadku błędu
 announcements = {};
 requiredCategories.forEach(cat => {
 announcements[cat] = [];
@@ -680,7 +1239,7 @@ archive = [];
 callback();
 });
 }
-																																	/* LISTA NAUCZYCIELI */
+
 const nauczyciele = [
 "Aleksander Białko", "Katarzyna Borzędzin", "Anna Brzeska", "Hanna Brzeska", "Anna Burakowska", "Agnieszka Burkiewicz", "Katarzyna Buzdro", "Sylwia Cześniewicz", "Faustyna Dobrzek",
 "Małgorzata Domagała", "Karolina Dominiak", "Dariusz Drzemała", "Elżbieta Gawin", "Mateusz Gig", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak",
@@ -688,11 +1247,10 @@ const nauczyciele = [
 "Aleksandra Malczyk", "Ewa Malinowska", "Joanna Małek", "Dorota Maszkiewska", "Agnieszka Miłasz", "Kinga Młodzik", "Karolina Młotek", "Daria Musherina", "Antonnio Myszkowski", "Tadeusz Ostrowski",
 "Ludwik Parkowiak", "Antonina Pawelczyk", "Michał Pietruszewski", "Natalia Raczyńska", "Alicja Rajewicz-Drzemała", "Weronika Rogalska", "Katarzyna Sieczko", "Renata Skleszewska",
 "Lena Skwierzyńska", "Alicja Struś-Michalska", "Barbara Strzegomska", "Karolina Sznurowska", "Bożena Szpilkiewicz", "Ewelina Śmigalska", "Zuzanna Świerczek", "Michał Tarczyn", 
-" Barbara Trzaskowska", "WAKAT Fizyka", "Celina Włodarczyk", "Ignacy Włoszek", "Marian Woźniak", "Aleksandra Wykaz", "Marlena Wyszyńska", "Urszula Złocińska", "Oliwia Żabkiewicz", "Karolina Żukowska",
-  "teacher_account_150", "teacher_account_153", "wychowawca świetlicy", "teacher_account_154", "Administrator"
+"Barbara Trzaskowska", "WAKAT Fizyka", "Celina Włodarczyk", "Ignacy Włoszek", "Marian Woźniak", "Aleksandra Wykaz", "Marlena Wyszyńska", "Urszula Złocińska", "Oliwia Żabkiewicz", "Karolina Żukowska",
+"teacher_account_150", "teacher_account_153", "wychowawca świetlicy", "teacher_account_154", "Administrator"
 ];
 
-// Inicjalizacja list nauczycieli
 [document.getElementById('absenceTeacher'), document.getElementById('announcementTeacher')].forEach(select => {
 nauczyciele.forEach(teacher => {
 const option = document.createElement('option');
@@ -714,7 +1272,6 @@ showAnnouncements();
 });
 });
 
-// Obsługa przycisku archiwum
 document.getElementById('archiveButton').addEventListener('click', (e) => {
 e.preventDefault();
 showArchive();
@@ -725,7 +1282,7 @@ const archiveContent = document.getElementById('archiveContent');
 archiveContent.innerHTML = '';
 
 if (archive.length === 0) {
-archiveContent.innerHTML = '<p>Archiwum jest puste.</p>';
+archiveContent.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 2rem;">Archiwum jest puste.</p>';
 } else {
 archive.forEach((item, index) => {
 const archiveItem = document.createElement('div');
@@ -739,53 +1296,48 @@ return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
 
 let content = '';
 if (item.category === 4) {
-// Nieobecność
 const from = formatDate(item.dateFrom);
 const to = formatDate(item.dateTo);
 content = `
-                           <h3>Nieobecność: ${item.teacher}</h3>
-                           <p>Okres: ${from} - ${to} ${item.hours ? `(${item.hours})` : ''}</p>
-                           <p>Powód: ${item.reason}</p>
-                       `;
+<h3>🏥 Nieobecność: ${item.teacher}</h3>
+<p>Okres: ${from} - ${to} ${item.hours ? `(${item.hours})` : ''}</p>
+<p>Powód: ${item.reason}</p>
+`;
 } else if (item.category === 2) {
-// Wydarzenie
 content = `
-                           <h3>Wydarzenie: ${item.name}</h3>
-                           <p>Data: ${formatDate(item.date)} ${item.hours ? `(${item.hours})` : ''}</p>
-                           <p>Kategoria: ${item.category}</p>
-                       `;
+<h3>📅 Wydarzenie: ${item.name}</h3>
+<p>Data: ${formatDate(item.date)} ${item.hours ? `(${item.hours})` : ''}</p>
+<p>Kategoria: ${item.category}</p>
+`;
 } else if (item.category === 3) {
-// Ogłoszenie
 const from = formatDate(item.dateFrom);
 const to = formatDate(item.dateTo);
 content = `
-                           <h3>Ogłoszenie: ${item.teacher} - ${item.title}</h3>
-                           <p>Okres ważności: ${from} - ${to}</p>
-                           <p>${item.content}</p>
-                       `;
+<h3>📢 Ogłoszenie: ${item.teacher} - ${item.title}</h3>
+<p>Okres ważności: ${from} - ${to}</p>
+<p>${item.content}</p>
+`;
 } else if (item.category === 5) {
-// Aktualność
 content = `
-                           <h3>Aktualność: ${item.title}</h3>
-                           <p>${item.content}</p>
-                       `;
+<h3>📰 Aktualność: ${item.title}</h3>
+<p>${item.content}</p>
+`;
 } else {
-// Inne
 content = `
-                           <h3>${item.title || 'Brak tytułu'}</h3>
-                           <p>${item.content || 'Brak treści'}</p>
-                       `;
+<h3>${item.title || 'Brak tytułu'}</h3>
+<p>${item.content || 'Brak treści'}</p>
+`;
 }
 
 const deletedDate = new Date(item.deletedAt || Date.now());
 content += `
-                       <p><small>Usunięte: ${deletedDate.toLocaleString()}</small></p>
-                       <p><small>Kategoria: ${getCategoryName(item.category)}</small></p>
-                       <div class="actions">
-                           <button class="restore" onclick="restoreFromArchive(${index})">Przywróć</button>
-                           <button class="delete-permanent" onclick="deleteFromArchive(${index})">Usuń na zawsze</button>
-                       </div>
-                   `;
+<p><small>Usunięte: ${deletedDate.toLocaleString()}</small></p>
+<p><small>Kategoria: ${getCategoryName(item.category)}</small></p>
+<div class="actions">
+<button class="restore" onclick="restoreFromArchive(${index})">♻️ Przywróć</button>
+<button class="delete-permanent" onclick="deleteFromArchive(${index})">🗑️ Usuń na zawsze</button>
+</div>
+`;
 
 archiveItem.innerHTML = content;
 archiveContent.appendChild(archiveItem);
@@ -798,11 +1350,8 @@ document.getElementById('archiveModal').style.display = 'flex';
 function restoreFromArchive(index) {
 const item = archive[index];
 if (confirm(`Czy na pewno chcesz przywrócić to ogłoszenie do kategorii ${getCategoryName(item.category)}?`)) {
-// Dodaj do odpowiedniej kategorii
 announcements[item.category].unshift(item);
-// Usuń z archiwum
 archive.splice(index, 1);
-// Zapisz zmiany
 saveAnnouncements().then(() => {
 showArchive();
 showAnnouncements();
@@ -841,293 +1390,539 @@ function showAnnouncements() {
 const container = document.getElementById('announcements');
 container.innerHTML = '';
 
-																															<!-- STRONA GŁÓWNA - INFORMACJE DO EDYCJI --!>
-
 if(currentCategory === 1) {
 container.innerHTML = `
-                   <div class="homepage-content">
-                       <h1>Witamy na stronie Szkoły Podstawowej nr 57 i Szkoły Artystycznej nr 2 we Wrocławiu!</h1>
-                       <h2>NOWA SZKOŁA ARTYSTYCZNA NR 2 WE WROCŁAWIU W NASZYM BUDYNKU!</h2>
-                       Zapraszamy do naszej krainy edukacji! <br>
-                    </p>
-                       
-                       <h3>O Naszej Szkole Podstawowej</h3>
-                       <p>Nasza szkoła to nowoczesna, przyjazna i otwarta placówka edukacyjna, która oferuje szeroki wachlarz możliwości rozwoju dla każdego ucznia. Prowadzimy 
-klasy ogólne, sportowe, muzyczne oraz językowe – tak, aby każde dziecko mogło rozwijać swoje pasje, zdolności i zainteresowania w odpowiednim dla siebie kierunku. Dysponujemy 
-wykwalifikowaną i doświadczoną kadrą pedagogiczną, która z zaangażowaniem wspiera uczniów w codziennej nauce i wychowaniu. Naszym priorytetem jest tworzenie bezpiecznego, 
-inspirującego środowiska, w którym dzieci mogą uczyć się, rozwijać i budować trwałe relacje. Nad całością czuwa kompetentna i oddana dyrekcja, dbająca zarówno o wysoki poziom
- kształcenia, jak i o dobrą atmosferę w szkole. Dzięki wspólnej pracy całej społeczności szkolnej, nasza szkoła to miejsce, które nie tylko kształci, ale również wychowuje i 
- wspiera młodych ludzi na każdym etapie ich rozwoju.</p>
-                       <h3>O Patronie Szkoły Podstawowej</h3>
-			<p>Stanisław Moniuszko urodził się 5 maja 1819 roku w Ubielu (dzisiejsza Białoruś). Był jednym z najwybitniejszych polskich kompozytorów XIX wieku, często nazywany 
-"ojcem polskiej opery narodowej". Od najmłodszych lat miał kontakt z muzyką – pierwsze lekcje gry na fortepianie otrzymał od matki. W wieku 18 lat wyjechał do Berlina, gdzie 
-studiował kompozycję i teorię muzyki u Carla Rungenhagena. Po powrocie do kraju objął posadę organisty w Wilnie i rozpoczął działalność kompozytorską oraz organizował koncerty. 
-W tym czasie tworzył pieśni, muzykę kościelną, a także utwory sceniczne. Jego największą sławę przyniosła opera „Halka”, która miała premierę w 1848 roku w Wilnie w wersji 
-koncertowej, a pełne wykonanie sceniczne odbyło się w 1858 roku w Warszawie. Moniuszko doskonale oddał w niej ducha polskiego społeczeństwa – pokazał problemy chłopów i szlachty, 
-wykorzystując elementy muzyki ludowej. W 1858 roku został dyrektorem Teatru Wielkiego w Warszawie, gdzie napisał kolejne ważne opery, m.in. „Straszny dwór”, „Hrabina” i „Paria”.
- Oprócz oper tworzył też liczne pieśni, zebrane w zbiorach takich jak „Śpiewnik domowy”, który do dziś stanowi skarb polskiej kultury muzycznej. Moniuszko zmarł nagle 4 czerwca 
- 1872 roku w Warszawie. Został pochowany na Cmentarzu Powązkowskim. Jego twórczość, mocno zakorzeniona w polskim folklorze i tradycji narodowej, do dziś jest symbolem muzycznego 
-patriotyzmu.</p>
-			<h3> O Naszej Szkole Artystycznej </h3>
-			<p> Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki 
-			i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. 
-			Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania 
-			swoich talentów szerszej publiczności. </p>
+<div class="homepage-content">
+<h1>✨ Witamy na stronie Szkoły Podstawowej nr 57 i Szkoły Artystycznej nr 2 we Wrocławiu!</h1>
+<h2>🎨 NOWA SZKOŁA ARTYSTYCZNA NR 2 WE WROCŁAWIU W NASZYM BUDYNKU!</h2>
+<p>Zapraszamy do naszej krainy edukacji!</p>
 
-                       <h3>Godziny otwarcia:</h3>
-					   <p> Szkoła: PN-PT 6:30-18:30 </p>
-						<p> Sekretariat: PN-PT 7:30-15:30 </p>
-						<p> Biblioteka (Karolina Młotek): PN(9:50-13:35) WT(8:00-13:35) CZ(12:30-14:30) PT(12:50-15:30)
-						<p> Psycholog mgr. Aleksandra Wykaz: PN-PT (9:00-14:30)
-	  					<p> Pedagog mgr. Anna Grześkowiak: WT:8:00-11:30, ŚR:8:00-10:30 i 13:00-15:30, CZ: 9:00-14:30, PT: 8:00-15:30
-                   </div>`;
+<h3>📚 O Naszej Szkole Podstawowej</h3>
+<p>Nasza szkoła to nowoczesna, przyjazna i otwarta placówka edukacyjna, która oferuje szeroki wachlarz możliwości rozwoju dla każdego ucznia. Prowadzimy klasy ogólne, sportowe, muzyczne oraz językowe – tak, aby każde dziecko mogło rozwijać swoje pasje, zdolności i zainteresowania w odpowiednim dla siebie kierunku. Dysponujemy wykwalifikowaną i doświadczoną kadrą pedagogiczną, która z zaangażowaniem wspiera uczniów w codziennej nauce i wychowaniu. Naszym priorytetem jest tworzenie bezpiecznego, inspirującego środowiska, w którym dzieci mogą uczyć się, rozwijać i budować trwałe relacje. Nad całością czuwa kompetentna i oddana dyrekcja, dbająca zarówno o wysoki poziom kształcenia, jak i o dobrą atmosferę w szkole. Dzięki wspólnej pracy całej społeczności szkolnej, nasza szkoła to miejsce, które nie tylko kształci, ale również wychowuje i wspiera młodych ludzi na każdym etapie ich rozwoju.</p>
+
+<h3>🎭 O Patronie Szkoły Podstawowej</h3>
+<p>Stanisław Moniuszko urodził się 5 maja 1819 roku w Ubielu (dzisiejsza Białoruś). Był jednym z najwybitniejszych polskich kompozytorów XIX wieku, często nazywany "ojcem polskiej opery narodowej". Od najmłodszych lat miał kontakt z muzyką – pierwsze lekcje gry na fortepianie otrzymał od matki. W wieku 18 lat wyjechał do Berlina, gdzie studiował kompozycję i teorię muzyki u Carla Rungenhagena. Po powrocie do kraju objął posadę organisty w Wilnie i rozpoczął działalność kompozytorską oraz organizował koncerty. W tym czasie tworzył pieśni, muzykę kościelną, a także utwory sceniczne. Jego największą sławę przyniosła opera „Halka", która miała premierę w 1848 roku w Wilnie w wersji koncertowej, a pełne wykonanie sceniczne odbyło się w 1858 roku w Warszawie. Moniuszko doskonale oddał w niej ducha polskiego społeczeństwa – pokazał problemy chłopów i szlachty, wykorzystując elementy muzyki ludowej. W 1858 roku został dyrektorem Teatru Wielkiego w Warszawie, gdzie napisał kolejne ważne opery, m.in. „Straszny dwór", „Hrabina" i „Paria". Oprócz oper tworzył też liczne pieśni, zebrane w zbiorach takich jak „Śpiewnik domowy", który do dziś stanowi skarb polskiej kultury muzycznej. Moniuszko zmarł nagle 4 czerwca 1872 roku w Warszawie. Został pochowany na Cmentarzu Powązkowskim. Jego twórczość, mocno zakorzeniona w polskim folklorze i tradycji narodowej, do dziś jest symbolem muzycznego patriotyzmu.</p>
+
+<h3>🎨 O Naszej Szkole Artystycznej</h3>
+<p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
+
+<h3>⏰ Godziny otwarcia:</h3>
+<p>🏫 Szkoła: PN-PT 6:30-18:30</p>
+<p>📋 Sekretariat: PN-PT 7:30-15:30</p>
+<p>📚 Biblioteka (Karolina Młotek): PN(9:50-13:35) WT(8:00-13:35) CZ(12:30-14:30) PT(12:50-15:30)</p>
+<p>🧠 Psycholog mgr. Aleksandra Wykaz: PN-PT (9:00-14:30)</p>
+<p>💭 Pedagog mgr. Anna Grześkowiak: WT:8:00-11:30, ŚR:8:00-10:30 i 13:00-15:30, CZ: 9:00-14:30, PT: 8:00-15:30</p>
+</div>`;
 return;
 }
 
 if(currentCategory === 12) {
 container.innerHTML = `
+<div class="homepage-content">
+<h1 style="text-align: center;">🎨 Szkoła Artystyczna nr 2 we Wrocławiu</h1>
+<p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z tańca, plastyki, teatru i fotografii, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
 
-																															<!-- INFORMACJE O SZKOLE ARTYSTYCZNEJ DO EDYCJI --!>
+<h1 style="text-align: center;">📋 KLASY</h1>
+<h3>💃 TANECZNA - TA1 (14 os.) 7-10 lat</h3>
+<h3>💃 TANECZNA - TA2 (13 os.) 11-14 lat</h3>
+<h3>🎨 PLASTYCZNA - P (20 os.) 7-14 lat</h3>
+<h3>🎭 TEATRALNA - TE (14 os.) 7-14 lat</h3>
+<h3>📷 FOTOGRAFICZNA - F (10 os.) 11-14 lat</h3>
 
-                   <div class="homepage-content">
-                       <h1 style="text-align: center;">Szkoła Artystyczna nr 2 we Wrocławiu</h1>
-                       <p>Informacje na temat szkoły artystycznej.<br>
-                       <p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z tańca, plastyki, teatru i fotografii, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. 
-			Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania 
-			swoich talentów szerszej publiczności.</p>
+<h1 style="text-align: center;">👥 Nauczyciele</h1>
+<h3>👔 Ewa Malinowska (dyrektor)</h3>
+<h3>👩‍🏫 Karolina Sznurowska</h3>
+<h3>👩‍🏫 Agnieszka Burkiewicz</h3>
 
-
-                       <h1 style="text-align: center;">KLASY</h1>
-		       <h3>TANECZNA - TA1 (14 os.) 7-10 lat </h3>
-	 		<h3>TANECZNA - TA2 (13 os.) 11-14 lat </h3>
-    <h3>PLASTYCZNA - P (20 os.) 7-14 lat </h3>
-    <h3>TEATRALNA - TE (14 os.) 7-14 lat </h3>
-    <h3>FOTOGRAFICZNA - F (10 os.) 11-14 lat </h3>
-			<h1 style="text-align: center;"> Nauczyciele </h1>
-			<h3> Ewa Malinowska (dyrektor) </h3>
-			<h3> Karolina Sznurowska </h3>
-			<h3> Agnieszka Burkiewicz </h3>	
 <a href="PLANSA.pdf" target="_blank">📅 PLAN LEKCJI SZKOŁY ARTYSTYCZNEJ</a>
-                   </div>`;
-const artContainer = document.getElementById('school-art-announcements') || container;
-    const categoryAnnouncements = announcements[currentCategory] || [];
+</div>`;
 
-    if(categoryAnnouncements.length === 0) {
-        artContainer.innerHTML = '<p>Brak ogłoszeń.</p>';
-    } else {
-        categoryAnnouncements.forEach((ann, index) => {
-            artContainer.appendChild(createAnnouncementCard(ann, index));
-        });
-    }
-    return;
+const artContainer = document.getElementById('school-art-announcements') || container;
+const categoryAnnouncements = announcements[currentCategory] || [];
+
+if(categoryAnnouncements.length === 0) {
+const emptyDiv = document.createElement('div');
+emptyDiv.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 2rem;">Brak ogłoszeń.</p>';
+artContainer.appendChild(emptyDiv);
+} else {
+categoryAnnouncements.forEach((ann, index) => {
+artContainer.appendChild(createAnnouncementCard(ann, index));
+});
+}
+return;
 }
 
 if(currentCategory === 11) {
 container.innerHTML = `
-
-																															<!-- DOKUMENTY DO DODANIA I INFORMACJE --!>
-
-                   <div class="homepage-content">
-                       <h1>DOKUMENTY:</h1>
-	<img src="" alt="" style="width: 600px;">
+<div class="homepage-content">
+<h1>📄 DOKUMENTY:</h1>
 <a href="kalendarz.pdf" target="_blank">📅 KALENDARZ ROKU SZKOLNEGO 2025/2026</a>
-<h3></h3>
-<a href="SP57_ZajDod.pdf" target="_blank">📅KALENDARZ ZAJĘĆ DODATKOWYCH W ROKU SZKOLNYM (NOWY!)</a>
-<h3></h3>
-<a href="SP57_Kon.pdf" target="_blank">👨‍💼TERMINY KONSULTACJI Z NAUCZYCIELAMI 2025/2026 (NOWE!)</a>
-<h2>PLANY LEKCJI</h2>
-<a href="PLANES.pdf" target="_blank"> stary PLAN SP57// ważny do 26.09.2025r.</a>
-<h3></h3>
-<a href="Sale-57.pdf" target="_blank"> PODZIAŁ SAL NA NAUCZYCIELI, KLASY I PRZEDMIOTY </a>
-<h2>PLANY LEKCJI</h2>
-<a href="SP57_P2.pdf" target="_blank"> NOWY PLAN LEKCJI DLA KLAS - SP 57 (ważny od 29.09) </a>
-<h3></h3>
-<a href="SP57_P2N.pdf" target="_blank"> NOWY PLAN LEKCJI DLA NAUCZYCIELI - SP 57 (wazny od 29.09) </a>
-<h3></h3>
-<a href="PLANSA.pdf" target="_blank">📅 PLAN LEKCJI SZKOŁY ARTYSTYCZNEJ 2025r.</a>
-<h3></h3>
+<a href="SP57_ZajDod.pdf" target="_blank">📅 KALENDARZ ZAJĘĆ DODATKOWYCH W ROKU SZKOLNYM (NOWY!)</a>
+<a href="SP57_Kon.pdf" target="_blank">👨‍💼 TERMINY KONSULTACJI Z NAUCZYCIELAMI 2025/2026 (NOWE!)</a>
 
+<h2>📋 PLANY LEKCJI</h2>
+<a href="PLANES.pdf" target="_blank">📄 stary PLAN SP57// ważny do 26.09.2025r.</a>
+<a href="Sale-57.pdf" target="_blank">🏫 PODZIAŁ SAL NA NAUCZYCIELI, KLASY I PRZEDMIOTY</a>
 
-
-                       <div class="tekst">
-		       
-                       </div> </div>
-					   
-																																<!-- PLAN LEKCJI SZKOŁY DO EDYCJI --!>
-						
+<h2>📅 PLANY LEKCJI</h2>
+<a href="SP57_P2.pdf" target="_blank">📄 NOWY PLAN LEKCJI DLA KLAS - SP 57 (ważny od 29.09)</a>
+<a href="SP57_P2N.pdf" target="_blank">👨‍🏫 NOWY PLAN LEKCJI DLA NAUCZYCIELI - SP 57 (ważny od 29.09)</a>
+<a href="PLANSA.pdf" target="_blank">🎨 PLAN LEKCJI SZKOŁY ARTYSTYCZNEJ 2025r.</a>
+</div>
 `;
 return;
 }
+
 if(currentCategory === 6) {
 container.innerHTML = `
+<div class="homepage-content">
+<h2>🎯 Samorząd Uczniowski i Szkolne Koło Wolontariatu</h2>
+<h4>👥 Opiekun Samorządu Ucz. kl.1-3: Anna Brzeska</h4>
+<h4>👥 Opiekun Samorządu Ucz. kl.4-8: Michał Tarczyn</h4>
+<h4>❤️ Opiekun Szkolnego Koła Wolontariatu: Michał Tarczyn, Zofia Lisek</h4>
+<h4>👑 Przewodnicząca Szkoły: Pola Rucińska (7m)</h4>
+<h4>👑 Przewodnicząca klas 1-3: Zuzanna Kamińska (3a)</h4>
+<h4>👑 Przewodniczący klas 4-8: Szymon Zaucha (6b)</h4>
 
-																											<!-- INFORMACJE O SAMORZADZIE I WOLONTARIACIE DO EDYCJI --!>
+<h3>⏰ GODZINA DOSTĘPNOŚCI OPIEKUNÓW SAMORZĄDU I KOŁA WOLONTARIATU: piątek 10:45-12:50</h3>
+<h3>📅 GODZINA ZEBRANIA UCZESTNIKÓW SAMORZĄDU UCZNIOWSKIEGO: piątek 11:30-11:45 (przerwa)</h3>
+<h3>📅 GODZINA ZEBRANIA UCZESTNIKÓW SZKOLNEGO KOŁA WOLONTARIATU: piątek 12:30-12:50 (przerwa)</h3>
 
-                    <div class="homepage-content">
-                       <h2>Samorząd Uczniowski i Szkolne Koło Wolontariatu</h2>
-                       <h4>• Opiekun Samorządu Ucz. kl.1-3:    Anna Brzeska</h4>
-                       <h4>• Opiekun Samorządu Ucz. kl.4-8:    Michał Tarczyn</h4>
-					   <h4>• Opiekun Szkolnego Koła Wolontariatu:      Michał Tarczyn, Zofia Lisek </h4>
-					   <h4>• Przewodniczący Szkoły:   </h4>
-					   <h4>• Przewodniczący klas 1-3:   </h4>
-					   <h4>• Przewodniczący klas 4-8:   </h4>
-					   <h4>• Przewodnicząca Szkoły: Pola Rucińska (7m)  </h4>
-					   <h4>• Przewodnicząca klas 1-3: Zuzanna Kamińska (3a)  </h4>
-					   <h4>• Przewodniczący klas 4-8: Szymon Zaucha (6b)  </h4>
-                       <h3>GODZINA DOSTĘPNOŚCI OPIEKUNÓW SAMORZĄDU I KOŁA WOLONTARIATU: piątek 10:45-12:50</h3>
-						<h3>GODZINA ZEBRANIA UCZESTNIKÓW SAMORZĄDU UCZNIOWSKIEGO: piątek 11:30-11:45 (przerwa) </h3>
-						<h3>GODZINA ZEBRANIA UCZESTNIKÓW SZKOLNEGO KOŁA WOLONTARIATU: piątek 12:30-12:50 (przerwa) </h3>
-                       <img src=".png" alt="" width="500">
-						 <h2>Ogłoszenia Samorządu i Wolontariatu:</h2>
-       </div>`;
+<h2>📢 Ogłoszenia Samorządu i Wolontariatu:</h2>
+</div>`;
 
-    const categoryAnnouncements = announcements[currentCategory] || [];
-    categoryAnnouncements.forEach((ann, index) => {
-        container.appendChild(createAnnouncementCard(ann, index));
-    });
-    return;
+const categoryAnnouncements = announcements[currentCategory] || [];
+categoryAnnouncements.forEach((ann, index) => {
+container.appendChild(createAnnouncementCard(ann, index));
+});
+return;
 }
 
 if(currentCategory === 9) {
 container.innerHTML = `
-<h2 style="text-align: center;">
-  GRONO PEDAGOGICZNE NA ROK SZKOLNY 2025/2026.
-</h2>
+<div class="teachers-modern-container">
+<h1 class="teachers-modern-title">
+🎓 Grono Pedagogiczne 2025/2026
+</h1>
 
-                   <table class="teachers-table">
-				   
-																										<!-- LISTA NAUCZYCIELI I ICH PRZEDMIOTÓW - DO UZUPEŁNIENIA --!>
-				   
-                       <thead>
-                           <tr>
-                               <th>Przedmiot</th>
-                               <th>Nauczyciel</th>
-                           </tr>
-                       </thead>
-                       <tbody>
-                           <tr><td>Język Polski</td><td>Małgorzata Lesińska, Anna Burakowska, Oliwia Żabkiewicz, Elżbieta Gawin, Dorota Maszkiewska</td></tr>
-                           <tr><td>Matematyka</td><td>Michał Tarczyn, Renata Skleszewska, Joanna Małek, Bożena Szpilkiewicz, Grażyna Gruszka</td></tr>
-                           <tr><td>Język Angielski</td><td>Karolina Dominiak, Zofia Lisek, Marlena Wyszyńska, Katarzyna Sieczko, Celina Włodarczyk</td></tr>
-                           <tr><td>Język Niemiecki</td><td>Magdalena Joelesh</td></tr>
-						   <tr><td>Język Hiszpański</td><td>Antonnio Myszkowski</td></tr>
-                           <tr><td>Wychowanie Fizyczne</td><td>Natalia Raczyńska, Sylwia Cześniewicz, Małgorzata Domagała, Marcin Krupnicki, Michał Pietruszewski,Kinga Młodzik</td></tr>
-                           <tr><td>Historia</td><td>Paweł Grzegorzewski, Karolina Żukowska</td></tr>
-                           <tr><td>Biologia, Przyroda</td><td>Zuzanna Świerczek</td></tr>
-                           <tr><td>Doradztwo Zawodowe</td><td>Martyna Kołodziejczyk</td></tr>
-                           <tr><td>Plastyka</td><td>Barbara Trzaskowska</td></tr>
-                           <tr><td>Technika</td><td>Ludwik Parkowiak</td></tr>
-                           <tr><td>Chemia</td><td>Tadeusz Ostrowski</td></tr>
-                           <tr><td>Fizyka</td><td>Marian Woźniak</td></tr>
-                           <tr><td>Wiedza o społeczeństwie</td><td>Ludwik Parkowiak</td></tr>
-                           <tr><td>Edukacja dla bezpieczeństwa</td><td>Dariusz Drzemała</td></tr>
-                           <tr><td>Geografia</td><td>Mateusz Gig</td></tr>
-                           <tr><td>Informatyka</td><td>Ewelina Śmigalska, Mateusz Gig</td></tr>
-							 <tr><td>Religia</td><td>Ignacy Włoszek</td></tr>
-                           <tr><td>Muzyka</td><td>Hanna Brzeska</td></tr>
-							<tr><td>Teatr</td><td>Antonina Pawelczyk</td></tr>
-	   						<tr><td>Taniec</td><td>Hanna Brzeska</td></tr>
-                           <tr><td>Kształcenie Słuchu</td><td>Antonina Pawelczyk</td></tr>
-							<tr><td>Nauka o Muzyce </td><td>Antonina Pawelczyk</td></tr>
-                           <tr><td>Edukacja Wczesnoszkolna</td><td>Weronika Rogalska, Martyna Kołodziejczyk, Rozalia Lipska, Faustyna Dobrzek, Katarzyna Buzdro, Anna Brzeska, Alicja Rajewicz-Drzemała, Agnieszka Miłasz, Daria Musherina</td></tr>
-                           <tr><td>Basen</td><td>Marcin Krupnicki</td></tr>
-							<tr><td>Edukacja Zdrowotna</td><td>Lena Skwierzyńska</td></tr>
-                           <tr><td>Zajęcia Terenowe</td><td>Sylwia Cześniewicz, Małgorzata Domagała, Michał Pietruszewski</td></tr>
-                           <tr><td>Świetlica</td><td>Alicja Struś-Michalska, Barbara Strzegomska, Urszula Złocińska, Kinga Młodzik, Małgorzata Lesińska, Alicja Rajewicz-Drzemała, Aleksandra Malczyk, Martyna Kołodziejczyk, Anna Brzeska , Zuzanna Kośnicka, Ignacy Jasinski</td></tr>
-                           <tr><td>Etyka</td><td>Elżbieta Gawin</td></tr>
-                           <tr><td>Nauczyciel Wspomagający</td><td>Sylwia Kozakowska, Aleksandra Malczyk, Dariusz Drzemała, Irynna Goshevniyk, Zuzanna Kośnicka</td></tr>
+<div class="teachers-grid">
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">📝</div>
+<div class="subject-name">Język Polski</div>
+</div>
+<div class="teachers-list">
+Małgorzata Lesińska, Anna Burakowska, Oliwia Żabkiewicz, Elżbieta Gawin, Dorota Maszkiewska
+</div>
+</div>
 
-                       </tbody>
-                   </table>
-				   
-<h2 style="text-align: center;">
-ADMINISTRACJA i SZKOŁA ARTYSTYCZNA
-</h2>
-	  <table class="teachers-table">
-                       <thead>
-                           <tr>
-                               <th>Zawód</th>
-                               <th>Imię i Nazwisko</th>
-                           </tr>
-                       </thead>
-                       <tbody>
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🔢</div>
+<div class="subject-name">Matematyka</div>
+</div>
+<div class="teachers-list">
+Michał Tarczyn, Renata Skleszewska, Joanna Małek, Bożena Szpilkiewicz, Grażyna Gruszka
+</div>
+</div>
 
-                    
-			          <tr><td>Pedagog</td><td>Anna Grześkowiak</td></tr>
-	            <tr><td>Psycholog</td><td>Aleksandra Wykaz</td></tr>
-                           <tr><td>Biblioteka</td><td>Karolina Młotek</td></tr>
-                           <tr><td>Dyrekcja</td><td>Lena Skwierzyńska - wicedyrektor klas młodszych, Mateusz Gig - wicyderektor klas starszych, Aleksander Białko - dyrektor SP 57, Ewa Malinowska - dyrektor SA 2</td></tr>
-							<tr><td>Taniec</td><td>Agnieszka Burkiewicz</td></tr>
-							<tr><td>Gimnastyka</td><td>Ewa Malinowska</td></tr>
-							<tr><td>Plastyka i Fotografia </td><td>Karolina Sznurkowska</td></tr>
-							<tr><td>Teatr i Warsztat Aktorski </td><td>Agnieszka Burkiewicz</td></tr>
-							<tr><td>Obróbka </td><td>Ewa Malinowska</td></tr>	   
-                       </tbody>
-                   </table>`
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🇬🇧</div>
+<div class="subject-name">Język Angielski</div>
+</div>
+<div class="teachers-list">
+Karolina Dominiak, Zofia Lisek, Marlena Wyszyńska, Katarzyna Sieczko, Celina Włodarczyk
+</div>
+</div>
 
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🇩🇪</div>
+<div class="subject-name">Język Niemiecki</div>
+</div>
+<div class="teachers-list">
+Magdalena Joelesh
+</div>
+</div>
 
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🇪🇸</div>
+<div class="subject-name">Język Hiszpański</div>
+</div>
+<div class="teachers-list">
+Antonnio Myszkowski
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">⚽</div>
+<div class="subject-name">Wychowanie Fizyczne</div>
+</div>
+<div class="teachers-list">
+Natalia Raczyńska, Sylwia Cześniewicz, Małgorzata Domagała, Marcin Krupnicki, Michał Pietruszewski, Kinga Młodzik
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">📜</div>
+<div class="subject-name">Historia</div>
+</div>
+<div class="teachers-list">
+Paweł Grzegorzewski, Karolina Żukowska
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🌱</div>
+<div class="subject-name">Biologia, Przyroda</div>
+</div>
+<div class="teachers-list">
+Zuzanna Świerczek
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">💼</div>
+<div class="subject-name">Doradztwo Zawodowe</div>
+</div>
+<div class="teachers-list">
+Martyna Kołodziejczyk
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🎨</div>
+<div class="subject-name">Plastyka</div>
+</div>
+<div class="teachers-list">
+Barbara Trzaskowska
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🔧</div>
+<div class="subject-name">Technika</div>
+</div>
+<div class="teachers-list">
+Ludwik Parkowiak
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">⚗️</div>
+<div class="subject-name">Chemia</div>
+</div>
+<div class="teachers-list">
+Tadeusz Ostrowski
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">⚡</div>
+<div class="subject-name">Fizyka</div>
+</div>
+<div class="teachers-list">
+Marian Woźniak
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🏛️</div>
+<div class="subject-name">Wiedza o Społeczeństwie</div>
+</div>
+<div class="teachers-list">
+Ludwik Parkowiak
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🚨</div>
+<div class="subject-name">Edukacja dla Bezpieczeństwa</div>
+</div>
+<div class="teachers-list">
+Dariusz Drzemała
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🌍</div>
+<div class="subject-name">Geografia</div>
+</div>
+<div class="teachers-list">
+Mateusz Gig
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">💻</div>
+<div class="subject-name">Informatyka</div>
+</div>
+<div class="teachers-list">
+Ewelina Śmigalska, Mateusz Gig
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">✝️</div>
+<div class="subject-name">Religia</div>
+</div>
+<div class="teachers-list">
+Ignacy Włoszek
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🎵</div>
+<div class="subject-name">Muzyka</div>
+</div>
+<div class="teachers-list">
+Hanna Brzeska
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🎭</div>
+<div class="subject-name">Teatr</div>
+</div>
+<div class="teachers-list">
+Antonina Pawelczyk
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">💃</div>
+<div class="subject-name">Taniec</div>
+</div>
+<div class="teachers-list">
+Hanna Brzeska
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🎼</div>
+<div class="subject-name">Kształcenie Słuchu</div>
+</div>
+<div class="teachers-list">
+Antonina Pawelczyk
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🎹</div>
+<div class="subject-name">Nauka o Muzyce</div>
+</div>
+<div class="teachers-list">
+Antonina Pawelczyk
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">👶</div>
+<div class="subject-name">Edukacja Wczesnoszkolna</div>
+</div>
+<div class="teachers-list">
+Weronika Rogalska, Martyna Kołodziejczyk, Rozalia Lipska, Faustyna Dobrzek, Katarzyna Buzdro, Anna Brzeska, Alicja Rajewicz-Drzemała, Agnieszka Miłasz, Daria Musherina
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🏊</div>
+<div class="subject-name">Basen</div>
+</div>
+<div class="teachers-list">
+Marcin Krupnicki
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">❤️</div>
+<div class="subject-name">Edukacja Zdrowotna</div>
+</div>
+<div class="teachers-list">
+Lena Skwierzyńska
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🏕️</div>
+<div class="subject-name">Zajęcia Terenowe</div>
+</div>
+<div class="teachers-list">
+Sylwia Cześniewicz, Małgorzata Domagała, Michał Pietruszewski
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🎮</div>
+<div class="subject-name">Świetlica</div>
+</div>
+<div class="teachers-list">
+Alicja Struś-Michalska, Barbara Strzegomska, Urszula Złocińska, Kinga Młodzik, Małgorzata Lesińska, Alicja Rajewicz-Drzemała, Aleksandra Malczyk, Martyna Kołodziejczyk, Anna Brzeska, Zuzanna Kośnicka, Ignacy Jasinski
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🤔</div>
+<div class="subject-name">Etyka</div>
+</div>
+<div class="teachers-list">
+Elżbieta Gawin
+</div>
+</div>
+
+<div class="teacher-card">
+<div class="teacher-card-header">
+<div class="subject-icon">🤝</div>
+<div class="subject-name">Nauczyciel Wspomagający</div>
+</div>
+<div class="teachers-list">
+Sylwia Kozakowska, Aleksandra Malczyk, Dariusz Drzemała, Irynna Goshevniyk, Zuzanna Kośnicka
+</div>
+</div>
+</div>
+
+<div class="admin-section">
+<h2>🏫 Administracja i Szkoła Artystyczna</h2>
+<div class="admin-grid">
+<div class="admin-card">
+<div class="admin-position">🧠 Pedagog</div>
+<div class="admin-name">Anna Grześkowiak</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">💭 Psycholog</div>
+<div class="admin-name">Aleksandra Wykaz</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">📚 Biblioteka</div>
+<div class="admin-name">Karolina Młotek</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">👔 Dyrektor SP 57</div>
+<div class="admin-name">Aleksander Białko</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">👔 Wicedyrektor (kl. 1-3)</div>
+<div class="admin-name">Lena Skwierzyńska</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">👔 Wicedyrektor (kl. 4-8)</div>
+<div class="admin-name">Mateusz Gig</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">🎭 Dyrektor SA 2</div>
+<div class="admin-name">Ewa Malinowska</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">💃 Taniec (SA)</div>
+<div class="admin-name">Agnieszka Burkiewicz</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">🤸 Gimnastyka (SA)</div>
+<div class="admin-name">Ewa Malinowska</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">🎨 Plastyka i Fotografia (SA)</div>
+<div class="admin-name">Karolina Sznurkowska</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">🎭 Teatr (SA)</div>
+<div class="admin-name">Agnieszka Burkiewicz</div>
+</div>
+<div class="admin-card">
+<div class="admin-position">✂️ Obróbka (SA)</div>
+<div class="admin-name">Ewa Malinowska</div>
+</div>
+</div>
+</div>
+</div>
+`;
 return;
 }
 
 if(currentCategory === 10) {
 container.innerHTML = `
-<h2 style="text-align: center;">
-LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026
-</h2>	
+<h2 style="text-align: center; color: white; font-size: 2.5rem; margin-bottom: 2rem; text-shadow: 2px 4px 8px rgba(0,0,0,0.3);">
+👥 LISTA KLAS, WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH NA ROK SZKOLNY 2025/2026
+</h2>
 
-																							<!-- LISTA WYCHOWAWCÓW I NAUCZYCIELI WSPOMAGAJĄCYCH - DO UZUPEŁNIENIA --!>
-
-                   <table class="tutors-table">
-                       <thead>
-                           <tr>
-                               <th>Klasa</th>
-			       <th>Nazwa klasy</th>
-                               <th>Wychowawca</th>
-                               <th>Nauczyciel Wspomagający</th>
-                           </tr>
-                       </thead>
-                       <tbody>
-                           <tr><td>1A</td><td>Ogólna</td><td>Weronika Rogalska</td><td>Sylwia Kozakowska</td></tr>
-			    <tr><td>1B</td><td>Językowa</td><td>Katarzyna Buzdro</td><td></td></tr>
-      			  <tr><td>1M</td><td>Muzyczna</td><td>Anna Brzeska</td><td></td></tr>
-			 <tr><td>2A</td><td>Ogólna</td><td>Martyna Kołodziejczyk</td><td></td></tr>
- 			  <tr><td>2B</td><td>Ogólna</td><td>Rozalia Lipska</td><td></td></tr>
-   			 <tr><td>2C</td><td>Ogólna</td><td>Faustyna Dobrzek</td><td></td></tr>
-    			 <tr><td>3A</td><td>Ogólna</td><td>Alicja Rajewicz-Drzemała</td><td></td></tr>
-   			   <tr><td>3B</td><td>Ogólna</td><td>Agnieszka Miłasz</td><td></td></tr>
-    			   <tr><td>3C</td><td>Językowa</td><td>Daria Musherina</td><td>Irynna Goshevniyk</td></tr>
-    		 	   <tr><td>4A</td><td>Sportowa</td><td>Marcin Krupnicki</td><td></td></tr>
-	  		   <tr><td>4B</td><td>Ogólna</td><td>Małgorzata Lesińska</td><td></td></tr>
-    <tr><td>4C</td><td>Ogólna</td><td>Karolina Dominiak</td><td></td></tr>
-    <tr><td>5A</td><td>Sportowa</td><td>Renata Skleszewska</td><td></td></tr>
-    <tr><td>5B</td><td>Ogólna</td><td>Mateusz Gig</td><td></td></tr>
-    <tr><td>5C</td><td>Artystyczna</td><td>Natalia Raczyńska</td><td>Aleksandra Malczyk</td></tr>
-    <tr><td>6A</td><td>Ogólna</td><td>Katarzyna Sieczko</td><td></td></tr>
-    <tr><td>6B</td><td>Ogólna</td><td>Dorota Maszkiewska</td><td></td></tr>
-    <tr><td>6M</td><td>Muzyczna</td><td>Antonina Pawelczyk</td><td></td></tr>
-    <tr><td>7A</td><td>Ogólna</td><td>Anna Burakowska</td><td></td></tr>
-    <tr><td>7B</td><td>Ogólna</td><td>Kinga Młodzik</td><td></td></tr>
-    <tr><td>7M</td><td>Muzyczna</td><td>Małgorzata Domagała</td><td>Dariusz Drzemała</td></tr>
-    <tr><td>8A</td><td>Ogólna</td><td>Celina Włodarczyk</td><td>Zuzanna Kośnicka</td></tr>
-    <tr><td>8B</td><td>Ogólna</td><td>Magdalena Joelesh</td><td></td></tr>
-    <tr><td>8M</td><td>Muzyczna</td><td>Ewelina Śmigalska</td><td></td></tr>
-	
-			   
-			   
-
-                   </table>`;
+<table class="tutors-table">
+<thead>
+<tr>
+<th>Klasa</th>
+<th>Nazwa klasy</th>
+<th>Wychowawca</th>
+<th>Nauczyciel Wspomagający</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1A</td><td>Ogólna</td><td>Weronika Rogalska</td><td>Sylwia Kozakowska</td></tr>
+<tr><td>1B</td><td>Językowa</td><td>Katarzyna Buzdro</td><td></td></tr>
+<tr><td>1M</td><td>Muzyczna</td><td>Anna Brzeska</td><td></td></tr>
+<tr><td>2A</td><td>Ogólna</td><td>Martyna Kołodziejczyk</td><td></td></tr>
+<tr><td>2B</td><td>Ogólna</td><td>Rozalia Lipska</td><td></td></tr>
+<tr><td>2C</td><td>Ogólna</td><td>Faustyna Dobrzek</td><td></td></tr>
+<tr><td>3A</td><td>Ogólna</td><td>Alicja Rajewicz-Drzemała</td><td></td></tr>
+<tr><td>3B</td><td>Ogólna</td><td>Agnieszka Miłasz</td><td></td></tr>
+<tr><td>3C</td><td>Językowa</td><td>Daria Musherina</td><td>Irynna Goshevniyk</td></tr>
+<tr><td>4A</td><td>Sportowa</td><td>Marcin Krupnicki</td><td></td></tr>
+<tr><td>4B</td><td>Ogólna</td><td>Małgorzata Lesińska</td><td></td></tr>
+<tr><td>4C</td><td>Ogólna</td><td>Karolina Dominiak</td><td></td></tr>
+<tr><td>5A</td><td>Sportowa</td><td>Renata Skleszewska</td><td></td></tr>
+<tr><td>5B</td><td>Ogólna</td><td>Mateusz Gig</td><td></td></tr>
+<tr><td>5C</td><td>Artystyczna</td><td>Natalia Raczyńska</td><td>Aleksandra Malczyk</td></tr>
+<tr><td>6A</td><td>Ogólna</td><td>Katarzyna Sieczko</td><td></td></tr>
+<tr><td>6B</td><td>Ogólna</td><td>Dorota Maszkiewska</td><td></td></tr>
+<tr><td>6M</td><td>Muzyczna</td><td>Antonina Pawelczyk</td><td></td></tr>
+<tr><td>7A</td><td>Ogólna</td><td>Anna Burakowska</td><td></td></tr>
+<tr><td>7B</td><td>Ogólna</td><td>Kinga Młodzik</td><td></td></tr>
+<tr><td>7M</td><td>Muzyczna</td><td>Małgorzata Domagała</td><td>Dariusz Drzemała</td></tr>
+<tr><td>8A</td><td>Ogólna</td><td>Celina Włodarczyk</td><td>Zuzanna Kośnicka</td></tr>
+<tr><td>8B</td><td>Ogólna</td><td>Magdalena Joelesh</td><td></td></tr>
+<tr><td>8M</td><td>Muzyczna</td><td>Ewelina Śmigalska</td><td></td></tr>
+</tbody>
+</table>`;
 return;
 }
 
-// PAGINACJA TYLKO DLA KATEGORII 5
 if(currentCategory === 5) {
 const allAnnouncements = announcements[currentCategory] || [];
 const startIndex = (currentPage - 1) * itemsPerPage;
 const endIndex = startIndex + itemsPerPage;
 const pagedAnnouncements = allAnnouncements.slice(startIndex, endIndex);
 
+if(pagedAnnouncements.length === 0) {
+container.innerHTML = '<p style="text-align: center; color: white; padding: 2rem; font-size: 1.2rem;">Brak aktualności.</p>';
+} else {
 pagedAnnouncements.forEach((ann, index) => {
 container.appendChild(createAnnouncementCard(ann, startIndex + index));
 });
+}
 
 const totalPages = Math.ceil(allAnnouncements.length / itemsPerPage);
 if(totalPages > 1) {
@@ -1147,11 +1942,14 @@ pagination.appendChild(pageBtn);
 container.appendChild(pagination);
 }
 } else {
-// DLA INNYCH KATEGORII BEZ PAGINACJI
 const categoryAnnouncements = announcements[currentCategory] || [];
+if(categoryAnnouncements.length === 0) {
+container.innerHTML = '<p style="text-align: center; color: white; padding: 2rem; font-size: 1.2rem;">Brak ogłoszeń.</p>';
+} else {
 categoryAnnouncements.forEach((ann, index) => {
 container.appendChild(createAnnouncementCard(ann, index));
 });
+}
 }
 }
 
@@ -1173,50 +1971,46 @@ dateRange = from === to ? from : `${from} - ${to}`;
 }
 
 div.innerHTML = `
-               <div class="actions">
-                   <span class="delete" onclick="deleteAnnouncement(${index})">🗑️</span>
-                   <span class="edit" onclick="editAnnouncement(${index})">✏️</span>
-                   <span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
-                   <span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
-               </div>
-               ${currentCategory === 4 ? `
-                   <h2>${dateRange}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-                   <p><strong>${ann.teacher || 'Brak danych'}</strong></p>
-                   <p>${ann.reason || 'Brak powodu'}</p>
-               ` : currentCategory === 2 ? `
-                   <h2>${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-                   <p><strong>${ann.name || 'Brak nazwy'}</strong></p>
-                   <p>Kategoria: ${ann.category || 'Brak kategorii'}</p>
-               ` : currentCategory === 3 ? `
-                   <h2>${ann.teacher || 'Brak nauczyciela'}: ${ann.title || 'Brak tytułu'} (${dateRange})</h2>
-                   <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-                   <span class="time">${timeAgo(ann.timestamp)}</span>
-        ` : [5,6,7,8,12].includes(currentCategory) ? `
-            <h2>${ann.title || 'Brak tytułu'}</h2>
-            <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-            <span class="time">${timeAgo(ann.timestamp)}</span>
-        ` : `
-            <h2>${ann.title || 'Brak tytułu'}</h2>
-            <div class="announcement-content">${ann.content || 'Brak treści'}</div>
-            <span class="time">${timeAgo(ann.timestamp)}</span>
-        `}
-    `;
-    return div;
+<div class="actions">
+<span class="delete" onclick="deleteAnnouncement(${index})">🗑️</span>
+<span class="edit" onclick="editAnnouncement(${index})">✏️</span>
+<span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
+<span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
+</div>
+${currentCategory === 4 ? `
+<h2>🏥 ${dateRange}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
+<p><strong>${ann.teacher || 'Brak danych'}</strong></p>
+<p>${ann.reason || 'Brak powodu'}</p>
+` : currentCategory === 2 ? `
+<h2>📅 ${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
+<p><strong>${ann.name || 'Brak nazwy'}</strong></p>
+<p>Kategoria: ${ann.category || 'Brak kategorii'}</p>
+` : currentCategory === 3 ? `
+<h2>📢 ${ann.teacher || 'Brak nauczyciela'}: ${ann.title || 'Brak tytułu'} (${dateRange})</h2>
+<div class="announcement-content">${ann.content || 'Brak treści'}</div>
+<span class="time">${timeAgo(ann.timestamp)}</span>
+` : [5,6,7,8,12].includes(currentCategory) ? `
+<h2>${ann.title || 'Brak tytułu'}</h2>
+<div class="announcement-content">${ann.content || 'Brak treści'}</div>
+<span class="time">${timeAgo(ann.timestamp)}</span>
+` : `
+<h2>${ann.title || 'Brak tytułu'}</h2>
+<div class="announcement-content">${ann.content || 'Brak treści'}</div>
+<span class="time">${timeAgo(ann.timestamp)}</span>
+`}
+`;
+return div;
 }
 
 function deleteAnnouncement(index) {
 if(confirm('Czy na pewno chcesz przenieść ten wpis do archiwum?')) {
 const deletedItem = announcements[currentCategory][index];
-// Dodaj informacje o kategorii i czasie usunięcia
 deletedItem.category = currentCategory;
 deletedItem.deletedAt = Date.now();
 
-// Dodaj do archiwum
 archive.unshift(deletedItem);
-// Usuń z aktualnej kategorii
 announcements[currentCategory].splice(index, 1);
 
-// Zapisz zmiany
 saveAnnouncements()
 .then(() => {
 showAnnouncements();
@@ -1291,50 +2085,48 @@ announcement.title = newTitle;
 announcement.content = newContent;
 announcement.dateFrom = newDateFrom;
 announcement.dateTo = newDateTo;
- } else if ([5,6,7,8,12].includes(currentCategory)) {
-        const item = announcements[currentCategory][index];
-        const newTitle = prompt('Edytuj tytuł:', item.title);
-        if (!newTitle) return;
+} else if ([5,6,7,8,12].includes(currentCategory)) {
+const item = announcements[currentCategory][index];
+const newTitle = prompt('Edytuj tytuł:', item.title);
+if (!newTitle) return;
 
-        const newContent = prompt('Edytuj treść:', item.content);
-        if (!newContent) return;
+const newContent = prompt('Edytuj treść:', item.content);
+if (!newContent) return;
 
-        item.title = newTitle;
-        item.content = newContent;
-
-        saveAnnouncements()
-        .then(() => showAnnouncements())
-        .catch(error => {
-            console.error("Błąd podczas zapisywania:", error);
-            alert("Wystąpił błąd podczas zapisywania zmian.");
-        });
-    }
+item.title = newTitle;
+item.content = newContent;
 }
+
+saveAnnouncements()
+.then(() => showAnnouncements())
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas zapisywania zmian.");
+});
+}
+
 function moveAnnouncement(index, direction) {
-    if (!announcements[currentCategory]) {
-        console.error("Brak ogłoszeń dla tej kategorii");
-        return;
-    }
+if (!announcements[currentCategory]) {
+console.error("Brak ogłoszeń dla tej kategorii");
+return;
+}
 
-    const arr = announcements[currentCategory];
+const arr = announcements[currentCategory];
 
-    if (direction === 'up' && index > 0) {
-        // Zamiana z poprzednim elementem
-        [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
-    } else if (direction === 'down' && index < arr.length - 1) {
-        // Zamiana z następnym elementem
-        [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
-    } else {
-        return; // Nie można już przesunąć
-    }
+if (direction === 'up' && index > 0) {
+[arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
+} else if (direction === 'down' && index < arr.length - 1) {
+[arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+} else {
+return;
+}
 
-    // Zapisz zmiany i odśwież widok
-    saveAnnouncements()
-        .then(() => showAnnouncements())
-        .catch(error => {
-            console.error("Błąd zapisu:", error);
-            alert("Błąd podczas przesuwania ogłoszenia");
-        });
+saveAnnouncements()
+.then(() => showAnnouncements())
+.catch(error => {
+console.error("Błąd zapisu:", error);
+alert("Błąd podczas przesuwania ogłoszenia");
+});
 }
 
 function timeAgo(timestamp) {
@@ -1354,17 +2146,17 @@ return `${seconds} sek. temu`;
 }
 
 function toggleAddButton() {
-    const btn = document.getElementById('addButton');
-    btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
-    btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
-                      currentCategory === 2 ? 'Dodaj Wydarzenie' : 
-                      currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
-                      currentCategory === 5 ? 'Dodaj Aktualność' :
-                      currentCategory === 6 ? 'Dodaj Ogłoszenie SU' :
-                      currentCategory === 7 ? 'Dodaj Ogłoszenie' :
-                      currentCategory === 8 ? 'Dodaj Ogłoszenie' :
-                      currentCategory === 12 ? 'Dodaj Ogłoszenie' :
-                      'Dodaj Ogłoszenie';
+const btn = document.getElementById('addButton');
+btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
+btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
+currentCategory === 2 ? 'Dodaj Wydarzenie' : 
+currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
+currentCategory === 5 ? 'Dodaj Aktualność' :
+currentCategory === 6 ? 'Dodaj Ogłoszenie SU' :
+currentCategory === 7 ? 'Dodaj Ogłoszenie' :
+currentCategory === 8 ? 'Dodaj Ogłoszenie' :
+currentCategory === 12 ? 'Dodaj Ogłoszenie' :
+'Dodaj Ogłoszenie';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1374,7 +2166,6 @@ toggleAddButton();
 });
 });
 
-// Obsługa formularzy
 document.getElementById('absenceForm').addEventListener('submit', function(e) {
 e.preventDefault();
 
@@ -1451,7 +2242,7 @@ alert('Proszę wypełnić wszystkie pola!');
 return;
 }
 
- announcements[currentCategory].unshift(newAnnouncement);
+announcements[currentCategory].unshift(newAnnouncement);
 saveAnnouncements()
 .then(() => {
 showAnnouncements();
@@ -1465,45 +2256,45 @@ alert("Wystąpił błąd podczas dodawania ogłoszenia.");
 });
 
 document.getElementById('newsForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+e.preventDefault();
 
-    const newNews = {
-        title: document.getElementById('newsTitle').value,
-        content: document.getElementById('newsContent').value,
-        timestamp: Date.now()
-    };
+const newNews = {
+title: document.getElementById('newsTitle').value,
+content: document.getElementById('newsContent').value,
+timestamp: Date.now()
+};
 
-    if (!newNews.title || !newNews.content) {
-        alert('Proszę wypełnić wszystkie pola!');
-        return;
-    }
+if (!newNews.title || !newNews.content) {
+alert('Proszę wypełnić wszystkie pola!');
+return;
+}
 
-    // Zmiana: zapis do aktualnej kategorii
-    announcements[currentCategory].unshift(newNews);
+announcements[currentCategory].unshift(newNews);
 
-    saveAnnouncements()
-    .then(() => {
-        showAnnouncements();
-        document.getElementById('newsModal').style.display = 'none';
-        this.reset();
-    })
-    .catch(error => {
-        console.error("Błąd podczas zapisywania:", error);
-        alert("Wystąpił błąd podczas dodawania.");
-    });
+saveAnnouncements()
+.then(() => {
+showAnnouncements();
+document.getElementById('newsModal').style.display = 'none';
+this.reset();
+})
+.catch(error => {
+console.error("Błąd podczas zapisywania:", error);
+alert("Wystąpił błąd podczas dodawania.");
+});
 });
 
 function handleAddButton() {
-    if (currentCategory === 4) {
-        addAbsence();
-    } else if (currentCategory === 2) {
-        addEvent();
-    } else if (currentCategory === 3) {
-        addAnnouncement();
-    } else if (currentCategory === 5 || [6,7,8,12].includes(currentCategory)) {
-        addNews();
-    }
+if (currentCategory === 4) {
+addAbsence();
+} else if (currentCategory === 2) {
+addEvent();
+} else if (currentCategory === 3) {
+addAnnouncement();
+} else if (currentCategory === 5 || [6,7,8,12].includes(currentCategory)) {
+addNews();
 }
+}
+
 function addAbsence() {
 document.getElementById('absenceModal').style.display = 'flex';
 }
@@ -1522,10 +2313,3 @@ document.getElementById('newsModal').style.display = 'flex';
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
