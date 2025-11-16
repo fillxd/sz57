@@ -693,13 +693,13 @@ font-size: 0.95rem;
 .form-group input,
 .form-group select,
 .form-group textarea {
-width: 100%;
-padding: 12px 16px;
-border: 2px solid #e5e7eb;
-border-radius: 12px;
-font-size: 1rem;
-transition: var(--transition);
-font-family: 'Poppins', sans-serif;
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    font-family: 'Poppins', sans-serif;
 }
 
 .form-group input:focus,
@@ -711,9 +711,12 @@ box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .form-group textarea {
-resize: vertical;
-min-height: 120px;
-white-space: pre-wrap;
+    resize: vertical;
+    min-height: 120px;
+    max-height: 600px;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    transition: none; /* Wyłącza zacinanie przy resize */
 }
 
 .date-range-container {
@@ -1054,7 +1057,7 @@ background: var(--primary-dark);
 <!-- Modal dla nieobecności -->
 <div class="modal-overlay" id="absenceModal">
     <div class="modal-content">
-        <h2>➕ Dodaj Nieobecność</h2>
+        <h2 id="absenceModalTitle">➕ Dodaj Nieobecność</h2>
         <form id="absenceForm">
             <div class="form-group">
                 <label>Okres nieobecności:</label>
@@ -1113,7 +1116,7 @@ background: var(--primary-dark);
 <!-- Modal dla wydarzeń -->
 <div class="modal-overlay" id="eventModal">
     <div class="modal-content">
-        <h2>➕ Dodaj Wydarzenie</h2>
+        <h2 id="eventModalTitle">➕ Dodaj Wydarzenie</h2>
         <form id="eventForm">
             <div class="form-group">
                 <label for="eventDate">Data:</label>
@@ -1152,7 +1155,7 @@ background: var(--primary-dark);
 <!-- Modal dla ogłoszeń -->
 <div class="modal-overlay" id="announcementModal">
     <div class="modal-content">
-        <h2>➕ Dodaj Ogłoszenie</h2>
+        <h2 id="announcementModalTitle">➕ Dodaj Ogłoszenie</h2>
         <form id="announcementForm">
             <div class="form-group">
                 <label for="announcementTeacher">Nauczyciel:</label>
@@ -1196,7 +1199,7 @@ background: var(--primary-dark);
 <!-- Modal dla aktualności -->
 <div class="modal-overlay" id="newsModal">
     <div class="modal-content">
-        <h2>➕ Dodaj Wpis</h2>
+        <h2 id="newsModalTitle">➕ Dodaj Wpis</h2>
         <form id="newsForm">
             <div class="form-group">
                 <label for="newsTitle">Tytuł wpisu:</label>
@@ -1252,6 +1255,8 @@ let currentCategory = 1;
 let announcements = {};
 let archive = [];
 let currentPage = 1;
+let editMode = false;
+let editIndex = -1;
 let eventFilters = {
     orange: true,
     green: true,
@@ -2177,86 +2182,45 @@ alert("Wystąpił błąd podczas przenoszenia do archiwum.");
 }
 
 function editAnnouncement(index) {
-if (currentCategory === 4) {
-const absence = announcements[currentCategory][index];
-const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', absence.dateFrom);
-if (!newDateFrom) return;
-
-const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', absence.dateTo);
-if (!newDateTo) return;
-
-const newHours = prompt('Edytuj godziny:', absence.hours || 'cały dzień');
-if (!newHours) return;
-
-const newTeacher = prompt('Edytuj nauczyciela:', absence.teacher);
-if (!newTeacher) return;
-
-const newReason = prompt('Edytuj powód:', absence.reason);
-if (!newReason) return;
-
-absence.dateFrom = newDateFrom;
-absence.dateTo = newDateTo;
-absence.hours = newHours === 'cały dzień' ? null : newHours;
-absence.teacher = newTeacher;
-absence.reason = newReason;
-} else if (currentCategory === 2) {
-const event = announcements[currentCategory][index];
-const newDate = prompt('Edytuj datę:', event.date);
-if (!newDate) return;
-
-const newHours = prompt('Edytuj godziny:', event.hours || 'cały dzień');
-if (!newHours) return;
-
-const newName = prompt('Edytuj nazwę wydarzenia:', event.name);
-if (!newName) return;
-
-const newCategory = prompt('Edytuj kategorię:', event.category);
-if (!newCategory) return;
-
-event.date = newDate;
-event.hours = newHours === 'cały dzień' ? null : newHours;
-event.name = newName;
-event.category = newCategory;
-} else if (currentCategory === 3) {
-const announcement = announcements[currentCategory][index];
-const newTeacher = prompt('Edytuj nauczyciela:', announcement.teacher);
-if (!newTeacher) return;
-
-const newTitle = prompt('Edytuj tytuł:', announcement.title);
-if (!newTitle) return;
-
-const newContent = prompt('Edytuj treść:', announcement.content);
-if (!newContent) return;
-
-const newDateFrom = prompt('Edytuj datę początkową (RRRR-MM-DD):', announcement.dateFrom);
-if (!newDateFrom) return;
-
-const newDateTo = prompt('Edytuj datę końcową (RRRR-MM-DD):', announcement.dateTo);
-if (!newDateTo) return;
-
-announcement.teacher = newTeacher;
-announcement.title = newTitle;
-announcement.content = newContent;
-announcement.dateFrom = newDateFrom;
-announcement.dateTo = newDateTo;
-} else if ([5,6,7,8,12].includes(currentCategory)) {
-const item = announcements[currentCategory][index];
-const newTitle = prompt('Edytuj tytuł:', item.title);
-if (!newTitle) return;
-
-const newContent = prompt('Edytuj treść:', item.content);
-if (!newContent) return;
-
-item.title = newTitle;
-item.content = newContent;
-}
-
-saveAnnouncements()
-.then(() => showAnnouncements())
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas zapisywania zmian.");
-});
+    editMode = true;
+    editIndex = index;
+    
+    if (currentCategory === 4) {
+        const absence = announcements[currentCategory][index];
+        document.getElementById('absenceModalTitle').textContent = '✏️ Edytuj Nieobecność';
+        document.getElementById('absenceDateFrom').value = absence.dateFrom;
+        document.getElementById('absenceDateTo').value = absence.dateTo;
+        document.getElementById('absenceHours').value = absence.hours || 'cały dzień';
+        document.getElementById('absenceTeacher').value = absence.teacher;
+        document.getElementById('absenceReason').value = absence.reason;
+        document.getElementById('absenceModal').style.display = 'flex';
+        
+    } else if (currentCategory === 2) {
+        const event = announcements[currentCategory][index];
+        document.getElementById('eventModalTitle').textContent = '✏️ Edytuj Wydarzenie';
+        document.getElementById('eventDate').value = event.date;
+        document.getElementById('eventHours').value = event.hours || 'cały dzień';
+        document.getElementById('eventName').value = event.name;
+        document.getElementById('eventCategory').value = event.category;
+        document.getElementById('eventModal').style.display = 'flex';
+        
+    } else if (currentCategory === 3) {
+        const announcement = announcements[currentCategory][index];
+        document.getElementById('announcementModalTitle').textContent = '✏️ Edytuj Ogłoszenie';
+        document.getElementById('announcementTeacher').value = announcement.teacher;
+        document.getElementById('announcementTitle').value = announcement.title;
+        document.getElementById('announcementContent').value = announcement.content;
+        document.getElementById('announcementDateFrom').value = announcement.dateFrom;
+        document.getElementById('announcementDateTo').value = announcement.dateTo;
+        document.getElementById('announcementModal').style.display = 'flex';
+        
+    } else if ([5,6,7,8,12].includes(currentCategory)) {
+        const item = announcements[currentCategory][index];
+        document.getElementById('newsModalTitle').textContent = '✏️ Edytuj Wpis';
+        document.getElementById('newsTitle').value = item.title;
+        document.getElementById('newsContent').value = item.content;
+        document.getElementById('newsModal').style.display = 'flex';
+    }
 }
 
 function moveAnnouncement(index, direction) {
@@ -2321,120 +2285,151 @@ toggleAddButton();
 });
 
 document.getElementById('absenceForm').addEventListener('submit', function(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const newAbsence = {
-dateFrom: document.getElementById('absenceDateFrom').value,
-dateTo: document.getElementById('absenceDateTo').value,
-hours: document.getElementById('absenceHours').value,
-teacher: document.getElementById('absenceTeacher').value,
-reason: document.getElementById('absenceReason').value,
-timestamp: Date.now()
-};
+    const absenceData = {
+        dateFrom: document.getElementById('absenceDateFrom').value,
+        dateTo: document.getElementById('absenceDateTo').value,
+        hours: document.getElementById('absenceHours').value,
+        teacher: document.getElementById('absenceTeacher').value,
+        reason: document.getElementById('absenceReason').value,
+        timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
+    };
 
-if (!newAbsence.dateFrom || !newAbsence.dateTo || !newAbsence.hours || !newAbsence.teacher || !newAbsence.reason) {
-alert('Proszę wypełnić wszystkie pola!');
-return;
-}
+    if (!absenceData.dateFrom || !absenceData.dateTo || !absenceData.hours || !absenceData.teacher || !absenceData.reason) {
+        alert('Proszę wypełnić wszystkie pola!');
+        return;
+    }
 
-announcements[currentCategory].unshift(newAbsence);
-saveAnnouncements()
-.then(() => {
-showAnnouncements();
-document.getElementById('absenceModal').style.display = 'none';
-this.reset();
-})
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas dodawania nieobecności.");
-});
+    if (editMode) {
+        announcements[currentCategory][editIndex] = absenceData;
+        editMode = false;
+        editIndex = -1;
+    } else {
+        announcements[currentCategory].unshift(absenceData);
+    }
+
+    saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+            document.getElementById('absenceModal').style.display = 'none';
+            document.getElementById('absenceModalTitle').textContent = '➕ Dodaj Nieobecność';
+            this.reset();
+        })
+        .catch(error => {
+            console.error("Błąd podczas zapisywania:", error);
+            alert("Wystąpił błąd podczas zapisywania.");
+        });
 });
 
 document.getElementById('eventForm').addEventListener('submit', function(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const newEvent = {
-date: document.getElementById('eventDate').value,
-hours: document.getElementById('eventHours').value,
-name: document.getElementById('eventName').value,
-category: document.getElementById('eventCategory').value,
-timestamp: Date.now()
-};
+    const eventData = {
+        date: document.getElementById('eventDate').value,
+        hours: document.getElementById('eventHours').value,
+        name: document.getElementById('eventName').value,
+        category: document.getElementById('eventCategory').value,
+        timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
+    };
 
-if (!newEvent.date || !newEvent.hours || !newEvent.name || !newEvent.category) {
-alert('Proszę wypełnić wszystkie pola!');
-return;
-}
+    if (!eventData.date || !eventData.hours || !eventData.name || !eventData.category) {
+        alert('Proszę wypełnić wszystkie pola!');
+        return;
+    }
 
-announcements[currentCategory].unshift(newEvent);
-saveAnnouncements()
-.then(() => {
-showAnnouncements();
-document.getElementById('eventModal').style.display = 'none';
-this.reset();
-})
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas dodawania wydarzenia.");
-});
+    if (editMode) {
+        announcements[currentCategory][editIndex] = eventData;
+        editMode = false;
+        editIndex = -1;
+    } else {
+        announcements[currentCategory].unshift(eventData);
+    }
+
+    saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+            document.getElementById('eventModal').style.display = 'none';
+            document.getElementById('eventModalTitle').textContent = '➕ Dodaj Wydarzenie';
+            this.reset();
+        })
+        .catch(error => {
+            console.error("Błąd podczas zapisywania:", error);
+            alert("Wystąpił błąd podczas zapisywania.");
+        });
 });
 
 document.getElementById('announcementForm').addEventListener('submit', function(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const newAnnouncement = {
-teacher: document.getElementById('announcementTeacher').value,
-title: document.getElementById('announcementTitle').value,
-content: document.getElementById('announcementContent').value,
-dateFrom: document.getElementById('announcementDateFrom').value,
-dateTo: document.getElementById('announcementDateTo').value,
-timestamp: Date.now()
-};
+    const announcementData = {
+        teacher: document.getElementById('announcementTeacher').value,
+        title: document.getElementById('announcementTitle').value,
+        content: document.getElementById('announcementContent').value,
+        dateFrom: document.getElementById('announcementDateFrom').value,
+        dateTo: document.getElementById('announcementDateTo').value,
+        timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
+    };
 
-if (!newAnnouncement.teacher || !newAnnouncement.title || !newAnnouncement.content || !newAnnouncement.dateFrom || !newAnnouncement.dateTo) {
-alert('Proszę wypełnić wszystkie pola!');
-return;
-}
+    if (!announcementData.teacher || !announcementData.title || !announcementData.content || !announcementData.dateFrom || !announcementData.dateTo) {
+        alert('Proszę wypełnić wszystkie pola!');
+        return;
+    }
 
-announcements[currentCategory].unshift(newAnnouncement);
-saveAnnouncements()
-.then(() => {
-showAnnouncements();
-document.getElementById('announcementModal').style.display = 'none';
-this.reset();
-})
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas dodawania ogłoszenia.");
-});
+    if (editMode) {
+        announcements[currentCategory][editIndex] = announcementData;
+        editMode = false;
+        editIndex = -1;
+    } else {
+        announcements[currentCategory].unshift(announcementData);
+    }
+
+    saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+            document.getElementById('announcementModal').style.display = 'none';
+            document.getElementById('announcementModalTitle').textContent = '➕ Dodaj Ogłoszenie';
+            this.reset();
+        })
+        .catch(error => {
+            console.error("Błąd podczas zapisywania:", error);
+            alert("Wystąpił błąd podczas zapisywania.");
+        });
 });
 
 document.getElementById('newsForm').addEventListener('submit', function(e) {
-e.preventDefault();
+    e.preventDefault();
 
-const newNews = {
-title: document.getElementById('newsTitle').value,
-content: document.getElementById('newsContent').value,
-timestamp: Date.now()
-};
+    const newsData = {
+        title: document.getElementById('newsTitle').value,
+        content: document.getElementById('newsContent').value,
+        timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
+    };
 
-if (!newNews.title || !newNews.content) {
-alert('Proszę wypełnić wszystkie pola!');
-return;
-}
+    if (!newsData.title || !newsData.content) {
+        alert('Proszę wypełnić wszystkie pola!');
+        return;
+    }
 
-announcements[currentCategory].unshift(newNews);
+    if (editMode) {
+        announcements[currentCategory][editIndex] = newsData;
+        editMode = false;
+        editIndex = -1;
+    } else {
+        announcements[currentCategory].unshift(newsData);
+    }
 
-saveAnnouncements()
-.then(() => {
-showAnnouncements();
-document.getElementById('newsModal').style.display = 'none';
-this.reset();
-})
-.catch(error => {
-console.error("Błąd podczas zapisywania:", error);
-alert("Wystąpił błąd podczas dodawania.");
-});
+    saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+            document.getElementById('newsModal').style.display = 'none';
+            document.getElementById('newsModalTitle').textContent = '➕ Dodaj Wpis';
+            this.reset();
+        })
+        .catch(error => {
+            console.error("Błąd podczas zapisywania:", error);
+            alert("Wystąpił błąd podczas zapisywania.");
+        });
 });
 
 function handleAddButton() {
@@ -2450,19 +2445,35 @@ addNews();
 }
 
 function addAbsence() {
-document.getElementById('absenceModal').style.display = 'flex';
+    editMode = false;
+    editIndex = -1;
+    document.getElementById('absenceForm').reset();
+    document.getElementById('absenceModalTitle').textContent = '➕ Dodaj Nieobecność';
+    document.getElementById('absenceModal').style.display = 'flex';
 }
 
 function addEvent() {
-document.getElementById('eventModal').style.display = 'flex';
+    editMode = false;
+    editIndex = -1;
+    document.getElementById('eventForm').reset();
+    document.getElementById('eventModalTitle').textContent = '➕ Dodaj Wydarzenie';
+    document.getElementById('eventModal').style.display = 'flex';
 }
 
 function addAnnouncement() {
-document.getElementById('announcementModal').style.display = 'flex';
+    editMode = false;
+    editIndex = -1;
+    document.getElementById('announcementForm').reset();
+    document.getElementById('announcementModalTitle').textContent = '➕ Dodaj Ogłoszenie';
+    document.getElementById('announcementModal').style.display = 'flex';
 }
 
 function addNews() {
-document.getElementById('newsModal').style.display = 'flex';
+    editMode = false;
+    editIndex = -1;
+    document.getElementById('newsForm').reset();
+    document.getElementById('newsModalTitle').textContent = '➕ Dodaj Wpis';
+    document.getElementById('newsModal').style.display = 'flex';
 }
 </script>
 </body>
