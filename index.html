@@ -275,6 +275,154 @@ background: rgba(0, 0, 0, 0.05);
 .announcement-card .actions .edit:hover { background: rgba(99, 102, 241, 0.1); }
 .announcement-card .actions .move:hover { background: rgba(16, 185, 129, 0.1); }
 
+/* MESSAGE RECIPIENTS */
+.message-recipients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 1rem 0;
+}
+
+.recipient-tag {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.recipient-tag.teacher {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.recipient-tag.class {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.message-datetime {
+    color: var(--gray);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    padding: 8px 12px;
+    background: var(--light);
+    border-radius: 8px;
+    width: fit-content;
+}
+
+/* RECIPIENT SELECTOR */
+.recipient-selector {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.recipient-selector h4 {
+    color: var(--dark);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recipient-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.recipient-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    font-size: 0.9rem;
+}
+
+.recipient-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+}
+
+.recipient-item.selected {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-color: var(--primary);
+}
+
+.recipient-item.selected.teacher-item {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: #10b981;
+}
+
+.recipient-item.selected.class-item {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #f59e0b;
+}
+
+.recipient-item input[type="checkbox"] {
+    display: none;
+}
+
+.selected-count {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-top: 0.5rem;
+    padding: 4px 8px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.recipient-type-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.recipient-type-tab {
+    padding: 10px 20px;
+    border: 2px solid var(--primary);
+    border-radius: 25px;
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.recipient-type-tab.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+}
+
+.recipient-type-tab:hover:not(.active) {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.recipient-section {
+    display: none;
+}
+
+.recipient-section.active {
+    display: block;
+}
+
 /* HOMEPAGE CONTENT */
 .homepage-content {
 background: white;
@@ -341,6 +489,7 @@ border-radius: var(--border-radius);
 overflow: hidden;
 box-shadow: var(--shadow-md);
 }
+
 /* FILTERS */
 .filters-container {
     background: white;
@@ -659,7 +808,7 @@ background: white;
 padding: 2.5rem;
 border-radius: var(--border-radius);
 width: 90%;
-max-width: 550px;
+max-width: 650px;
 box-shadow: var(--shadow-lg);
 animation: slideUp 0.3s ease;
 max-height: 90vh;
@@ -716,7 +865,7 @@ box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     max-height: 600px;
     white-space: pre-wrap;
     overflow-y: auto;
-    transition: none; /* Wyłącza zacinanie przy resize */
+    transition: none;
 }
 
 .date-range-container {
@@ -785,6 +934,47 @@ cursor: pointer;
 transition: var(--transition);
 font-weight: 500;
 color: var(--primary);
+}
+
+/* PRZYCISKI WSZYSCY/WSZYSTKIE */
+.bulk-select-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.bulk-select-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bulk-select-btn.all-teachers {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.bulk-select-btn.all-classes {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.bulk-select-btn.clear-all {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.bulk-select-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
 }
 
 .page-btn.active {
@@ -990,6 +1180,15 @@ padding: 10px;
 padding: 8px 12px;
 font-size: 12px;
 }
+
+.recipient-type-tabs {
+flex-direction: column;
+}
+
+.recipient-item {
+font-size: 0.8rem;
+padding: 6px 10px;
+}
 }
 
 /* SCROLLBAR */
@@ -1045,7 +1244,7 @@ background: var(--primary-dark);
         <a href="#" data-category="12">🎨 Szkoła Artystyczna</a>
         <a href="#" data-category="8">📚 Dla Nauczycieli</a>
         <a href="#" data-category="3">📢 Ogłoszenia</a>
-        <a href="#" data-category="4">🏥 Nieobecności</a>
+        <a href="#" data-category="4">✉️ Wiadomości</a>
     </div>
 </nav>
 
@@ -1054,60 +1253,68 @@ background: var(--primary-dark);
     <div id="announcements"></div>
 </div>
 
-<!-- Modal dla nieobecności -->
-<div class="modal-overlay" id="absenceModal">
+<!-- Modal dla wiadomości -->
+<div class="modal-overlay" id="messageModal">
     <div class="modal-content">
-        <h2 id="absenceModalTitle">➕ Dodaj Nieobecność</h2>
-        <form id="absenceForm">
+        <h2 id="messageModalTitle">➕ Nowa Wiadomość</h2>
+        <form id="messageForm">
             <div class="form-group">
-                <label>Okres nieobecności:</label>
-                <div class="date-range-container">
-                    <div class="date-range-item">
-                        <label for="absenceDateFrom">Od:</label>
-                        <input type="date" id="absenceDateFrom" required>
+                <label>Wybierz odbiorców:</label>
+                <div class="recipient-type-tabs">
+                    <div class="recipient-type-tab active" data-type="teachers" onclick="switchRecipientType('teachers')">
+                        👨‍🏫 Nauczyciele
                     </div>
-                    <div class="date-range-item">
-                        <label for="absenceDateTo">Do:</label>
-                        <input type="date" id="absenceDateTo" required>
+                    <div class="recipient-type-tab" data-type="classes" onclick="switchRecipientType('classes')">
+                        🏫 Klasy
                     </div>
+                </div>
+                
+                <div class="recipient-section active" id="teachersSection">
+                    <div class="bulk-select-buttons">
+                        <button type="button" class="bulk-select-btn all-teachers" onclick="selectAllTeachers()">
+                            ✅ WSZYSCY nauczyciele
+                        </button>
+                        <button type="button" class="bulk-select-btn clear-all" onclick="deselectAllTeachers()">
+                            ❌ Wyczyść nauczycieli
+                        </button>
+                    </div>
+                    <div class="recipient-selector">
+                        <h4>👨‍🏫 Wybierz nauczycieli:</h4>
+                        <div class="recipient-list" id="teachersList"></div>
+                    </div>
+                    <div class="selected-count" id="teachersCount">Wybrano: 0</div>
+                </div>
+                
+                <div class="recipient-section" id="classesSection">
+                    <div class="bulk-select-buttons">
+                        <button type="button" class="bulk-select-btn all-classes" onclick="selectAllClasses()">
+                            ✅ WSZYSTKIE klasy
+                        </button>
+                        <button type="button" class="bulk-select-btn clear-all" onclick="deselectAllClasses()">
+                            ❌ Wyczyść klasy
+                        </button>
+                    </div>
+                    <div class="recipient-selector">
+                        <h4>🏫 Wybierz klasy:</h4>
+                        <div class="recipient-list" id="classesList"></div>
+                    </div>
+                    <div class="selected-count" id="classesCount">Wybrano: 0</div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="absenceHours">Godziny (lub "cały dzień"):</label>
-                <input type="text" id="absenceHours" placeholder="np. 8:00-12:00 lub cały dzień" required>
+                <label for="messageTitle">Tytuł wiadomości:</label>
+                <input type="text" id="messageTitle" placeholder="Wpisz tytuł wiadomości..." required>
             </div>
 
             <div class="form-group">
-                <label for="absenceTeacher">Nauczyciel:</label>
-                <select id="absenceTeacher" required>
-                    <option value="">Wybierz nauczyciela</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="absenceReason">Powód:</label>
-                <select id="absenceReason" required>
-                    <option value="">brak</option>
-                    <option value="Zwolnienie Lekarskie">Zwolnienie Lekarskie</option>
-                    <option value="Choroba">Choroba</option>
-                    <option value="Długotrwała Choroba">Długotrwała Choroba</option>
-                    <option value="Sprawy szkolne">Sprawy szkolne</option>
-                    <option value="Sprawy prywatne">Sprawy prywatne</option>
-                    <option value="Urlop Płatny">Urlop Płatny</option>
-                    <option value="Urlop Bezpłatny">Urlop Bezpłatny</option>
-                    <option value="Urlop Rodzinny">Urlop Rodzinny</option>
-                    <option value="Szkolenie">Szkolenie</option>
-                    <option value="Rada/Konsultacje">Rada/Konsultacje</option>
-                    <option value="Odpracowanie">Odpracowanie</option>
-                    <option value="Wycieczka">Wycieczka</option>
-                    <option value="Inne">Inne</option>
-                </select>
+                <label for="messageContent">Treść wiadomości:</label>
+                <textarea id="messageContent" rows="6" placeholder="Wpisz treść wiadomości..." required></textarea>
             </div>
 
             <div class="form-buttons">
-                <button type="button" onclick="document.getElementById('absenceModal').style.display = 'none'">Anuluj</button>
-                <button type="submit">Zapisz</button>
+                <button type="button" onclick="closeMessageModal()">Anuluj</button>
+                <button type="submit">Wyślij</button>
             </div>
         </form>
     </div>
@@ -1257,6 +1464,8 @@ let archive = [];
 let currentPage = 1;
 let editMode = false;
 let editIndex = -1;
+let selectedTeachers = [];
+let selectedClasses = [];
 let eventFilters = {
     orange: true,
     green: true,
@@ -1266,6 +1475,118 @@ let eventFilters = {
 const itemsPerPage = 8;
 
 const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
+
+// Lista nauczycieli
+const nauczyciele = [
+"Aleksander Białko", "Katarzyna Borzędzin", "Anna Brzeska", "Hanna Brzeska", "Anna Burakowska", "Agnieszka Burkiewicz", "Katarzyna Buzdro", "Sylwia Cześniewicz", "Faustyna Dobrzek",
+"Małgorzata Domagała", "Karolina Dominiak", "Dariusz Drzemała", "Elżbieta Gawin", "Mateusz Gig", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak",
+"Ignacy Jasiński", "Magdalena Joelesh", "Martyna Kołodziejczyk", "Zuzanna Kośnicka", "Sylwia Kozakowska", "Marcin Krupnicki", "Małgorzata Lesińska", "Rozalia Lipska", "Zofia Lisek",
+"Aleksandra Malczyk", "Ewa Malinowska", "Joanna Małek", "Dorota Maszkiewska", "Agnieszka Miłasz", "Kinga Młodzik", "Karolina Młotek", "Daria Musherina", "Antonnio Myszkowski", "Tadeusz Ostrowski",
+"Ludwik Parkowiak", "Antonina Pawelczyk", "Michał Pietruszewski", "Natalia Raczyńska", "Alicja Rajewicz-Drzemała", "Weronika Rogalska", "Katarzyna Sieczko", "Renata Skleszewska",
+"Lena Skwierzyńska", "Alicja Struś-Michalska", "Barbara Strzegomska", "Karolina Sznurowska", "Bożena Szpilkiewicz", "Ewelina Śmigalska", "Zuzanna Świerczek", "Michał Tarczyn", 
+"Barbara Trzaskowska", "WAKAT Fizyka", "Celina Włodarczyk", "Ignacy Włoszek", "Marian Woźniak", "Aleksandra Wykaz", "Marlena Wyszyńska", "Urszula Złocińska", "Oliwia Żabkiewicz", "Karolina Żukowska"
+];
+
+// Lista klas - TYLKO JEDNA DEKLARACJA!
+const klasy = [
+"1A", "1B", "1M", "2A", "2B", "2C", "3A", "3B", "3C", 
+"4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "6M", 
+"7A", "7B", "7M", "8A", "8B", "8M",
+"TA1", "TA2", "P", "TE", "F"
+];
+
+// Inicjalizacja list odbiorców - POPRAWIONA WERSJA
+function initRecipientLists() {
+    const teachersList = document.getElementById('teachersList');
+    const classesList = document.getElementById('classesList');
+    
+    if (!teachersList || !classesList) return;
+    
+    teachersList.innerHTML = '';
+    classesList.innerHTML = '';
+    
+    nauczyciele.forEach(teacher => {
+        const div = document.createElement('div');
+        div.className = 'recipient-item teacher-item';
+        div.dataset.name = teacher;
+        div.innerHTML = `<input type="checkbox" value="${teacher}"><span>👨‍🏫 ${teacher}</span>`;
+        div.onclick = () => toggleRecipient(div, teacher, 'teacher');
+        teachersList.appendChild(div);
+    });
+    
+    klasy.forEach(klasa => {
+        const div = document.createElement('div');
+        div.className = 'recipient-item class-item';
+        div.dataset.name = klasa;
+        div.innerHTML = `<input type="checkbox" value="${klasa}"><span>🏫 ${klasa}</span>`;
+        div.onclick = () => toggleRecipient(div, klasa, 'class');
+        classesList.appendChild(div);
+    });
+}
+
+function toggleRecipient(element, value, type) {
+    element.classList.toggle('selected');
+    const checkbox = element.querySelector('input');
+    checkbox.checked = !checkbox.checked;
+    
+    if (type === 'teacher') {
+        if (checkbox.checked) {
+            selectedTeachers.push(value);
+        } else {
+            selectedTeachers = selectedTeachers.filter(t => t !== value);
+        }
+        document.getElementById('teachersCount').textContent = `Wybrano: ${selectedTeachers.length}`;
+    } else {
+        if (checkbox.checked) {
+            selectedClasses.push(value);
+        } else {
+            selectedClasses = selectedClasses.filter(c => c !== value);
+        }
+        document.getElementById('classesCount').textContent = `Wybrano: ${selectedClasses.length}`;
+    }
+}
+
+function switchRecipientType(type) {
+    document.querySelectorAll('.recipient-type-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.recipient-type-tab[data-type="${type}"]`).classList.add('active');
+    
+    document.querySelectorAll('.recipient-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById(type + 'Section').classList.add('active');
+}
+
+function closeMessageModal() {
+    document.getElementById('messageModal').style.display = 'none';
+    resetMessageForm();
+}
+
+function resetMessageForm() {
+    document.getElementById('messageForm').reset();
+    selectedTeachers = [];
+    selectedClasses = [];
+    document.querySelectorAll('.recipient-item').forEach(item => {
+        item.classList.remove('selected');
+        const checkbox = item.querySelector('input');
+        if (checkbox) checkbox.checked = false;
+    });
+    document.getElementById('teachersCount').textContent = 'Wybrano: 0';
+    document.getElementById('classesCount').textContent = 'Wybrano: 0';
+    document.getElementById('messageModalTitle').textContent = '➕ Nowa Wiadomość';
+    editMode = false;
+    editIndex = -1;
+}
+
+// Wypełnienie selecta dla ogłoszeń
+document.getElementById('announcementTeacher').innerHTML = '<option value="">Wybierz nauczyciela</option>';
+nauczyciele.forEach(teacher => {
+    const option = document.createElement('option');
+    option.value = teacher;
+    option.textContent = teacher;
+    document.getElementById('announcementTeacher').appendChild(option);
+});
 
 function saveAnnouncements() {
 const updates = {
@@ -1307,26 +1628,6 @@ callback();
 });
 }
 
-const nauczyciele = [
-"Aleksander Białko", "Katarzyna Borzędzin", "Anna Brzeska", "Hanna Brzeska", "Anna Burakowska", "Agnieszka Burkiewicz", "Katarzyna Buzdro", "Sylwia Cześniewicz", "Faustyna Dobrzek",
-"Małgorzata Domagała", "Karolina Dominiak", "Dariusz Drzemała", "Elżbieta Gawin", "Mateusz Gig", "Irynna Goshevniyk", "Grażyna Gruszka", "Paweł Grzegorzewski", "Anna Grześkowiak",
-"Ignacy Jasiński", "Magdalena Joelesh", "Martyna Kołodziejczyk", "Zuzanna Kośnicka", "Sylwia Kozakowska", "Marcin Krupnicki", "Małgorzata Lesińska", "Rozalia Lipska", "Zofia Lisek",
-"Aleksandra Malczyk", "Ewa Malinowska", "Joanna Małek", "Dorota Maszkiewska", "Agnieszka Miłasz", "Kinga Młodzik", "Karolina Młotek", "Daria Musherina", "Antonnio Myszkowski", "Tadeusz Ostrowski",
-"Ludwik Parkowiak", "Antonina Pawelczyk", "Michał Pietruszewski", "Natalia Raczyńska", "Alicja Rajewicz-Drzemała", "Weronika Rogalska", "Katarzyna Sieczko", "Renata Skleszewska",
-"Lena Skwierzyńska", "Alicja Struś-Michalska", "Barbara Strzegomska", "Karolina Sznurowska", "Bożena Szpilkiewicz", "Ewelina Śmigalska", "Zuzanna Świerczek", "Michał Tarczyn", 
-"Barbara Trzaskowska", "WAKAT Fizyka", "Celina Włodarczyk", "Ignacy Włoszek", "Marian Woźniak", "Aleksandra Wykaz", "Marlena Wyszyńska", "Urszula Złocińska", "Oliwia Żabkiewicz", "Karolina Żukowska",
-"teacher_account_150", "teacher_account_153", "wychowawca świetlicy", "teacher_account_154", "Administrator"
-];
-
-[document.getElementById('absenceTeacher'), document.getElementById('announcementTeacher')].forEach(select => {
-nauczyciele.forEach(teacher => {
-const option = document.createElement('option');
-option.value = teacher;
-option.textContent = teacher;
-select.appendChild(option);
-});
-});
-
 document.querySelectorAll('.menu a').forEach(link => {
 link.addEventListener('click', (e) => {
 e.preventDefault();
@@ -1363,13 +1664,21 @@ return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
 
 let content = '';
 if (item.category === 4) {
-const from = formatDate(item.dateFrom);
-const to = formatDate(item.dateTo);
-content = `
-<h3>🏥 Nieobecność: ${item.teacher}</h3>
-<p>Okres: ${from} - ${to} ${item.hours ? `(${item.hours})` : ''}</p>
-<p>Powód: ${item.reason}</p>
-`;
+    // Wiadomość
+    const recipients = [];
+    if (item.teachers && item.teachers.length > 0) {
+        recipients.push(`Nauczyciele: ${item.teachers.join(', ')}`);
+    }
+    if (item.classes && item.classes.length > 0) {
+        recipients.push(`Klasy: ${item.classes.join(', ')}`);
+    }
+    const datetime = new Date(item.timestamp).toLocaleString('pl-PL');
+    content = `
+    <h3>✉️ ${item.title}</h3>
+    <p><strong>Do:</strong> ${recipients.join(' | ') || 'Brak odbiorców'}</p>
+    <p><strong>Data:</strong> ${datetime}</p>
+    <p>${item.content}</p>
+    `;
 } else if (item.category === 2) {
 content = `
 <h3>📅 Wydarzenie: ${item.name}</h3>
@@ -1440,14 +1749,14 @@ const categories = {
 1: 'Strona Główna',
 2: 'Wydarzenia',
 3: 'Ogłoszenia',
-4: 'Nieobecności',
+4: 'Wiadomości',
 5: 'Aktualności',
 6: 'Samorząd Uczniowski i Wolontariat',
 7: 'Klasy 1-3 i Świetlica',
 8: 'Dla Nauczycieli',
 9: 'Grono Pedagogiczne',
 10: 'Wychowawcy',
-11: 'Dokumenty' ,
+11: 'Dokumenty',
 12: 'Szkoła Artystyczna'
 };
 return categories[categoryId] || 'Nieznana kategoria';
@@ -1471,7 +1780,7 @@ container.innerHTML = `
 <p>Stanisław Moniuszko urodził się 5 maja 1819 roku w Ubielu (dzisiejsza Białoruś). Był jednym z najwybitniejszych polskich kompozytorów XIX wieku, często nazywany "ojcem polskiej opery narodowej". Od najmłodszych lat miał kontakt z muzyką – pierwsze lekcje gry na fortepianie otrzymał od matki. W wieku 18 lat wyjechał do Berlina, gdzie studiował kompozycję i teorię muzyki u Carla Rungenhagena. Po powrocie do kraju objął posadę organisty w Wilnie i rozpoczął działalność kompozytorską oraz organizował koncerty. W tym czasie tworzył pieśni, muzykę kościelną, a także utwory sceniczne. Jego największą sławę przyniosła opera „Halka", która miała premierę w 1848 roku w Wilnie w wersji koncertowej, a pełne wykonanie sceniczne odbyło się w 1858 roku w Warszawie. Moniuszko doskonale oddał w niej ducha polskiego społeczeństwa – pokazał problemy chłopów i szlachty, wykorzystując elementy muzyki ludowej. W 1858 roku został dyrektorem Teatru Wielkiego w Warszawie, gdzie napisał kolejne ważne opery, m.in. „Straszny dwór", „Hrabina" i „Paria". Oprócz oper tworzył też liczne pieśni, zebrane w zbiorach takich jak „Śpiewnik domowy", który do dziś stanowi skarb polskiej kultury muzycznej. Moniuszko zmarł nagle 4 czerwca 1872 roku w Warszawie. Został pochowany na Cmentarzu Powązkowskim. Jego twórczość, mocno zakorzeniona w polskim folklorze i tradycji narodowej, do dziś jest symbolem muzycznego patriotyzmu.</p>
 
 <h3>🎨 O Naszej Szkole Artystycznej</h3>
-<p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
+<p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworowania, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
 
 <h3>⏰ Godziny otwarcia:</h3>
 <p>🏫 Szkoła: PN-PT 6:30-18:30</p>
@@ -1487,7 +1796,7 @@ if(currentCategory === 12) {
 container.innerHTML = `
 <div class="homepage-content">
 <h1 style="text-align: center;">🎨 Szkoła Artystyczna nr 2 we Wrocławiu</h1>
-<p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z tańca, plastyki, teatru i fotografii, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworzenia, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
+<p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z tańca, plastyki, teatru i fotografii, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworowania, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
 
 <h1 style="text-align: center;">📋 KLASY</h1>
 <h3>💃 TANECZNA - TA1 (14 os.) 7-10 lat</h3>
@@ -2019,7 +2328,6 @@ return;
 
 // FILTROWANIE DLA WYDARZEŃ (kategoria 2)
 if(currentCategory === 2) {
-    // Dodaj filtry
     const filtersDiv = document.createElement('div');
     filtersDiv.className = 'filters-container';
     filtersDiv.innerHTML = `
@@ -2045,7 +2353,6 @@ if(currentCategory === 2) {
     `;
     container.appendChild(filtersDiv);
 
-    // Dodaj event listenery dla checkboxów
     setTimeout(() => {
         document.getElementById('filter-orange').addEventListener('change', (e) => {
             eventFilters.orange = e.target.checked;
@@ -2065,7 +2372,6 @@ if(currentCategory === 2) {
         });
     }, 0);
 
-    // Filtruj wydarzenia
     const allEvents = announcements[currentCategory] || [];
     const filteredEvents = allEvents.filter(event => {
         if (event.category === 'zajęcia odwołane - uczniowie zwolnieni do domu.') {
@@ -2088,6 +2394,20 @@ if(currentCategory === 2) {
         filteredEvents.forEach((ann, originalIndex) => {
             const actualIndex = allEvents.indexOf(ann);
             container.appendChild(createAnnouncementCard(ann, actualIndex));
+        });
+    }
+    return;
+}
+
+// KATEGORIA 4 - WIADOMOŚCI (NOWA!)
+if(currentCategory === 4) {
+    const categoryMessages = announcements[currentCategory] || [];
+    
+    if(categoryMessages.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: white; padding: 2rem; font-size: 1.2rem;">Brak wiadomości.</p>';
+    } else {
+        categoryMessages.forEach((msg, index) => {
+            container.appendChild(createMessageCard(msg, index));
         });
     }
     return;
@@ -2136,23 +2456,64 @@ container.appendChild(createAnnouncementCard(ann, index));
 }
 }
 
+// FUNKCJA TWORZENIA KARTY WIADOMOŚCI
+function createMessageCard(msg, index) {
+    const div = document.createElement('div');
+    div.className = 'announcement-card';
+    div.style.borderLeftColor = '#ec4899';
+    
+    const date = new Date(msg.timestamp);
+    const formattedDate = date.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = date.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    
+    let recipientTags = '';
+    if (msg.teachers && msg.teachers.length > 0) {
+        msg.teachers.forEach(t => {
+            recipientTags += `<span style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; margin: 2px; display: inline-block;">👤 ${t}</span>`;
+        });
+    }
+    if (msg.classes && msg.classes.length > 0) {
+        msg.classes.forEach(c => {
+            recipientTags += `<span style="background: linear-gradient(135deg, #ec4899, #db2777); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; margin: 2px; display: inline-block;">🎓 ${c}</span>`;
+        });
+    }
+    
+    div.innerHTML = `
+        <div class="actions">
+            <span class="delete" onclick="deleteAnnouncement(${index})">🗑️</span>
+            <span class="edit" onclick="editMessage(${index})">✏️</span>
+            <span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
+            <span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
+        </div>
+        <h2>✉️ ${msg.title || 'Brak tytułu'}</h2>
+        <div style="margin: 1rem 0; display: flex; flex-wrap: wrap; gap: 4px;">
+            ${recipientTags || '<span style="color: var(--gray);">Brak odbiorców</span>'}
+        </div>
+        <div class="announcement-content">${msg.content || 'Brak treści'}</div>
+        <div style="margin-top: 1rem; color: var(--gray); font-size: 0.875rem; display: flex; align-items: center; gap: 12px;">
+            <span style="background: rgba(99, 102, 241, 0.1); padding: 4px 10px; border-radius: 6px; color: var(--primary); font-weight: 500;">📅 ${formattedDate}</span>
+            <span>🕐 ${formattedTime}</span>
+        </div>
+    `;
+    return div;
+}
+
 function createAnnouncementCard(ann, index) {
 const div = document.createElement('div');
 div.className = 'announcement-card';
 
-// Ustawienie koloru tła dla wydarzeń (kategoria 2) w zależności od działania
 if (currentCategory === 2) {
     if (ann.category === 'zajęcia odwołane - uczniowie zwolnieni do domu.') {
-        div.style.backgroundColor = '#ff9800'; // pomarańczowy
+        div.style.backgroundColor = '#ff9800';
         div.style.color = 'white';
     } else if (ann.category === 'Zajęcia związane z tematem wydarzenia.') {
-        div.style.backgroundColor = '#4caf50'; // zielony
+        div.style.backgroundColor = '#4caf50';
         div.style.color = 'white';
     } else if (ann.category === 'Dzień wolny od zajęć dydaktyczno-wychowawczych (Dzień Wolny Szkoły)') {
-        div.style.backgroundColor = '#f44336'; // czerwony
+        div.style.backgroundColor = '#f44336';
         div.style.color = 'white';
     } else if (ann.category === 'brak') {
-        div.style.backgroundColor = 'white'; // biały (domyślny)
+        div.style.backgroundColor = 'white';
     }
 }
 
@@ -2176,11 +2537,7 @@ div.innerHTML = `
 <span class="move" onclick="moveAnnouncement(${index}, 'up')">⬆️</span>
 <span class="move" onclick="moveAnnouncement(${index}, 'down')">⬇️</span>
 </div>
-${currentCategory === 4 ? `
-<h2>🏥 ${dateRange}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
-<p><strong>${ann.teacher || 'Brak danych'}</strong></p>
-<p>${ann.reason || 'Brak powodu'}</p>
-` : currentCategory === 2 ? `
+${currentCategory === 2 ? `
 <h2>📅 ${formatDate(ann.date)}${ann.hours && ann.hours !== 'cały dzień' ? ` (${ann.hours})` : ''}</h2>
 <p><strong>${ann.name || 'Brak nazwy'}</strong></p>
 <p>Kategoria: ${ann.category || 'Brak kategorii'}</p>
@@ -2225,17 +2582,7 @@ function editAnnouncement(index) {
     editMode = true;
     editIndex = index;
     
-    if (currentCategory === 4) {
-        const absence = announcements[currentCategory][index];
-        document.getElementById('absenceModalTitle').textContent = '✏️ Edytuj Nieobecność';
-        document.getElementById('absenceDateFrom').value = absence.dateFrom;
-        document.getElementById('absenceDateTo').value = absence.dateTo;
-        document.getElementById('absenceHours').value = absence.hours || 'cały dzień';
-        document.getElementById('absenceTeacher').value = absence.teacher;
-        document.getElementById('absenceReason').value = absence.reason;
-        document.getElementById('absenceModal').style.display = 'flex';
-        
-    } else if (currentCategory === 2) {
+    if (currentCategory === 2) {
         const event = announcements[currentCategory][index];
         document.getElementById('eventModalTitle').textContent = '✏️ Edytuj Wydarzenie';
         document.getElementById('eventDate').value = event.date;
@@ -2261,6 +2608,46 @@ function editAnnouncement(index) {
         document.getElementById('newsContent').value = item.content;
         document.getElementById('newsModal').style.display = 'flex';
     }
+}
+
+// EDYCJA WIADOMOŚCI - POPRAWIONA
+function editMessage(index) {
+    editMode = true;
+    editIndex = index;
+    
+    const msg = announcements[currentCategory][index];
+    
+    initRecipientLists();
+    
+    document.getElementById('messageModalTitle').textContent = '✏️ Edytuj Wiadomość';
+    document.getElementById('messageTitle').value = msg.title || '';
+    document.getElementById('messageContent').value = msg.content || '';
+    
+    selectedTeachers = msg.teachers || [];
+    selectedClasses = msg.classes || [];
+    
+    setTimeout(() => {
+        document.querySelectorAll('#teachersList .recipient-item').forEach(item => {
+            const teacherName = item.querySelector('input').value;
+            if (selectedTeachers.includes(teacherName)) {
+                item.classList.add('selected');
+                item.querySelector('input').checked = true;
+            }
+        });
+        
+        document.querySelectorAll('#classesList .recipient-item').forEach(item => {
+            const className = item.querySelector('input').value;
+            if (selectedClasses.includes(className)) {
+                item.classList.add('selected');
+                item.querySelector('input').checked = true;
+            }
+        });
+        
+        document.getElementById('teachersCount').textContent = `Wybrano: ${selectedTeachers.length}`;
+        document.getElementById('classesCount').textContent = `Wybrano: ${selectedClasses.length}`;
+    }, 100);
+    
+    document.getElementById('messageModal').style.display = 'flex';
 }
 
 function moveAnnouncement(index, direction) {
@@ -2306,7 +2693,7 @@ return `${seconds} sek. temu`;
 function toggleAddButton() {
 const btn = document.getElementById('addButton');
 btn.style.display = [1, 9, 10, 11].includes(currentCategory) ? 'none' : 'block';
-btn.textContent = currentCategory === 4 ? 'Dodaj Nieobecność' : 
+btn.textContent = currentCategory === 4 ? 'Nowa Wiadomość' : 
 currentCategory === 2 ? 'Dodaj Wydarzenie' : 
 currentCategory === 3 ? 'Dodaj Ogłoszenie' : 
 currentCategory === 5 ? 'Dodaj Aktualność' :
@@ -2317,49 +2704,14 @@ currentCategory === 12 ? 'Dodaj Ogłoszenie' :
 'Dodaj Ogłoszenie';
 }
 
+// USUNIĘTE DUPLIKATY - NIE MA TU JUŻ POWTÓRNEJ DEKLARACJI klasy, selectedTeachers, selectedClasses
+
 document.addEventListener('DOMContentLoaded', () => {
 loadAnnouncements(() => {
 showAnnouncements();
 toggleAddButton();
+initRecipientLists(); // DODANE - inicjalizacja list przy ładowaniu
 });
-});
-
-document.getElementById('absenceForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const absenceData = {
-        dateFrom: document.getElementById('absenceDateFrom').value,
-        dateTo: document.getElementById('absenceDateTo').value,
-        hours: document.getElementById('absenceHours').value,
-        teacher: document.getElementById('absenceTeacher').value,
-        reason: document.getElementById('absenceReason').value,
-        timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
-    };
-
-    if (!absenceData.dateFrom || !absenceData.dateTo || !absenceData.hours || !absenceData.teacher || !absenceData.reason) {
-        alert('Proszę wypełnić wszystkie pola!');
-        return;
-    }
-
-    if (editMode) {
-        announcements[currentCategory][editIndex] = absenceData;
-        editMode = false;
-        editIndex = -1;
-    } else {
-        announcements[currentCategory].unshift(absenceData);
-    }
-
-    saveAnnouncements()
-        .then(() => {
-            showAnnouncements();
-            document.getElementById('absenceModal').style.display = 'none';
-            document.getElementById('absenceModalTitle').textContent = '➕ Dodaj Nieobecność';
-            this.reset();
-        })
-        .catch(error => {
-            console.error("Błąd podczas zapisywania:", error);
-            alert("Wystąpił błąd podczas zapisywania.");
-        });
 });
 
 document.getElementById('eventForm').addEventListener('submit', function(e) {
@@ -2392,10 +2744,6 @@ document.getElementById('eventForm').addEventListener('submit', function(e) {
             document.getElementById('eventModal').style.display = 'none';
             document.getElementById('eventModalTitle').textContent = '➕ Dodaj Wydarzenie';
             this.reset();
-        })
-        .catch(error => {
-            console.error("Błąd podczas zapisywania:", error);
-            alert("Wystąpił błąd podczas zapisywania.");
         });
 });
 
@@ -2411,11 +2759,6 @@ document.getElementById('announcementForm').addEventListener('submit', function(
         timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
     };
 
-    if (!announcementData.teacher || !announcementData.title || !announcementData.content || !announcementData.dateFrom || !announcementData.dateTo) {
-        alert('Proszę wypełnić wszystkie pola!');
-        return;
-    }
-
     if (editMode) {
         announcements[currentCategory][editIndex] = announcementData;
         editMode = false;
@@ -2428,12 +2771,7 @@ document.getElementById('announcementForm').addEventListener('submit', function(
         .then(() => {
             showAnnouncements();
             document.getElementById('announcementModal').style.display = 'none';
-            document.getElementById('announcementModalTitle').textContent = '➕ Dodaj Ogłoszenie';
             this.reset();
-        })
-        .catch(error => {
-            console.error("Błąd podczas zapisywania:", error);
-            alert("Wystąpił błąd podczas zapisywania.");
         });
 });
 
@@ -2445,11 +2783,6 @@ document.getElementById('newsForm').addEventListener('submit', function(e) {
         content: document.getElementById('newsContent').value,
         timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
     };
-
-    if (!newsData.title || !newsData.content) {
-        alert('Proszę wypełnić wszystkie pola!');
-        return;
-    }
 
     if (editMode) {
         announcements[currentCategory][editIndex] = newsData;
@@ -2463,33 +2796,63 @@ document.getElementById('newsForm').addEventListener('submit', function(e) {
         .then(() => {
             showAnnouncements();
             document.getElementById('newsModal').style.display = 'none';
-            document.getElementById('newsModalTitle').textContent = '➕ Dodaj Wpis';
             this.reset();
-        })
-        .catch(error => {
-            console.error("Błąd podczas zapisywania:", error);
-            alert("Wystąpił błąd podczas zapisywania.");
+        });
+});
+
+// OBSŁUGA FORMULARZA WIADOMOŚCI
+document.getElementById('messageForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (selectedTeachers.length === 0 && selectedClasses.length === 0) {
+        alert('Wybierz przynajmniej jednego odbiorcę!');
+        return;
+    }
+    
+    const messageData = {
+        title: document.getElementById('messageTitle').value,
+        content: document.getElementById('messageContent').value,
+        teachers: [...selectedTeachers],
+        classes: [...selectedClasses],
+        timestamp: editMode ? announcements[currentCategory][editIndex].timestamp : Date.now()
+    };
+    
+    if (!messageData.title || !messageData.content) {
+        alert('Wypełnij tytuł i treść!');
+        return;
+    }
+    
+    if (editMode) {
+        announcements[currentCategory][editIndex] = messageData;
+        editMode = false;
+        editIndex = -1;
+    } else {
+        if (!announcements[currentCategory]) {
+            announcements[currentCategory] = [];
+        }
+        announcements[currentCategory].unshift(messageData);
+    }
+    
+    saveAnnouncements()
+        .then(() => {
+            showAnnouncements();
+            closeMessageModal();
         });
 });
 
 function handleAddButton() {
 if (currentCategory === 4) {
-addAbsence();
+    initRecipientLists();
+    resetMessageForm();
+    document.getElementById('messageModalTitle').textContent = '➕ Nowa Wiadomość';
+    document.getElementById('messageModal').style.display = 'flex';
 } else if (currentCategory === 2) {
-addEvent();
+    addEvent();
 } else if (currentCategory === 3) {
-addAnnouncement();
-} else if (currentCategory === 5 || [6,7,8,12].includes(currentCategory)) {
-addNews();
+    addAnnouncement();
+} else if ([5,6,7,8,12].includes(currentCategory)) {
+    addNews();
 }
-}
-
-function addAbsence() {
-    editMode = false;
-    editIndex = -1;
-    document.getElementById('absenceForm').reset();
-    document.getElementById('absenceModalTitle').textContent = '➕ Dodaj Nieobecność';
-    document.getElementById('absenceModal').style.display = 'flex';
 }
 
 function addEvent() {
@@ -2515,8 +2878,89 @@ function addNews() {
     document.getElementById('newsModalTitle').textContent = '➕ Dodaj Wpis';
     document.getElementById('newsModal').style.display = 'flex';
 }
+
+// FUNKCJE DO MASOWEGO WYBIERANIA
+function selectAllTeachers() {
+    selectedTeachers = [...nauczyciele];
+    
+    document.querySelectorAll('#teachersList .recipient-item').forEach(item => {
+        item.classList.add('selected');
+        const checkbox = item.querySelector('input');
+        if (checkbox) checkbox.checked = true;
+    });
+    
+    document.getElementById('teachersCount').textContent = `Wybrano: ${selectedTeachers.length}`;
+}
+
+function deselectAllTeachers() {
+    selectedTeachers = [];
+    
+    document.querySelectorAll('#teachersList .recipient-item').forEach(item => {
+        item.classList.remove('selected');
+        const checkbox = item.querySelector('input');
+        if (checkbox) checkbox.checked = false;
+    });
+    
+    document.getElementById('teachersCount').textContent = 'Wybrano: 0';
+}
+
+function selectAllClasses() {
+    selectedClasses = [...klasy];
+    
+    document.querySelectorAll('#classesList .recipient-item').forEach(item => {
+        item.classList.add('selected');
+        const checkbox = item.querySelector('input');
+        if (checkbox) checkbox.checked = true;
+    });
+    
+    document.getElementById('classesCount').textContent = `Wybrano: ${selectedClasses.length}`;
+}
+
+function deselectAllClasses() {
+    selectedClasses = [];
+    
+    document.querySelectorAll('#classesList .recipient-item').forEach(item => {
+        item.classList.remove('selected');
+        const checkbox = item.querySelector('input');
+        if (checkbox) checkbox.checked = false;
+    });
+    
+    document.getElementById('classesCount').textContent = 'Wybrano: 0';
+}
+
+// OPTYMALNIE: Dodaj też przycisk do wyboru wszystkich z danej sekcji
+function selectAllInCurrentSection() {
+    const activeTab = document.querySelector('.recipient-type-tab.active');
+    if (!activeTab) return;
+    
+    const type = activeTab.dataset.type;
+    
+    if (type === 'teachers') {
+        selectAllTeachers();
+    } else if (type === 'classes') {
+        selectAllClasses();
+    }
+}
+
+function getCategoryName(categoryId) {
+const categories = {
+1: 'Strona Główna',
+2: 'Wydarzenia',
+3: 'Ogłoszenia',
+4: 'Wiadomości',
+5: 'Aktualności',
+6: 'Samorząd Uczniowski i Wolontariat',
+7: 'Klasy 1-3 i Świetlica',
+8: 'Dla Nauczycieli',
+9: 'Grono Pedagogiczne',
+10: 'Wychowawcy',
+11: 'Dokumenty',
+12: 'Szkoła Artystyczna'
+};
+return categories[categoryId] || 'Nieznana kategoria';
+}
+
+
 </script>
 </body>
 </html>
-
-
