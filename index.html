@@ -1479,23 +1479,18 @@ const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
 // Lista nauczycieli
   const nauczyciele = [
   "Barbara Bartosiewicz",
-      "Renata Skleszewska",
-      "Marian Woźniak",
+      "Aleksander Białko",
   "Hanna Brzeska",
   "Anna Brzeska",
   "Anna Burakowska",
   "Katarzyna Buzdro",
-  "Sylwia Cześniewicz",
   "Małgorzata Domagała",
   "Karolina Dominiak",
   "Faustyna Dobrzek",
   "Dariusz Drzemała",
-  "Elżbieta Gawin",
   "Mateusz Gig",
-  "Irynna Goshevniyk",
   "Paweł Grzegorzewski",
   "Anna Grześkowiak",
-  "Grażyna Gruszka",
   "Ignacy Jasiński",
   "Magdalena Joelesh",
   "Martyna Kołodziejczyk",
@@ -1503,19 +1498,18 @@ const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
   "Sylwia Kozakowska",
   "Marcin Krupnicki",
   "Beata Krzyżewska",
+      "Elżbieta Kucharska",
   "Małgorzata Lesińska",
   "Zofia Lisek",
   "Rozalia Lipska",
   "Joanna Małek",
   "Aleksandra Malczyk",
+      "Marcin Malicki",
   "Dorota Maszkiewska",
   "Agnieszka Miłasz",
   "Kinga Młodzik",
   "Karolina Młotek",
-  "Daria Musherina",
   "Antonnio Myszkowski",
-  "Tadeusz Ostrowski",
-  "Ludwik Parkowiak",
   "Antonina Pawelczyk",
   "Michał Pietruszewski",
   "Natalia Raczyńska",
@@ -1523,11 +1517,9 @@ const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
   "Weronika Rogalska",
   "Katarzyna Sieczko",
   "Lena Skwierzyńska",
-  "Ewelina Śmigalska",
   "Andrzej Sterowiec",
   "Alicja Struś-Michalska",
   "Barbara Strzegomska",
-  "Bożena Szpilkiewicz",
   "Zuzanna Świerczek",
   "Michał Tarczyn",
   "Barbara Trzaskowska",
@@ -1543,10 +1535,9 @@ const requiredCategories = [2, 3, 4, 5, 6, 7, 8, 12];
 
 // Lista klas - TYLKO JEDNA DEKLARACJA!
 const klasy = [
-"1A", "1B", "1M", "2A", "2B", "2C", "3A", "3B", "3C", 
-"4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "6M", 
-"7A", "7B", "7M", "8A", "8B", "8M",
-"TA1", "TA2", "P", "TE", "F"
+"1A", "1B", "1M", "2A", "2B", "2M", "3A", "3B", "3C", 
+"4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "6C", 
+"7A", "7B", "7M", "8A", "8B", "8M", "OG"
 ];
 
 // Inicjalizacja list odbiorców - POPRAWIONA WERSJA
@@ -1836,12 +1827,12 @@ container.innerHTML = `
 <h3>🎨 O Naszej Szkole Artystycznej</h3>
 <p>Nasza szkoła popołudniowa to idealne miejsce dla uczniów, którzy chcą rozwijać swoje pasje artystyczne po lekcjach. Oferujemy zajęcia z muzyki, teatru, plastyki i tańca, prowadzone przez pełnych energii i kreatywności nauczycieli. Zajęcia są otwarte dla wszystkich – niezależnie od szkoły, do której uczęszczasz na co dzień. Wystarczy chęć tworowania, odrobina pasji i zapis, a resztą zajmiemy się my! To nie tylko nauka, ale też świetna atmosfera, występy, warsztaty i możliwość pokazania swoich talentów szerszej publiczności.</p>
 
-<h3>⏰ Godziny otwarcia W WAKACJE:</h3>
-<p>🏫 Szkoła: zamknięta dla uczniów</p>
-<p>📋 Sekretariat: od 1.07 do 31.07 (od 8:00 do 14:00), od 1.08 do 21.08 (od 7:00 do 12:00)</p>
-<p>📚 Biblioteka (Karolina Młotek): ZAMKNIĘTA W WAKACJE</p>
-<p>🧠 Psycholog mgr. Aleksandra Wykaz:</p>
-<p>💭 Pedagog mgr. Anna Grześkowiak:</p>
+<h3>⏰ Godziny otwarcia:</h3>
+<p>🏫 Szkoła: do 31.08 - zamknięta dla uczniów.</p>
+<p>📋 Sekretariat: od 1.08 do 21.08 (od 7:00 do 12:00), od 24.08 do 28.08 (od 10:00 do 12:30) </p>
+<p>📚 Biblioteka (Karolina Młotek): Zamknięta do 1.09.2026. </p>
+<p>🧠 Psycholog mgr. Aleksandra Wykaz: wkrótce</p>
+<p>💭 Pedagog mgr. Anna Grześkowiak: wkrótce</p>
 </div>`;
 return;
 }
@@ -1886,18 +1877,18 @@ if(currentCategory === 11) {
 container.innerHTML = `
 <div class="homepage-content">
 <h1>📄 DOKUMENTY:</h1>
-<a href="kalendarz.pdf" target="_blank">📅 KALENDARZ ROKU SZKOLNEGO 2025/2026</a>
-<a href="SP57_ZajDod.pdf" target="_blank">📅 KALENDARZ ZAJĘĆ DODATKOWYCH W ROKU SZKOLNYM (ważny od 12.01)</a>
-<a href="SP57_Kon.pdf" target="_blank">👨‍💼 TERMINY KONSULTACJI Z NAUCZYCIELAMI 2025/2026 (NIEWAŻNE)</a>
+<a href="kalendarz.pdf" target="_blank">📅 KALENDARZ ROKU SZKOLNEGO 2026/2027 </a>
+<a href="SP57_ZajDod.pdf" target="_blank">📅 KALENDARZ ZAJĘĆ DODATKOWYCH W ROKU SZKOLNYM - wkrótce</a>
+<a href="SP57_Kon.pdf" target="_blank">👨‍💼 TERMINY KONSULTACJI - wkrótce </a>
 
 <h2>📋 PLANY LEKCJI (od 12.01)</h2>
-<a href="plannauc.pdf" target="_blank">📄 PLAN LEKCJI II SEMESTR (nauczyciele)</a>
-<a href="planklas.pdf" target="_blank">📄 PLAN LEKCJI II SEMESTR (klasy)</a>
+<a href="plannauc.pdf" target="_blank">📄 PLAN LEKCJI - WKRÓTCE </a>
+<a href="planklas.pdf" target="_blank">📄 PLAN LEKCJI 2 - WKRÓTCE</a>
 
 <h2>📅 INNE</h2>
 <a href="Sale-57.pdf" target="_blank">📄 PODZIAŁ SAL NA NAUCZYCIELI, KLASY I PRZEDMIOTY</a>
 <a href="" target="_blank">.</a>
-<a href="PLANSA.pdf" target="_blank">🎨 PLAN LEKCJI SZKOŁY ARTYSTYCZNEJ 2025r.</a>
+<a href="PLANSA.pdf" target="_blank">🎨 PLAN LEKCJI SZKOŁY ARTYSTYCZNEJ 2025r. - nieaktualne</a>
 
 <h2> SKRÓTY W DZIENNIKU SZKOLNYM:</h2>
 <p> Pol - Język Polski </p>
